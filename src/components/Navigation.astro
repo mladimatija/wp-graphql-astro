@@ -1,5 +1,6 @@
 ---
-import { navQuery } from "../lib/api";
+import { navQuery, settingsQuery } from "../lib/api";
+const { generalSettings } = await settingsQuery();
 const { menus } = await navQuery();
 const primaryMenu = menus.nodes[0];
 ---
@@ -10,7 +11,7 @@ const primaryMenu = menus.nodes[0];
       primaryMenu.menuItems.nodes.map((menuItem) => (
         <li>
           <a
-            href={menuItem.uri}
+            href={menuItem.uri || generalSettings.url}
             class={
               menuItem.uri.includes(Astro.params.uri) ||
               (menuItem.uri === "/" && Astro.params.uri === undefined)
@@ -105,11 +106,11 @@ const primaryMenu = menus.nodes[0];
   }
 
   .header-nav {
-    position: fixed;
-    z-index: 11;
     padding: rem(100) 0 0 0;
+    position: fixed;
     top: 0;
     left: 0;
+    z-index: 101;
 
     li {
       color: $color-black;
