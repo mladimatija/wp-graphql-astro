@@ -12,7 +12,7 @@ import netlify from "@astrojs/netlify/functions";
 // https://astro.build/config
 export default defineConfig({
   site: "https://matijaculjak.com",
-  output: "server",
+  output: "static",
   integrations: [react(), sitemap()],
   adapter: netlify()
 });
