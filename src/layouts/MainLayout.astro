@@ -79,13 +79,15 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "'favicon.svg";
       <slot />
     </div>
     {showFooter && <Footer />}
-  </body><script>
-    import Darkmode from "darkmode-js/src/darkmode";
+    <script>
+      import Darkmode from "darkmode-js/src/darkmode";
 
-    new Darkmode({
-      label: "🌓",
-      mixColor: "#E6DDD9",
-      buttonColorDark: "#121212",
-    }).showWidget();
-  </script>
+      new Darkmode({
+        label: "🌓",
+        mixColor: "#E6DDD9",
+        buttonColorDark: "#121212",
+        time: "0s",
+      }).showWidget();
+    </script>
+  </body>
 </html>
