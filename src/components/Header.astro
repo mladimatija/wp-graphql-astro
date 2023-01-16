@@ -9,18 +9,26 @@ const { generalSettings } = await settingsQuery();
   <Navigation />
   <h1 class="header-title">
     <a href="/" rel="home">
-      <img class="header-logo" src="/logo.png" alt={`${generalSettings.title} logo`} />
+      <img
+        class="header-logo"
+        src="/logo.png"
+        alt={`${generalSettings.title} logo`}
+      />
     </a>
   </h1>
 
   {
-    Astro.url.pathname === "/" && ( // show only on homepage
+    (Astro.url.pathname === "/" || "page" in Astro.params) && ( // show only on homepage
       <>
         <div class="header-description">
           <h1>Hi, I'm Matija, a frontend / web developer</h1>
           <h4>
             <a href="/about/">get to know me</a>, check out the{" "}
-            <a href="https://www.linkedin.com/in/matijaculjak" target="_blank" title="Linkedin profile">
+            <a
+              href="https://www.linkedin.com/in/matijaculjak"
+              target="_blank"
+              title="Linkedin profile"
+            >
               projects I worked on
             </a>{" "}
             or read on some of the stuff I wrote
