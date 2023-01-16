@@ -11,7 +11,8 @@ import netlify from "@astrojs/netlify/functions";
 
 // https://astro.build/config
 export default defineConfig({
-  output: "static",
+  site: "https://matijaculjak.com",
+  output: "server",
   integrations: [react(), sitemap()],
   adapter: netlify()
 });
