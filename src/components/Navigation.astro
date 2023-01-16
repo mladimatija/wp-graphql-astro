@@ -1,0 +1,268 @@
+---
+import { navQuery } from "../lib/api";
+const { menus } = await navQuery();
+const primaryMenu = menus.nodes[0];
+---
+
+<nav role="navigation">
+  <ul class="header-nav">
+    {
+      primaryMenu.menuItems.nodes.map((menuItem) => (
+        <li>
+          <a
+            href={menuItem.uri}
+            class={
+              menuItem.uri.includes(Astro.params.uri) ||
+              (menuItem.uri === "/" && Astro.params.uri === undefined)
+                ? "active"
+                : ""
+            }
+          >
+            {menuItem.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="burger-menu-icon-container">
+    <div class="burger-menu-icon">
+      <div class="burger-bun burger-bun--top"></div>
+      <div class="burger-bun burger-bun--mid"></div>
+      <div class="burger-bun burger-bun--bottom"></div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  (() => {
+    "use strict";
+    (function () {
+      const burgerMenu: HTMLElement =
+          document.querySelector(".burger-menu-icon"),
+        burgerContainer = document.querySelector(".burger-menu-icon-container"),
+        burgerNav = document.querySelector(".header-nav");
+
+      burgerMenu.addEventListener(
+        "click",
+        () => {
+          [document.body, burgerContainer, burgerNav].forEach(function (el) {
+            if (el === document.body) {
+              el.classList.toggle("nav-open");
+            } else {
+              el.classList.toggle("open");
+            }
+          });
+        },
+        false
+      );
+      document.onkeydown = (evt) => {
+        let isEscape = false;
+        if ("key" in evt) {
+          isEscape = evt.key === "Escape" || evt.key === "Esc";
+        }
+
+        if (
+          isEscape &&
+          burgerContainer.classList.contains("open") &&
+          burgerNav.classList.contains("open")
+        ) {
+          burgerMenu.click();
+        }
+      };
+    })();
+  })();
+</script>
+
+<style lang="scss">
+  @use '../styles/config/variables.scss' as *;
+  @use '../styles/abstracts/functions/rem.scss' as *;
+
+  body {
+    &.nav-open {
+      overflow: hidden;
+
+      &::after {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+
+    &::after {
+      background: #fff;
+      content: '';
+      height: 100%;
+      left: 0;
+      opacity: 0;
+      overflow: auto;
+      position: fixed;
+      top: 0;
+      transition: all 0.4s ease;
+      width: 100%;
+      visibility: hidden;
+      z-index: 100;
+    }
+  }
+
+  .header-nav {
+    position: fixed;
+    z-index: 11;
+    padding: rem(100) 0 0 0;
+    top: 0;
+    left: 0;
+
+    li {
+      color: $color-black;
+      list-style-type: none;
+      margin-bottom: rem(15);
+      text-align: left;
+      transform: translateX(rem(-250));
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      &:not(.open) {
+        animation-duration: 0.4s;
+        animation-fill-mode: both;
+        animation-name: slideOutLeft;
+      }
+    }
+
+    a {
+      border-left: rgba(255, 255, 255, 0) solid rem(2);
+      color: $color-black;
+      font-family: Helvetica-Neue, Helvetica, Arial, sans-serif;
+      font-size: rem(24);
+      font-weight: 300;
+      margin-left: rem(30);
+      text-decoration: none;
+      transition: all 0.4s ease;
+      width: auto;
+
+      &:hover,
+      &:active,
+      &:focus,
+      &.active {
+        border-left: $color-black solid rem(2);
+        color: $color-blue;
+        padding-left: rem(30);
+      }
+    }
+
+    &:not(.open) {
+      visibility: hidden;
+      opacity: 0;
+    }
+
+    &.open {
+      visibility: visible;
+      opacity: 1;
+
+      li {
+        animation-duration: 0.4s;
+        animation-fill-mode: both;
+        animation-name: slideInLeft;
+      }
+    }
+  }
+
+  .burger-menu-icon {
+    background: transparent;
+    border: transparent solid rem(2);
+    border-radius: 50%;
+    cursor: pointer;
+    height: rem(60);
+    padding: rem(17) rem(15) rem(15);
+    position: relative;
+    transition: all 0.4s ease;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    width: rem(60);
+
+    &:hover {
+      border: $color-black solid rem(2);
+    }
+  }
+
+  .burger-bun {
+    background: $color-black;
+    position: relative;
+    transition: all 0.4s ease;
+
+    &--top {
+      height: rem(2);
+      top: 0;
+      width: rem(25);
+    }
+
+    &--mid {
+      height: rem(2);
+      top: rem(8);
+      width: rem(25);
+    }
+
+    &--bottom {
+      height: rem(2);
+      top: rem(16);
+      width: rem(25);
+    }
+  }
+
+  .burger-menu-icon-container {
+    height: rem(60);
+    left: rem(15);
+    position: fixed;
+    top: rem(15);
+    z-index: 101;
+
+    &.open {
+      .burger-menu-icon {
+        border: #fff solid rem(2);
+        background: #fff;
+      }
+
+      &:hover .burger-menu-icon {
+        border: $color-black solid rem(2);
+      }
+
+      .burger-bun--top {
+        background: $color-black;
+        top: rem(9);
+        transform: rotate(45deg);
+      }
+
+      .burger-bun--mid {
+        opacity: 0;
+      }
+
+      .burger-bun--bottom {
+        background: $color-black;
+        top: rem(5);
+        transform: rotate(-45deg);
+      }
+    }
+  }
+
+  @keyframes slideInLeft {
+    0% {
+      transform: translate3d(rem(-250), 0, 0);
+      visibility: visible;
+    }
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes slideOutLeft {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    100% {
+      transform: translate3d(rem(-250), 0, 0);
+      visibility: hidden;
+    }
+  }
+</style>

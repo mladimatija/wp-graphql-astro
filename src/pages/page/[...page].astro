@@ -1,0 +1,25 @@
+---
+import { Page } from "astro";
+import { getPosts, settingsQuery } from "../../lib/api.js";
+import PostCard from "../../components/PostCard.astro";
+import MainLayout from "../../layouts/MainLayout.astro";
+import Pagination from "../../components/Pagination.astro";
+
+export async function getStaticPaths({ paginate }) {
+  const data = await getPosts();
+  const { allSettings } = await settingsQuery();
+  return paginate(data.posts.edges, {
+    pageSize: allSettings.readingSettingsPostsPerPage,
+  });
+}
+let { page } = Astro.props;
+---
+
+<MainLayout>
+  <main role="main">
+    <div class="posts">
+      {page.data.map((post) => <PostCard post={post.node} />)}
+    </div>
+    <Pagination page={page as Page} />
+  </main>
+</MainLayout>

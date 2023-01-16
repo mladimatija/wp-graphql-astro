@@ -1,0 +1,91 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+  showFooter?: boolean;
+}
+
+import { getNodeByURI } from "../lib/api";
+import { SEO } from "astro-seo";
+import { stripHtml } from "string-strip-html";
+
+// import fonts
+import "@fontsource/open-sans";
+import "@fontsource/open-sans/latin-ext.css";
+import "@fontsource/lora";
+import "@fontsource/lora/latin-ext.css";
+
+/* npm depts styles, and shared styles to be used everywhere throughout the project where MainLayout is used */
+import "../styles/styles.scss";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { settingsQuery } from "../lib/api";
+
+const { generalSettings } = await settingsQuery();
+const { title, description, showFooter = true } = Astro.props;
+
+const uri = `/${Astro.params.uri}/`;
+const data = await getNodeByURI(uri);
+const node = data.nodeByUri;
+
+const cleanDescription =
+  (description && stripHtml(description).result) || generalSettings.description;
+const generatedTitle = `${title ? title + " | " : ""}${generalSettings.title}`;
+const metaImage = node?.featuredImage?.node?.mediaItemUrl || "'favicon.svg";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <SEO
+      title={generatedTitle}
+      description={cleanDescription}
+      openGraph={{
+        basic: {
+          title: generatedTitle,
+          type: "website",
+          image: metaImage,
+        },
+        image: {
+          url: metaImage,
+          alt: generatedTitle,
+        },
+      }}
+      twitter={{
+        creator: `@${import.meta.env.PUBLIC_TWITTER_SHARE_USER}`,
+      }}
+      extend={{
+        // extending the default link tags
+        link: [{ rel: "icon", href: "/favicon.svg" }],
+        // extending the default meta tags
+        meta: [
+          {
+            name: "twitter:image",
+            content: metaImage,
+          },
+          { name: "twitter:title", content: generatedTitle },
+          { name: "twitter:description", content: cleanDescription },
+        ],
+      }}
+    />
+  </head>
+
+  <body>
+    <Header />
+    <div id="content" class="site-content">
+      <slot />
+    </div>
+    {showFooter && <Footer />}
+  </body><script>
+    import Darkmode from "darkmode-js/src/darkmode";
+
+    new Darkmode({
+      label: "🌓",
+      mixColor: "#E6DDD9",
+      buttonColorDark: "#121212",
+    }).showWidget();
+  </script>
+</html>

@@ -1,0 +1,33 @@
+---
+interface Props {
+  node: {
+    __typename: string;
+    id: string;
+    name: string;
+    slug: string;
+    posts?: {
+      nodes: PostProps[];
+    };
+  };
+  page: Page;
+}
+
+import PostCard from "../PostCard.astro";
+import { getPostsByCategory } from "../../lib/api.js";
+import { PostProps } from "./Single.astro";
+import { Page } from "astro";
+const { node } = Astro.props;
+const data = await getPostsByCategory(node.slug);
+---
+
+<div class="header">
+  <div class="header-description">
+    <h1 class="header-title">{node.__typename}: {node.name}</h1>
+  </div>
+</div>
+
+<main role="main">
+  <div class="posts">
+    {data?.category?.posts?.edges.map((post) => <PostCard post={post.node} />)}
+  </div>
+</main>

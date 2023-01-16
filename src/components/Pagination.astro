@@ -1,0 +1,71 @@
+---
+interface Props {
+  isHomepage?: boolean;
+  totalPosts?: number;
+  page?: Page;
+}
+
+import { Page } from "astro";
+import { settingsQuery } from "../lib/api";
+
+const { allSettings } = await settingsQuery();
+const { isHomepage, totalPosts, page } = Astro.props;
+
+function getPaginationText() {
+  let text = "Page ";
+
+  if (isHomepage) {
+    text += "1";
+
+    if (totalPosts) {
+      text += ` of ${Math.ceil(
+        totalPosts / allSettings.readingSettingsPostsPerPage
+      )}`;
+    }
+  } else if (page) {
+    text += `${page.currentPage} of ${page.lastPage}`;
+  }
+
+  return text;
+}
+---
+
+<div class="pagination">
+  {
+    !isHomepage && page.url.prev && (
+      <a href={page.url.prev === "/page" ? "/" : page.url.prev}>« Prev</a>
+    )
+  }
+  <span set:text={getPaginationText()} />
+  {
+    isHomepage || page.currentPage !== page.lastPage ? (
+      <a href={isHomepage ? "/page/2" : page.url.next && page.url.next}>
+        Next »
+      </a>
+    ) : null
+  }
+</div>
+
+<style lang="scss">
+  @use '../styles/config/variables.scss' as *;
+  @use '../styles/abstracts/functions/rem.scss' as *;
+
+  .pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: rem(20);
+    padding: rem(8) 0;
+
+    > * {
+      font-size: rem(13);
+      color: $color-black !important;
+    }
+
+    a:hover {
+      text-decoration: underline;
+      color: $color-blue !important;
+    }
+  }
+</style>

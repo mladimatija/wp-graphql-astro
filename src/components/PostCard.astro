@@ -1,0 +1,28 @@
+---
+import { stripHtml } from "string-strip-html";
+import PostMeta from "./PostMeta.astro";
+
+const { post } = Astro.props;
+---
+
+<article class="post">
+  <header class="post-header">
+    <h2 class="post-title">
+      <a
+        class="post-link"
+        href={post.uri}
+        aria-label={post.title}
+        rel="bookmark">{post.title}</a
+      >
+    </h2>
+
+    <PostMeta post={post} />
+  </header>
+
+  <!-- get post content, limit to 150 chars and strip html tags -->
+  <div class="post-content">
+    {stripHtml(post.content.substring(0, 150)).result}... (<a href={post.uri}
+      >continue</a
+    >)
+  </div>
+</article>

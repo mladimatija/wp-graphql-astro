@@ -1,0 +1,29 @@
+.darkmode--activated {
+  &::after {
+    background-color: $color-black;  
+  }
+  
+
+  .burger-bun {
+    background: #fff;
+  }
+
+  .burger-menu-icon:hover {
+    border-color: #fff;
+  }
+
+  .header-nav li,
+  .header-nav a {
+    color: #fff;
+  }
+
+  .header-nav a {
+    &:hover,
+    &:active,
+    &:focus,
+    &.active {
+      border-left-color: #fff;
+      color: $color-blue;
+    }
+  }
+}

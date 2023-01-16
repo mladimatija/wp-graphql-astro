@@ -1,0 +1,91 @@
+@import "../config/variables.scss";
+@import "../abstracts/functions/rem.scss";
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  padding: rem(30);
+  font-family: "Open Sans", sans-serif !important;
+  min-height: 100vh;
+}
+
+.post-content {
+  font-family: "Lora", sans-serif !important;
+  line-height: 1.5;
+}
+
+a {
+  color: $color-blue;
+  -webkit-transition: all 0.4s ease;
+  transition: all 0.4s ease;
+  text-decoration: none;
+
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
+    color: $color-black;
+  }
+
+  &:visited:not(nav a) {
+    color: $color-blue;
+
+    &:hover {
+      color: $color-black;
+    }
+  }
+
+  a:hover,
+  a:active {
+    outline: 0;
+  }
+
+  &:focus {
+    outline: thin dotted;
+  }
+}
+
+.site-content {
+  max-width: rem(760);
+  width: 100%;
+  margin: 0 auto;
+
+  @media all and (max-width: 767px) {
+    padding: 0 5%;
+  }
+}
+
+.updated:not(.published) {
+  display: none;
+}
+
+embed,
+iframe,
+object {
+  max-width: 100%;
+}
+
+.posts .post {
+  margin-bottom: rem(22);
+}
+
+.posts .post,
+.single .entry-footer {
+  border-top: 1px solid #e4e4e4;
+}
+
+.posts .post:first-child {
+  border-top: none;
+}
+
+.posts .post h2 {
+  font-size: rem(18);
+  line-height: 1.2;
+  margin: rem(16) 0 rem(8);
+}
+
+small {
+  font-size: 85%;
+}

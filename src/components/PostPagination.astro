@@ -1,0 +1,70 @@
+---
+import { PostProps } from "./templates/Single.astro";
+
+interface Props {
+  post: PostProps["post"];
+}
+
+const { post } = Astro.props;
+---
+
+<div class="post-pagination">
+  <p>
+    You've reached end of the line but you can check out some of the other
+    articles I wrote:
+  </p>
+
+  <div class="post-pagination-container">
+    {
+      post.previous && (
+        <div class="post-pagination-prev">
+          <span>«</span>
+          <a href={post.previous.uri} rel="prev">
+            {post.previous.title}
+          </a>
+        </div>
+      )
+    }
+
+    {
+      post.next && (
+        <div class="post-pagination-next">
+          <a href={post.next.uri} rel="next">
+            {post.next.title}
+          </a>
+          <span>»</span>
+        </div>
+      )
+    }
+  </div>
+</div>
+
+<style lang="scss">
+  @use '../styles/abstracts/functions/rem.scss' as *;
+  .post-pagination {
+    margin: rem(30) 0;
+  }
+
+  .post-pagination p {
+    margin: rem(30) 0;
+    font-weight: bold;
+    text-align: center;
+  }
+  .post-pagination-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10%;
+
+    > * {
+      flex-basis: 45%;
+    }
+  }
+
+  .post-pagination-prev {
+    text-align: left;
+  }
+
+  .post-pagination-next {
+    text-align: right;
+  }
+</style>

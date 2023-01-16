@@ -1,0 +1,53 @@
+---
+import { getNodeByURI } from "../lib/api";
+const uri = `/${Astro.params.uri}/`;
+const data = await getNodeByURI(uri);
+const node = data.nodeByUri;
+
+//simple breadcrumbs, only one level deep
+const getBreadCrumbs = (node) => {
+  const type = node.__typename;
+  let out = 'You are here: <a href="/">Home</a> > ';
+  
+  if (type === 'Tag' || type === 'Category' || type === 'Archive') {
+    if (type === 'Tag') {
+      out += `Posts tagged "${node.name}"`;
+    } else {
+      out += `Archive by category "${node.name}"`;
+    }
+  } else if (type === 'Post') {
+    if (node.categories.nodes.length) {
+      // get the first category
+      out += `<a href="${node.categories.nodes[0].uri}">${node.categories.nodes[0].name}</a> > `;
+    }
+  }
+
+  out += node.title;
+  
+  return out;
+};
+---
+
+<footer>
+  {Astro.params.uri !== undefined && <small set:html={getBreadCrumbs(node)}></small>}
+  <hr>
+  <small
+    >built with Astro, headless WordPress and GraphQL, hosted on Netlify</small
+  >
+</footer>
+
+<style lang="scss">
+  @use '../styles/abstracts/functions/rem.scss' as *;
+
+  footer {
+    max-width: rem(760);
+    width: 100%;
+    margin: 0 auto;    
+    padding-top: rem(12);
+    text-align: center;
+
+    hr {
+      margin: rem(15) 0;
+    }
+  }
+</style>

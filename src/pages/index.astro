@@ -1,0 +1,21 @@
+---
+import PostCard from "../components/PostCard.astro";
+import MainLayout from "../layouts/MainLayout.astro";
+import Pagination from "../components/Pagination.astro";
+import { getPosts } from "../lib/api";
+
+const data = await getPosts(5);
+---
+
+<MainLayout>
+  <main role="main">
+    <div class="posts">
+      {
+        data.posts.edges.map((post) => {
+          return <PostCard post={post.node} />;
+        })
+      }
+    </div>
+    <Pagination isHomepage={true} totalPosts={data.posts.pageInfo.total} />
+  </main>
+</MainLayout>
