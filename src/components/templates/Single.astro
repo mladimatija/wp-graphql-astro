@@ -40,6 +40,7 @@ interface Props {
 
 export interface PostProps extends Props {}
 
+import ContactForm from "../ContactForm.astro";
 import PostMeta from "../PostMeta.astro";
 import PostPagination from "../PostPagination.astro";
 
@@ -74,6 +75,8 @@ const { node } = Astro.props;
       </>
     )
   }
+
+  {node.slug === "contact" && <ContactForm />}
 </article>
 
 {
@@ -158,7 +161,6 @@ const { node } = Astro.props;
   .wp-caption-text {
     text-align: center;
   }
-
 
   .wp-caption .wp-caption-text {
     margin: 0.8rem 0;

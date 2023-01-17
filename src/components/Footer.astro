@@ -8,7 +8,7 @@ const node = data.nodeByUri;
 const getBreadCrumbs = (node) => {
   const type = node.__typename;
   let out = 'You are here: <a href="/">Home</a> > ';
-  
+
   if (type === 'Tag' || type === 'Category' || type === 'Archive') {
     if (type === 'Tag') {
       out += `Posts tagged "${node.name}"`;
@@ -23,17 +23,17 @@ const getBreadCrumbs = (node) => {
   }
 
   out += node.title;
-  
+
   return out;
 };
 ---
 
 <footer>
-  {Astro.params.uri !== undefined && <small set:html={getBreadCrumbs(node)}></small>}
-  <hr>
-  <small
-    >built with Astro, headless WordPress and GraphQL, hosted on Netlify</small
-  >
+  {Astro.params.uri !== undefined && <small set:html={getBreadCrumbs(node)} />}
+  <hr />
+  <small>
+    built with <a href="https://astro.build/" target="_blank">Astro</a>, headless WordPress and <a href="https://www.wpgraphql.com/" target="_blank">GraphQL</a>, hosted on <a href="https://www.netlify.com/" target="_blank">Netlify</a>
+  </small>
 </footer>
 
 <style lang="scss">
@@ -42,7 +42,7 @@ const getBreadCrumbs = (node) => {
   footer {
     max-width: rem(760);
     width: 100%;
-    margin: 0 auto;    
+    margin: 0 auto;
     padding-top: rem(12);
     text-align: center;
 

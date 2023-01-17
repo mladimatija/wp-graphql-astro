@@ -177,6 +177,7 @@ export async function getNodeByURI(uri) {
                   ... on Page {
                     id
                     title
+                    slug
                     uri
                     date
                     content

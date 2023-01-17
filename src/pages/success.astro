@@ -1,0 +1,27 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import PostCard from "../components/PostCard.astro";
+import { getPosts } from "../lib/api";
+
+const data = await getPosts(3);
+---
+
+<MainLayout title="Feedback received!">
+  <main role="main">
+    <div style="margin-bottom: 3rem; text-align: center;">
+      <h1>Got it!</h1>
+      <h2>
+        Thank you for your feedback! I'll get back to you as soon as possible.
+      </h2>
+    </div>
+
+    <p style="text-align: center; font-weight: bold;">Up next - read some of the stuff I wrote:</p>
+    <div class="posts">
+      {
+        data.posts.edges.map((post) => {
+          return <PostCard post={post.node} />;
+        })
+      }
+    </div>
+  </main>
+</MainLayout>
