@@ -32,8 +32,8 @@
 </div>
 
 <style lang="scss">
-  @use "../styles/config/variables.scss" as *;
-  @use "../styles/abstracts/functions/rem.scss" as *;
+  @use '../styles/config/variables.scss' as *;
+  @use '../styles/abstracts/functions/rem.scss' as *;
 
   .contact-form {
     margin: 2rem 0;
@@ -52,6 +52,15 @@
       position: absolute;
       white-space: nowrap;
       width: 1px;
+    }
+
+    input {
+      flex-basis: calc(50% - 0.75rem);
+    }
+
+    textarea {
+      flex-basis: 100%;
+      resize: none;
     }
 
     input,
@@ -102,16 +111,7 @@
       }
     }
 
-    input {
-      flex-basis: calc(50% - 0.75rem);
-    }
-
-    textarea {
-      flex-basis: 100%;
-      resize: none;
-    }
-
-    button[type="submit"] {
+    button[type='submit'] {
       margin: 0 auto;
       padding: 1rem 1.5rem;
       color: #fff;
