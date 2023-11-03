@@ -1,7 +1,7 @@
 {
   "name": "wp-graphql-astro",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
   "license": "MIT",
   "scripts": {
@@ -14,8 +14,8 @@
     "lint:scss": "stylelint \"src/**/*.{astro,scss}\""
   },
   "dependencies": {
-    "@astrojs/react": "^1.2.2",
-    "@astrojs/sitemap": "^1.0.0",
+    "@astrojs/react": "^3.0.4",
+    "@astrojs/sitemap": "^3.0.3",
     "@fontsource/lora": "^5.0.8",
     "@fontsource/open-sans": "^5.0.17",
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
@@ -24,8 +24,8 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.10",
-    "astro": "^1.9.1",
-    "astro-seo": "^0.7.0",
+    "astro": "^3.4.3",
+    "astro-seo": "^0.8.0",
     "darkmode-js": "^1.5.7",
     "http-server": "^14.1.1",
     "normalize.css": "^8.0.1",
