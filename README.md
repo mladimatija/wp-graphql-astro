@@ -16,10 +16,10 @@ This project is meant to be a flexible starting point for people interested in u
 
 Add a variable to your `.env` and then hit `npm run dev`:
 
-* `WORDPRESS_API_URL = https://yoursitename.com/graphql`
-* `PUBLIC_DISQUS_EMBED_URL = https://siteid.disqus.com/embed.js`
-* `PUBLIC_TWITTER_SHARE_USER = your_twitter_handle`
-* `PUBLIC_SITE_URL = https://yoursitename.com`
+* `WORDPRESS_API_URL=https://yoursitename.com/graphql`
+* `PUBLIC_DISQUS_EMBED_URL=https://siteid.disqus.com/embed.js`
+* `PUBLIC_TWITTER_SHARE_USER=your_twitter_handle`
+* `PUBLIC_SITE_URL=https://yoursitename.com`
 
 ## Routing and Templates
 
