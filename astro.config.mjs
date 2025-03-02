@@ -6,7 +6,7 @@ import netlify from "@astrojs/netlify";
 // https://astro.build/config
 export default defineConfig({
   site: import.meta.env.PUBLIC_SITE_URL,
-  output: process.env.NETLIFY || process.env.NODE_ENV === 'production' ? "server" : "static", // Use server rendering in production, static for local preview
+  output: "server", // Always use server output mode for consistent behavior
   integrations: [
     react(), 
     sitemap({
@@ -47,6 +47,6 @@ export default defineConfig({
     }
   },
   
-  // Add Netlify adapter for production, but only when deploying to Netlify
-  adapter: process.env.NETLIFY ? netlify() : undefined
+  // Add Netlify adapter for all environments
+  adapter: netlify()
 });

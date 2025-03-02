@@ -114,7 +114,7 @@ describe('Pagination Logic', () => {
     });
     expect(lastPagePagination.hasNextPage()).toBe(false);
     
-    // Mid page should have next
+    // Mid-page should have next
     const midPagePagination = new PaginationHelper({
       isHomepage: false,
       currentPage: 2,

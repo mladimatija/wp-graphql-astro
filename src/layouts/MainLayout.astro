@@ -114,6 +114,11 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
     <!-- Include the accessibility manager -->
     <A11yManager />
     
+    <!-- Loading spinner -->
+    <div class="loading-spinner" id="page-loader">
+      <div class="spinner"></div>
+    </div>
+    
     <Header />
     <main id="content" class="site-content" transition:animate="fade">
       <slot />
@@ -126,8 +131,23 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
     <!-- Web Vitals monitoring component (conditionally rendered) -->
     {showWebVitals && <WebVitalsMonitor client:idle showByDefault={false} />}
     
-    <!-- Register service worker for PWA support and initialize Web Vitals -->
+    <!-- Register service worker, initialize Web Vitals, and handle page transitions -->
     <script client:load>
+      // Show loading spinner on page navigation
+      document.addEventListener('astro:before-preparation', () => {
+        document.getElementById('page-loader').classList.add('active');
+      });
+      
+      // Hide loading spinner when page is ready
+      document.addEventListener('astro:page-load', () => {
+        document.getElementById('page-loader').classList.remove('active');
+      });
+
+      // Also hide spinner if navigation is canceled or fails
+      document.addEventListener('astro:after-swap', () => {
+        document.getElementById('page-loader').classList.remove('active');
+      });
+      
       // Register service worker for PWA functionality
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

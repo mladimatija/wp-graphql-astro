@@ -645,8 +645,8 @@ export async function getNodeByURI(uri: string): Promise<NodeByUriResponse> {
     
     // Special case for nodes: don't cache the current page/post being viewed
     // This ensures we always get fresh content for the current page
-    // In client context, never bypass cache; in SSR context, check if this is current page
-    const bypassCache = false; // Simplified approach to avoid ESLint errors with Astro global
+    // In client context, never bypass cache; in SSR context, always bypass cache for direct page views
+    const bypassCache = true; // Always get fresh content when directly viewing a page
     return await executeQuery<NodeByUriResponse>(query, { uri }, `uri-${uri}`, bypassCache);
   } catch (error) {
     console.error(`Error fetching node by URI ${uri}:`, error);

@@ -4,8 +4,8 @@ import Archive from "../components/templates/Archive.astro";
 import Single from "../components/templates/Single.astro";
 import { getNodeByURI, getAllUris } from "../lib/api";
 
-// Set for static prerendering
-export const prerender = true;
+// Dynamic rendering for posts and content from WordPress
+export const prerender = false;
 
 // Astro dynamic routing pattern
 const uri = `/${Astro.params.uri}/`;

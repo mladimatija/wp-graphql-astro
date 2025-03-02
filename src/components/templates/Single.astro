@@ -43,7 +43,8 @@ interface Props {
     };
 }
 
-export interface PostProps extends Props {
+interface Props {
+    node: any;
 }
 
 const {node} = Astro.props;
@@ -126,7 +127,7 @@ const showFeaturedImages = siteConfig?.data.showFeaturedImages ?? true;
                 const d = document,
                     s = d.createElement("script");
                 s.src = import.meta.env.PUBLIC_DISQUS_EMBED_URL;
-                s.setAttribute("data-timestamp", +new Date());
+                s.setAttribute("data-timestamp", (+new Date()).toString());
                 (d.head || d.body).appendChild(s);
             })();
         }
@@ -146,7 +147,7 @@ const showFeaturedImages = siteConfig?.data.showFeaturedImages ?? true;
 
 .post-content .featured-image {
     display: block;
-    margin: 0 auto;
+    margin: 1.5em auto;
     }
 
 .post-content ul li:not(:last-child) {
@@ -154,8 +155,13 @@ const showFeaturedImages = siteConfig?.data.showFeaturedImages ?? true;
     }
 
 .post-content img {
+    margin: 0.5em auto;
+    display: block;
     max-width: 100%;
     height: auto;
+    }
+.post-content p img {
+    margin: 0 auto !important;
     }
 
 .wp-caption {
