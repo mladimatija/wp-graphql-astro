@@ -1,9 +1,12 @@
 ---
 import { Page } from "astro";
-import { getPosts, settingsQuery } from "../../lib/api.js";
+import { getPosts, settingsQuery } from "../../lib/api";
 import PostCard from "../../components/PostCard.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
 import Pagination from "../../components/Pagination.astro";
+
+// Set for static prerendering
+export const prerender = true;
 
 export async function getStaticPaths({ paginate }) {
   const data = await getPosts();

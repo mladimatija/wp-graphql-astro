@@ -10,7 +10,7 @@ const estimatedReadingTime = (postContent: string) => {
   }
 
   const wordCount = stripHtml(postContent).result.trim().split(/\s+/).length;
-  const minutes = Math.trunc(wordCount / 250); // let's say that 250 is a golden average reading words per minute for adults
+  const minutes = Math.trunc(wordCount / 250);
 
   if (minutes >= 1) {
     return `${minutes} minute${minutes === 1 ? "" : "s"} read`;

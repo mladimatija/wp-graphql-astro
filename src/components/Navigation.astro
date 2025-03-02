@@ -36,43 +36,91 @@ const primaryMenu = menus.nodes[0];
 </nav>
 
 <script>
-  (() => {
-    "use strict";
-    (function () {
-      const burgerMenu: HTMLElement =
-          document.querySelector(".burger-menu-icon"),
-        burgerContainer = document.querySelector(".burger-menu-icon-container"),
-        burgerNav = document.querySelector(".header-nav");
-
-      burgerMenu.addEventListener(
-        "click",
-        () => {
-          [document.body, burgerContainer, burgerNav].forEach(function (el) {
-            if (el === document.body) {
-              el.classList.toggle("nav-open");
-            } else {
-              el.classList.toggle("open");
-            }
-          });
-        },
-        false
-      );
-      document.onkeydown = (evt) => {
-        let isEscape = false;
-        if ("key" in evt) {
-          isEscape = evt.key === "Escape" || evt.key === "Esc";
+  // Helper function to initialize navigation
+  function initNavigation() {
+    const burgerMenu = document.querySelector(".burger-menu-icon");
+    const burgerContainer = document.querySelector(".burger-menu-icon-container");
+    const burgerNav = document.querySelector(".header-nav");
+    
+    if (!burgerMenu || !burgerContainer || !burgerNav) {
+      console.warn("Navigation elements not found");
+      return;
+    }
+    
+    // Remove existing event listener if any (to prevent duplicates)
+    const existingHandler = burgerMenu.getAttribute('data-has-click-handler');
+    if (existingHandler) {
+      burgerMenu.removeEventListener("click", window.navClickHandler);
+    }
+    
+    // Define the click handler
+    window.navClickHandler = () => {
+      if (burgerNav.classList.contains("open")) {
+        burgerNav.classList.add("animating");
+        setTimeout(() => {
+          burgerNav.classList.remove("animating");
+        }, 400);
+      }
+      
+      [document.body, burgerContainer, burgerNav].forEach(function (el) {
+        if (el === document.body) {
+          el.classList.toggle("nav-open");
+        } else {
+          el.classList.toggle("open");
         }
+      });
+    };
+    
+    // Add the click handler and mark the element
+    burgerMenu.addEventListener("click", window.navClickHandler);
+    burgerMenu.setAttribute('data-has-click-handler', 'true');
+    
+    // Define keyboard handler
+    const keydownHandler = (evt) => {
+      let isEscape = false;
+      if ("key" in evt) {
+        isEscape = evt.key === "Escape" || evt.key === "Esc";
+      }
 
-        if (
-          isEscape &&
-          burgerContainer.classList.contains("open") &&
-          burgerNav.classList.contains("open")
-        ) {
-          burgerMenu.click();
-        }
-      };
-    })();
-  })();
+      if (
+        isEscape &&
+        burgerContainer.classList.contains("open") &&
+        burgerNav.classList.contains("open")
+      ) {
+        burgerNav.classList.add("animating");
+        setTimeout(() => {
+          burgerNav.classList.remove("animating");
+        }, 400);
+        
+        burgerMenu.click();
+      }
+    };
+    
+    // Remove existing keyboard handler
+    document.removeEventListener("keydown", window.navKeydownHandler);
+    
+    // Add the keyboard handler
+    window.navKeydownHandler = keydownHandler;
+    document.addEventListener("keydown", window.navKeydownHandler);
+  }
+  
+  // Initialize on first load
+  initNavigation();
+  
+  // Re-initialize on page transitions
+  document.addEventListener('astro:page-load', () => {
+    initNavigation();
+  });
+  
+  // Clean up before transitions
+  document.addEventListener('astro:before-swap', () => {
+    // Remove event listeners before page swap
+    document.removeEventListener("keydown", window.navKeydownHandler);
+    const burgerMenu = document.querySelector(".burger-menu-icon");
+    if (burgerMenu) {
+      burgerMenu.removeEventListener("click", window.navClickHandler);
+    }
+  });
 </script>
 
 <style lang="scss">
@@ -117,16 +165,10 @@ const primaryMenu = menus.nodes[0];
       list-style-type: none;
       margin-bottom: rem(15);
       text-align: left;
-      transform: translateX(rem(-250));
+      transform: translateX(0);
 
       &:last-child {
         margin-bottom: 0;
-      }
-
-      &:not(.open) {
-        animation-duration: 0.4s;
-        animation-fill-mode: both;
-        animation-name: slideOutLeft;
       }
     }
 
@@ -152,13 +194,25 @@ const primaryMenu = menus.nodes[0];
     }
 
     &:not(.open) {
-      visibility: hidden;
       opacity: 0;
+      transition: opacity 0.4s, visibility 0s linear 0.4s;
+      
+      li {
+        animation-duration: 0.4s;
+        animation-fill-mode: both;
+        animation-name: slideOutLeft;
+      }
+      
+      // Apply visibility: hidden AFTER animation completes
+      &:not(.animating) {
+        visibility: hidden;
+      }
     }
 
     &.open {
       visibility: visible;
       opacity: 1;
+      transition: visibility 0s linear 0s;
 
       li {
         animation-duration: 0.4s;
@@ -251,18 +305,22 @@ const primaryMenu = menus.nodes[0];
     0% {
       transform: translate3d(rem(-250), 0, 0);
       visibility: visible;
+      opacity: 0;
     }
     100% {
       transform: translate3d(0, 0, 0);
+      opacity: 1;
     }
   }
 
   @keyframes slideOutLeft {
     0% {
       transform: translate3d(0, 0, 0);
+      opacity: 1;
     }
     100% {
       transform: translate3d(rem(-250), 0, 0);
+      opacity: 0;
       visibility: hidden;
     }
   }

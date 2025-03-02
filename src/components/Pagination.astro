@@ -39,7 +39,7 @@ function getPaginationText() {
   <span set:text={getPaginationText()} />
   {
     isHomepage || page.currentPage !== page.lastPage ? (
-      <a href={isHomepage ? "/page/2" : page.url.next && page.url.next}>
+      <a href={isHomepage ? "/page/2" : page.url.next}>
         Next »
       </a>
     ) : null
@@ -60,12 +60,16 @@ function getPaginationText() {
 
     > * {
       font-size: rem(13);
-      color: $color-black !important;
+      color: $color-black;
     }
 
-    a:hover {
-      text-decoration: underline;
-      color: $color-blue !important;
+    a {
+      color: $color-blue;
+
+      &:hover {
+        text-decoration: underline;
+        color: $color-black;
+      }
     }
   }
 </style>

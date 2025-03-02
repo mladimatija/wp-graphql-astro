@@ -13,6 +13,7 @@ const { generalSettings } = await settingsQuery();
         class="header-logo"
         src="/logo.png"
         alt={`${generalSettings.title} logo`}
+        transition:name="logo"
       />
     </a>
   </h1>
@@ -21,7 +22,7 @@ const { generalSettings } = await settingsQuery();
     (Astro.url.pathname === "/" || "page" in Astro.params) && ( // show only on homepage
       <>
         <div class="header-description">
-          <h1>Hi, I'm Matija, a frontend / web developer</h1>
+          <h1>Hi, I'm Matija, a frontend engineer</h1>
           <h4>
             <a href="/about/">get to know me</a>, check out the{" "}
             <a

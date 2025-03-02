@@ -3,42 +3,64 @@ interface Props {
   title?: string;
   description?: string;
   showFooter?: boolean;
+  showWebVitals?: boolean;
 }
 
 import { getNodeByURI } from "../lib/api";
 import { SEO } from "astro-seo";
 import { stripHtml } from "string-strip-html";
+import { ClientRouter } from "astro:transitions";
 
-// import fonts
-import "@fontsource/open-sans";
-import "@fontsource/open-sans/latin-ext.css";
-import "@fontsource/lora";
-import "@fontsource/lora/latin-ext.css";
-
-/* npm depts styles, and shared styles to be used everywhere throughout the project where MainLayout is used */
 import "../styles/styles.scss";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import A11yManager from "../components/A11yManager.astro";
+import DarkMode from "../components/react/DarkMode";
+import WebVitalsMonitor from "../components/react/WebVitalsMonitor";
 import { settingsQuery } from "../lib/api";
 
+// Prefetch site settings for optimal performance
 const { generalSettings } = await settingsQuery();
-const { title, description, showFooter = true } = Astro.props;
+const { 
+  title, 
+  description, 
+  showFooter = true,
+  showWebVitals = import.meta.env.DEV // Show Web Vitals in development by default
+} = Astro.props;
 
-const uri = `/${Astro.params.uri}/`;
-const data = await getNodeByURI(uri);
+// Only fetch node data if we have a URI parameter
+const uri = Astro.params.uri ? `/${Astro.params.uri}/` : undefined;
+const data = uri ? await getNodeByURI(uri) : { nodeByUri: null };
 const node = data.nodeByUri;
 
+// Generate clean description and title with fallbacks
 const cleanDescription =
   (description && stripHtml(description).result) || generalSettings.description;
 const generatedTitle = `${title ? title + " | " : ""}${generalSettings.title}`;
-const metaImage = node?.featuredImage?.node?.mediaItemUrl || "'favicon.svg";
+const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
 ---
 
-<html lang="en">
+<html lang="en" transition:animate="none">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
+    
+    <!-- Accessibility meta tags -->
+    <meta name="description" content={cleanDescription} />
+    
+    <!-- Preload critical assets -->
+    <link rel="preconnect" href={import.meta.env.WORDPRESS_API_URL} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- PWA support -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#29aae1" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
     <SEO
       title={generatedTitle}
@@ -55,11 +77,16 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "'favicon.svg";
         },
       }}
       twitter={{
-        creator: `@${import.meta.env.PUBLIC_TWITTER_SHARE_USER}`,
+        creator: `@${import.meta.env.PUBLIC_X_SHARE_USER}`,
+        card: "summary_large_image"
       }}
       extend={{
         // extending the default link tags
-        link: [{ rel: "icon", href: "/favicon.svg" }],
+        link: [
+          { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+          { rel: "apple-touch-icon", href: "/logo.png" },
+          { rel: "sitemap", href: "/sitemap-index.xml" }
+        ],
         // extending the default meta tags
         meta: [
           {
@@ -71,23 +98,76 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "'favicon.svg";
         ],
       }}
     />
+
+    <!-- Astro Client Router for transitions -->
+    <ClientRouter />
+    
+    <!-- Add support for Astro:assets image optimization -->
+    <slot name="head" />
   </head>
 
   <body>
+    <!-- Accessibility: Skip to content link -->
+    <a href="#content" class="skip-to-content">Skip to content</a>
+    
+    <!-- Include the accessibility manager -->
+    <A11yManager />
+    
     <Header />
-    <div id="content" class="site-content">
+    <main id="content" class="site-content" transition:animate="fade">
       <slot />
-    </div>
+    </main>
     {showFooter && <Footer />}
-    <script>
-      import Darkmode from "darkmode-js/src/darkmode";
-
-      new Darkmode({
-        label: "🌓",
-        mixColor: "#E6DDD9",
-        buttonColorDark: "#121212",
-        time: "0s",
-      }).showWidget();
+    
+    <!-- Dark mode component properly bundled with npm package -->
+    <DarkMode client:idle />
+    
+    <!-- Web Vitals monitoring component (conditionally rendered) -->
+    {showWebVitals && <WebVitalsMonitor client:idle showByDefault={false} />}
+    
+    <!-- Register service worker for PWA support and initialize Web Vitals -->
+    <script client:load>
+      // Register service worker for PWA functionality
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js').then(registration => {
+            console.log('SW registered:', registration);
+            
+            // Listen for updates
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              
+              // Notify user when new content is available
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
+                  // New service worker activated - new content is available
+                  if (window.a11yManager) {
+                    window.a11yManager.announce('New content is available. Refresh the page to update.', true);
+                  }
+                  
+                  // Could also show a visible notification here
+                }
+              });
+            });
+          }).catch(error => {
+            console.log('SW registration failed:', error);
+          });
+        });
+      }
+      
+      // Initialize Web Vitals monitoring
+      try {
+        // Use dynamic import to load the web-vitals module
+        import('/src/lib/webVitals').then(module => {
+          if (module && typeof module.initWebVitals === 'function') {
+            module.initWebVitals();
+          }
+        }).catch(error => {
+          console.error('Failed to load Web Vitals:', error);
+        });
+      } catch (error) {
+        console.error('Error initializing Web Vitals:', error);
+      }
     </script>
   </body>
 </html>

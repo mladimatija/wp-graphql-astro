@@ -1,0 +1,137 @@
+---
+import { Image } from 'astro:assets';
+import MainLayout from '../../layouts/MainLayout.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  page: CollectionEntry<'pages'>;
+}
+
+const { page } = Astro.props;
+const { Content } = await page.render();
+
+// Extract frontmatter data
+const { title, description, heroImage, publishDate, updatedDate } = page.data;
+
+// Format dates for display
+const formattedPublishDate = publishDate ? new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+}).format(publishDate) : null;
+
+const formattedUpdatedDate = updatedDate ? new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+}).format(updatedDate) : null;
+---
+
+<MainLayout title={title} description={description}>
+  <article class="local-page">
+    <header class="page-header">
+      <h1 class="page-title">{title}</h1>
+      {description && <p class="page-description">{description}</p>}
+      
+      {publishDate && (
+        <div class="page-meta">
+          <time datetime={publishDate.toISOString()}>Published: {formattedPublishDate}</time>
+          {updatedDate && updatedDate > publishDate && (
+            <time datetime={updatedDate.toISOString()}> (Updated: {formattedUpdatedDate})</time>
+          )}
+        </div>
+      )}
+    </header>
+
+    {heroImage && (
+      <div class="hero-image">
+        <img 
+          src={heroImage} 
+          alt={`Hero image for ${title}`}
+          width="1200"
+          height="600"
+          loading="eager"
+        />
+      </div>
+    )}
+
+    <div class="page-content">
+      <Content />
+    </div>
+  </article>
+</MainLayout>
+
+<style>
+  .local-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  .page-header {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-description {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 1rem;
+  }
+
+  .page-meta {
+    font-size: 0.9rem;
+    color: #777;
+    margin-top: 1rem;
+  }
+
+  .hero-image {
+    margin: 2rem 0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  .hero-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .page-content {
+    line-height: 1.6;
+  }
+
+  .page-content h2 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+  }
+
+  .page-content p {
+    margin-bottom: 1.5rem;
+  }
+
+  .page-content ul, .page-content ol {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+  }
+
+  .page-content li {
+    margin-bottom: 0.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .page-content h2 {
+      font-size: 1.5rem;
+    }
+  }
+</style>

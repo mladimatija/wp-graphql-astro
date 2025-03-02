@@ -28,8 +28,12 @@ const getBreadCrumbs = (node) => {
 };
 ---
 
-<footer>
-  {Astro.params.uri !== undefined && <small set:html={getBreadCrumbs(node)} />}
+<footer transition:animate="fade">
+  {Astro.params.uri !== undefined && (
+    <div transition:animate="fade">
+      <small set:html={getBreadCrumbs(node)} />
+    </div>
+  )}
   <hr />
   <small>
     built with <a href="https://astro.build/" target="_blank">Astro</a>, headless WordPress and <a href="https://www.wpgraphql.com/" target="_blank">GraphQL</a>, hosted on <a href="https://www.netlify.com/" target="_blank">Netlify</a>

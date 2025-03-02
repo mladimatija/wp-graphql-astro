@@ -1,27 +1,50 @@
-# build output
+# Build output
 dist/
+.astro/
+.netlify/
 
-# dependencies
+# Dependencies
 node_modules/
 package-lock.json
 
-# logs
+# Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
 
-
-# environment variables
+# Environment variables
 .env
-.env.production
+.env.*
+!.env.example
 
-# macOS-specific files
+# Testing
+test-results/
+coverage/
+/playwright-report/
+/blob-report/
+/.playwright/
+
+# OS specific files
 .DS_Store
+Thumbs.db
 
-# code editor specific files and folders
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
 .idea/
-.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# Local Netlify folder
-.netlify
+# Temporary files
+temp/
+tmp/
+
+# Cache
+.cache/

@@ -1,4 +1,9 @@
 ---
+import { getSiteConfig } from "../../lib/content";
+import ContactForm from "../ContactForm.astro";
+import PostMeta from "../PostMeta.astro";
+import PostPagination from "../PostPagination.astro";
+
 interface Props {
   post: {
     id: string;
@@ -40,29 +45,34 @@ interface Props {
 
 export interface PostProps extends Props {}
 
-import ContactForm from "../ContactForm.astro";
-import PostMeta from "../PostMeta.astro";
-import PostPagination from "../PostPagination.astro";
-
 const { node } = Astro.props;
+
+// Get site configuration
+const siteConfig = await getSiteConfig();
+const showFeaturedImages = siteConfig?.data.showFeaturedImages ?? true;
 ---
 
-<article>
+<article transition:name={`post-${node.id}`} transition:animate="fade">
   <header class="header">
     <div class="header-description">
-      <h1 class="header-title">{node.title}</h1>
+      <h1 class="header-title" transition:name={`title-${node.id}`}>{node.title}</h1>
     </div>
   </header>
 
-  <main class="post-content" set:html={node.content}>
+  <main class="post-content">
     <!-- Only show date if node is a Post -->
     {node.__typename === "Post" ? <PostMeta post={node} /> : null}
 
-    <img
-      class="featured-image"
-      src={node.featuredImage?.node?.mediaItemUrl}
-      alt={node.featuredImage?.node?.altText}
-    />
+    {node.featuredImage?.node?.mediaItemUrl && showFeaturedImages && (
+      <img
+        class="featured-image"
+        src={node.featuredImage.node.mediaItemUrl}
+        alt={node.featuredImage.node.altText || node.title}
+        transition:name={`image-${node.id}`}
+      />
+    )}
+    
+    <div transition:animate="fade" set:html={node.content}></div>
   </main>
 
   {

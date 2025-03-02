@@ -1,6 +1,290 @@
-/* NPM dependencies */
-@import "normalize.css/normalize.css";
+// Main Stylesheet
+@use "config/variables.scss" as vars;
+@use "abstracts/functions/rem" as *;
 
-/** Global styles */
-@import "common/global";
-@import "common/dark-mode";
+// Vendor
+@import "normalize.css/normalize.css";
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
+
+// Base styles
+* {
+  box-sizing: border-box;
+}
+body {
+  padding: rem(30);
+  font-family: vars.$font-family-sans;
+  min-height: 100vh;
+  color: vars.$color-text;
+  line-height: vars.$line-height-normal;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  line-height: vars.$line-height-tight;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: vars.$spacing-md;
+}
+a {
+  color: vars.$color-link;
+  transition: all vars.$transition-duration-normal vars.$transition-timing-default;
+  text-decoration: none;
+
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
+    color: vars.$color-black;
+  }
+
+  &:visited:not(nav a) {
+    color: vars.$color-link;
+
+    &:hover {
+      color: vars.$color-black;
+    }
+  }
+
+  &:focus {
+    outline: thin dotted vars.$color-focus;
+  }
+}
+
+.post-content {
+  font-family: vars.$font-family-serif;
+  line-height: vars.$line-height-relaxed;
+}
+
+.site-content {
+  max-width: vars.$container-width;
+  width: 100%;
+  margin: 0 auto;
+
+  @media all and (max-width: vars.$breakpoint-md) {
+    padding: 0 5%;
+  }
+}
+
+embed, iframe, object, img {
+  max-width: 100%;
+  height: auto;
+}
+
+// Components
+.posts {
+  .post {
+    margin-bottom: vars.$spacing-lg;
+    border-top: vars.$border-width solid vars.$color-border;
+
+    &:first-child {
+      border-top: none;
+    }
+
+    h2 {
+      font-size: vars.$font-size-lg;
+      line-height: vars.$line-height-tight;
+      margin: vars.$spacing-md 0 vars.$spacing-xs;
+    }
+  }
+}
+
+.single .entry-footer {
+  border-top: vars.$border-width solid vars.$color-border;
+}
+
+.updated:not(.published) {
+  display: none;
+}
+
+small {
+  font-size: 85%;
+}
+
+// Accessibility
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.skip-to-content {
+  position: absolute;
+  top: -50px;
+  left: 0;
+  background: vars.$color-blue;
+  color: vars.$color-white;
+  padding: vars.$spacing-sm;
+  z-index: vars.$z-index-fixed;
+  transition: top vars.$transition-duration-fast vars.$transition-timing-default;
+  
+  &:focus {
+    top: 0;
+  }
+}
+
+:focus {
+  outline: 3px solid vars.$color-focus;
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 3px solid vars.$color-focus;
+  outline-offset: 2px;
+}
+
+// Dark Mode
+.darkmode--activated {
+  color: #fff;
+  
+  &::after {
+    background-color: #192226;
+  }
+  
+  &.nav-open::after {
+    background-color: #192226;
+  }
+
+  .burger-bun {
+    background: #29aae1 !important;
+  }
+
+  .burger-menu-icon:hover {
+    border-color: #29aae1;
+  }
+
+  .header-nav {
+    li {
+      color: #fff;
+    }
+    
+    a, a[data-astro-cid-pux6a34n] {
+      color: #fff !important;
+      border-left-color: rgba(255, 255, 255, 0);
+      
+      &:hover,
+      &:active,
+      &:focus,
+      &.active {
+        border-left-color: #fff !important;
+        color: #29aae1 !important;
+      }
+    }
+  }
+  
+  .burger-menu-icon-container {
+    .burger-menu-icon {
+      border-color: transparent;
+      
+      &:hover {
+        border-color: #29aae1;
+      }
+    }
+    
+    &.open .burger-menu-icon {
+      background-color: #192226;
+      border-color: #29aae1;
+      
+      .burger-bun {
+        background-color: #29aae1;
+      }
+      
+      &:hover {
+        border-color: #29aae1;
+      }
+    }
+  }
+
+  .post-link, .read-more {
+    color: #29aae1 !important;
+    
+    &:hover {
+      color: #fff !important;
+    }
+  }
+  
+  .pagination, .post-pagination {
+    > * {
+      color: #fff !important;
+    }
+    
+    a {
+      color: #29aae1 !important;
+      
+      &:hover {
+        color: #fff !important;
+      }
+    }
+  }
+  .contact-form form {
+    input, textarea {
+      &::placeholder {
+        color: #000;
+      }
+    }
+
+    button[type="submit"] {
+      color: #000;
+    }
+  }
+}
+
+// Transitions
+::view-transition-group(*),
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation-duration: vars.$transition-duration-normal;
+  animation-timing-function: vars.$transition-timing-smooth;
+}
+
+::view-transition-old(fade),
+::view-transition-new(fade) {
+  animation-duration: vars.$transition-duration-normal;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.fade-in {
+  animation: vars.$transition-duration-normal vars.$transition-timing-smooth both fade-in;
+}
+
+.fade-out {
+  animation: vars.$transition-duration-normal vars.$transition-timing-smooth both fade-out;
+}
+
+// Media Queries
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

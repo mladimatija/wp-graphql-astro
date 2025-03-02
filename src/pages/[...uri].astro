@@ -3,17 +3,35 @@ import MainLayout from "../layouts/MainLayout.astro";
 import Archive from "../components/templates/Archive.astro";
 import Single from "../components/templates/Single.astro";
 import { getNodeByURI, getAllUris } from "../lib/api";
+
+// Set for static prerendering
+export const prerender = true;
+
+// Astro dynamic routing pattern
 const uri = `/${Astro.params.uri}/`;
 const data = await getNodeByURI(uri);
 const node = data.nodeByUri;
 
+// Get static paths for static site generation (homepage and other crucial pages)
 export async function getStaticPaths() {
-  return await getAllUris();
+  const allPaths = await getAllUris();
+  
+  // Filter to only prerender specific critical pages to save build time
+  // For a full static site, you could return all paths
+  const criticalPaths = allPaths.filter(path => {
+    const uri = path.params.uri;
+    return uri === '' || // homepage
+           uri === 'about' || 
+           uri === 'contact';
+  });
+  
+  return criticalPaths;
 }
 
+// Determine which template to use based on content type
 function resolveContentTemplate(node) {
   let template;
-  switch (node.__typename) {
+  switch (node?.__typename) {
     case "Post":
       template = Single;
       break;
@@ -33,8 +51,13 @@ function resolveContentTemplate(node) {
   return template;
 }
 
+// Resolve the appropriate template component
 const Template = resolveContentTemplate(node);
 
+// Handle case of node not found
+if (!node) {
+  return Astro.redirect('/404');
+}
 ---
 
 <MainLayout title={node.title || node.name} description={node.excerpt}>
