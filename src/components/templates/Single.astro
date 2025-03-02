@@ -1,51 +1,52 @@
 ---
-import { getSiteConfig } from "../../lib/content";
+import {getSiteConfig} from "../../lib/content";
 import ContactForm from "../ContactForm.astro";
 import PostMeta from "../PostMeta.astro";
 import PostPagination from "../PostPagination.astro";
 
 interface Props {
-  post: {
-    id: string;
-    postId: number;
-    title: string;
-    date: string;
-    dateGmt: string;
-    modified: string;
-    modifiedGmt: string;
-    uri: string;
-    link: string;
-    guid: string;
-    excerpt: string;
-    content: string;
-    categories: {
-      nodes: {
-        name: string;
+    post: {
+        id: string;
+        postId: number;
+        title: string;
+        date: string;
+        dateGmt: string;
+        modified: string;
+        modifiedGmt: string;
         uri: string;
-      }[];
+        link: string;
+        guid: string;
+        excerpt: string;
+        content: string;
+        categories: {
+            nodes: {
+                name: string;
+                uri: string;
+            }[];
+        };
+        featuredImage: {
+            node: {
+                mediaItemUrl: string;
+                altText: string;
+            };
+        };
+        previous?: {
+            id: number;
+            title: string;
+            uri: string;
+        };
+        next?: {
+            id: number;
+            title: string;
+            uri: string;
+        };
     };
-    featuredImage: {
-      node: {
-        mediaItemUrl: string;
-        altText: string;
-      };
-    };
-    previous?: {
-      id: number;
-      title: string;
-      uri: string;
-    };
-    next?: {
-      id: number;
-      title: string;
-      uri: string;
-    };
-  };
 }
 
-export interface PostProps extends Props {}
+export interface PostProps extends Props {
+}
 
-const { node } = Astro.props;
+const {node} = Astro.props;
 
 // Get site configuration
 const siteConfig = await getSiteConfig();
@@ -53,172 +54,174 @@ const showFeaturedImages = siteConfig?.data.showFeaturedImages ?? true;
 ---
 
 <article transition:name={`post-${node.id}`} transition:animate="fade">
-  <header class="header">
-    <div class="header-description">
-      <h1 class="header-title" transition:name={`title-${node.id}`}>{node.title}</h1>
-    </div>
-  </header>
+    <header class="header">
+        <div class="header-description">
+            <h1 class="header-title" transition:name={`title-${node.id}`}>{node.title}</h1>
+        </div>
+    </header>
 
-  <main class="post-content">
-    <!-- Only show date if node is a Post -->
-    {node.__typename === "Post" ? <PostMeta post={node} /> : null}
+    <main class="post-content">
+        <!-- Only show date if node is a Post -->
+        {node.__typename === "Post" ?
+                <PostMeta post={node}/> : null}
 
-    {node.featuredImage?.node?.mediaItemUrl && showFeaturedImages && (
-      <img
-        class="featured-image"
-        src={node.featuredImage.node.mediaItemUrl}
-        alt={node.featuredImage.node.altText || node.title}
-        transition:name={`image-${node.id}`}
-      />
-    )}
-    
-    <div transition:animate="fade" set:html={node.content}></div>
-  </main>
+        {node.featuredImage?.node?.mediaItemUrl && showFeaturedImages && (
+                <img
+                        class="featured-image"
+                        src={node.featuredImage.node.mediaItemUrl}
+                        alt={node.featuredImage.node.altText || node.title}
+                        transition:name={`image-${node.id}`}
+                />
+        )}
 
-  {
-    (node.previous || node.next) && (
-      <>
-        <hr />
-        <footer>
-          <PostPagination post={node} />
-        </footer>
-      </>
-    )
-  }
+        <div transition:animate="fade" set:html={node.content}></div>
+    </main>
 
-  {node.slug === "contact" && <ContactForm />}
+    {
+        (node.previous || node.next) && (
+                    <>
+                        <hr/>
+                        <footer>
+                            <PostPagination post={node}/>
+                        </footer>
+                    </>
+        )
+    }
+
+    {node.slug === "contact" &&
+            <ContactForm/>}
 </article>
 
 {
-  // only show the Disqus embed if env variable is found
+    // only show the Disqus embed if env variable is found
   import.meta.env.PUBLIC_DISQUS_EMBED_URL && node.__typename === "Post" && (
-    <disqus-widget
-      data-page-url={node.link}
-      data-post-identifier={`${node.postId} ${node.guid}`}
-    >
-      <div id="disqus_thread" />
-      <noscript>
+<disqus-widget
+        data-page-url={node.link}
+        data-post-identifier={`${node.postId} ${node.guid}`}
+>
+    <div id="disqus_thread"/>
+    <noscript>
         Please enable JavaScript to view the{" "}
         <a href="https://disqus.com/?ref_noscript">
-          comments powered by Disqus.
+            comments powered by Disqus.
         </a>
-      </noscript>
-    </disqus-widget>
-  )
-}
+    </noscript>
+</disqus-widget>
+    )
+    }
 
 <script>
-  class DisqusWidget extends HTMLElement {
-    constructor() {
-      super();
+    class DisqusWidget extends HTMLElement {
+        constructor() {
+            super();
 
-      const message = this.dataset.message;
-      var disqus_config = function () {
-        // mimic params generated by https://wordpress.org/plugins/disqus-comment-system/
-        this.page.url = this.dataset.pageUrl;
-        this.page.identifier = this.dataset.postIdentifier;
-      };
+            const message = this.dataset.message;
+            const disqus_config = function () {
+                // mimic params generated by https://wordpress.org/plugins/disqus-comment-system/
+                this.page.url = this.dataset.pageUrl;
+                this.page.identifier = this.dataset.postIdentifier;
+            };
 
-      (function () {
-        var d = document,
-          s = d.createElement("script");
-        s.src = import.meta.env.PUBLIC_DISQUS_EMBED_URL;
-        s.setAttribute("data-timestamp", +new Date());
-        (d.head || d.body).appendChild(s);
-      })();
+            (function () {
+                const d = document,
+                    s = d.createElement("script");
+                s.src = import.meta.env.PUBLIC_DISQUS_EMBED_URL;
+                s.setAttribute("data-timestamp", +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        }
     }
-  }
 
-  customElements.define("disqus-widget", DisqusWidget);
+    customElements.define("disqus-widget", DisqusWidget);
 </script>
 
 <style lang="scss" is:inline>
-  @use '../../styles/config/variables.scss' as *;
-  @use '../../styles/abstracts/functions/rem.scss' as *;
+@use '../../styles/config/variables.scss' as *;
+@use '../../styles/abstracts/functions/rem.scss' as *;
 
-  .post-content .post-meta {
+.post-content .post-meta {
     padding-top: 0.5em;
     justify-content: center;
-  }
+    }
 
-  .post-content .featured-image {
+.post-content .featured-image {
     display: block;
     margin: 0 auto;
-  }
+    }
 
-  .post-content ul li:not(:last-child) {
+.post-content ul li:not(:last-child) {
     margin-bottom: rem(10);
-  }
+    }
 
-  .post-content img {
+.post-content img {
     max-width: 100%;
     height: auto;
-  }
+    }
 
-  .wp-caption {
+.wp-caption {
     margin-bottom: 1.5rem;
     margin-left: 0;
     max-width: 100%;
-  }
+    }
 
-  .wp-caption img[class*='wp-image-'],
-  .aligncenter {
+.wp-caption img[class*='wp-image-'],
+.aligncenter {
     display: block;
     margin-left: auto;
     margin-right: auto;
-  }
+    }
 
-  .wp-caption-text {
+.wp-caption-text {
     text-align: center;
-  }
+    }
 
-  .wp-caption .wp-caption-text {
+.wp-caption .wp-caption-text {
     margin: 0.8rem 0;
-  }
-  .gallery {
+    }
+.gallery {
     margin-bottom: 1.5rem;
-  }
+    }
 
-  .gallery-item {
+.gallery-item {
     display: inline-block;
     text-align: center;
     vertical-align: top;
     width: 100%;
-  }
+    }
 
-  .gallery-columns-2 .gallery-item {
+.gallery-columns-2 .gallery-item {
     max-width: 50%;
-  }
+    }
 
-  .gallery-columns-3 .gallery-item {
+.gallery-columns-3 .gallery-item {
     max-width: 33.33%;
-  }
+    }
 
-  .gallery-columns-4 .gallery-item {
+.gallery-columns-4 .gallery-item {
     max-width: 25%;
-  }
+    }
 
-  .gallery-columns-5 .gallery-item {
+.gallery-columns-5 .gallery-item {
     max-width: 20%;
-  }
+    }
 
-  .gallery-columns-6 .gallery-item {
+.gallery-columns-6 .gallery-item {
     max-width: 16.66%;
-  }
+    }
 
-  .gallery-columns-7 .gallery-item {
+.gallery-columns-7 .gallery-item {
     max-width: 14.28%;
-  }
+    }
 
-  .gallery-columns-8 .gallery-item {
+.gallery-columns-8 .gallery-item {
     max-width: 12.5%;
-  }
+    }
 
-  .gallery-columns-9 .gallery-item {
+.gallery-columns-9 .gallery-item {
     max-width: 11.11%;
-  }
+    }
 
-  .gallery-caption {
+.gallery-caption {
     display: block;
-  }
+    }
 </style>

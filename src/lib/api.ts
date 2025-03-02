@@ -714,22 +714,20 @@ export async function getAllUris(): Promise<UriParams[]> {
     const data = await executeQuery<AllUrisResponse>(query, {}, 'all-uris');
     
     // Process the URIs
-    const uris = Object.values(data)
-      .reduce(function (acc: { uri: string }[], currentValue: { nodes: { uri: string }[] }) {
-        return acc.concat(currentValue.nodes);
-      }, [])
-      .map((node: { uri: string }) => {
-        // Clean up the URI format for Astro routes
-        let trimmedURI = node.uri.substring(1);
-        trimmedURI = trimmedURI.substring(0, trimmedURI.length - 1);
-        return {
-          params: {
-            uri: trimmedURI,
-          },
-        };
-      });
-
-    return uris;
+    return Object.values(data)
+        .reduce(function (acc: { uri: string }[], currentValue: { nodes: { uri: string }[] }) {
+          return acc.concat(currentValue.nodes);
+        }, [])
+        .map((node: { uri: string }) => {
+          // Clean up the URI format for Astro routes
+          let trimmedURI = node.uri.substring(1);
+          trimmedURI = trimmedURI.substring(0, trimmedURI.length - 1);
+          return {
+            params: {
+              uri: trimmedURI,
+            },
+          };
+        });
   } catch (error) {
     console.error("Error fetching all URIs:", error);
     // Return fallback data for development

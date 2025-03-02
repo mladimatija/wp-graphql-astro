@@ -1,10 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import React from 'react';
-
-// Create a simplified mock version of DarkMode component for testing
-const MockDarkMode = (): React.ReactElement | null => {
-  return null; // Component doesn't render anything
-};
+import { describe, it, expect } from 'vitest';
 
 // Type definitions
 interface ToggleAttributes {

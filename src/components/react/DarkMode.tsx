@@ -14,7 +14,7 @@ type ColorScheme = 'dark' | 'light' | null;
 
 // Dark mode with accessibility enhancements
 export default function DarkMode(): React.ReactElement | null {
-  const [prefersColorScheme, setPrefersColorScheme] = useState<ColorScheme>(null);
+  const [, setPrefersColorScheme] = useState<ColorScheme>(null);
   
   useEffect(() => {
     // Check if user has system dark mode preference

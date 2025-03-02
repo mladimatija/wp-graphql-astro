@@ -18,14 +18,12 @@ export async function getStaticPaths() {
   
   // Filter to only prerender specific critical pages to save build time
   // For a full static site, you could return all paths
-  const criticalPaths = allPaths.filter(path => {
+  return allPaths.filter(path => {
     const uri = path.params.uri;
     return uri === '' || // homepage
-           uri === 'about' || 
-           uri === 'contact';
+        uri === 'about' ||
+        uri === 'contact';
   });
-  
-  return criticalPaths;
 }
 
 // Determine which template to use based on content type
