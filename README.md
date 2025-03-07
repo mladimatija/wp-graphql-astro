@@ -274,6 +274,86 @@ PUBLIC_ANALYTICS_ENDPOINT=https://your-analytics-service.com/collect
 
 The Web Vitals data will be automatically sent to the configured endpoint using the `navigator.sendBeacon()` API when available, with a fallback to `fetch()` for older browsers.
 
+## PWA Configuration
+
+The site supports Progressive Web App (PWA) capabilities with a dynamic manifest.json generator.
+
+### PWA Manifest Generation
+
+This project uses a build-time manifest generation approach for its Progressive Web App features:
+
+1. The manifest.json is generated during the build process using data from WordPress
+2. The `fix-manifest.js` script fetches site data from WordPress GraphQL API
+3. The generated manifest is placed in both `public/` and `dist/` directories
+4. The service worker includes dynamically generated cache names based on site identity
+
+#### WordPress Integration
+
+The manifest generator fetches data from WordPress during the build process:
+
+```graphql
+{
+  generalSettings {
+    title        # Used for manifest name
+    description  # Used for manifest description
+    language     # Used for manifest language
+  }
+  mediaItems {   # Used for PWA icons
+    nodes {
+      mediaItemUrl
+      mimeType
+      mediaDetails {
+        width
+        height
+      }
+    }
+  }
+}
+```
+
+#### Fallback Mechanism
+
+If WordPress data is unavailable during build time, the system falls back to default values:
+
+```javascript
+const DEFAULT_APP_NAME = "WP GraphQL Astro";
+const DEFAULT_APP_SHORT_NAME = "WP Astro";
+const DEFAULT_APP_DESCRIPTION = "A modern headless WordPress implementation using Astro and GraphQL";
+const DEFAULT_THEME_COLOR = "#29aae1";
+const DEFAULT_BG_COLOR = "#ffffff";
+```
+
+#### Dynamic Service Worker
+
+The service worker is also generated during build time with dynamic cache names derived from:
+
+1. PUBLIC_SITE_NAME environment variable (if available)
+2. Hostname from PUBLIC_SITE_URL (if available)
+3. WordPress site title (fetched from the API)
+4. Default fallback value
+
+This prevents cache collisions between different sites and includes a date-based version number for cache invalidation. You can manually generate the service worker by running:
+
+```bash
+npm run generate-sw
+```
+
+#### Build Scripts
+
+Two main scripts handle PWA generation during build:
+
+- **fix-manifest.js**: Generates the manifest.json with WordPress data
+- **generate-service-worker.js**: Creates the service worker with dynamic cache names
+
+Both scripts are automatically run during the build process.
+
+### PWA Assets
+
+Required PWA assets are located in the `/public` directory:
+- `favicon.svg` - Vector icon used for app icons
+- `logo.png` - 192x192 PNG icon
+- `offline.html` - Offline fallback page
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.

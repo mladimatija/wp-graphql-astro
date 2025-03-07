@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "http-server ./dist",
-    "build": "astro build",
+    "build": "npm run build:branding && astro build && node fix-manifest.js && node src/scripts/generate-service-worker.js",
     "preview": "astro preview",
     "astro": "astro",
     "format": "prettier --write .",
@@ -16,9 +16,12 @@
     "lint": "npm run lint:css && npm run lint:js",
     "clean": "rm -rf dist",
     "prebuild": "npm run clean",
+    "build:branding": "node src/scripts/process-templates.js",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "fix-manifest": "node fix-manifest.js",
+    "generate-sw": "node src/scripts/generate-service-worker.js"
   },
   "dependencies": {
     "@astrojs/netlify": "^6.2.2",
@@ -33,6 +36,7 @@
     "astro": "^5.4.2",
     "astro-seo": "^0.8.4",
     "darkmode-js": "^1.5.7",
+    "dotenv": "^16.4.7",
     "http-server": "^14.1.1",
     "normalize.css": "^8.0.1",
     "react": "^19.0.0",
@@ -48,6 +52,7 @@
     "@typescript-eslint/parser": "^8.26.0",
     "astro-eslint-parser": "^1.2.1",
     "autoprefixer": "^10.4.20",
+    "cross-fetch": "^4.1.0",
     "cssnano": "^7.0.6",
     "eslint": "^9.21.0",
     "eslint-plugin-astro": "^1.3.1",

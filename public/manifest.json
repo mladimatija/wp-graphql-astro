@@ -1,20 +1,53 @@
 {
-  "name": "WP GraphQL Astro",
-  "short_name": "WP Astro",
-  "description": "Headless WordPress with Astro and GraphQL",
+  "name": "Matija Culjak",
+  "short_name": "Matija Culjak",
+  "description": "frontend / web engineer",
+  "lang": "en",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#ffffff",
   "theme_color": "#29aae1",
   "icons": [
     {
-      "src": "favicon.svg",
+      "src": "https://wp.matijaculjak.com/wp-content/uploads/2016/05/cropped-matija-culjak-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://wp.matijaculjak.com/wp-content/uploads/2016/05/matija-culjak-logo.png",
+      "sizes": "1200x628",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://wp.matijaculjak.com/wp-content/uploads/2014/11/Logos-Edit-e1395028343477.png",
+      "sizes": "800x592",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://wp.matijaculjak.com/wp-content/uploads/2014/06/Oxidian-logo.png",
+      "sizes": "243x113",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://wp.matijaculjak.com/wp-content/uploads/2014/04/logo-matija-culjak.png",
+      "sizes": "1250x471",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
       "sizes": "48x48 72x72 96x96 128x128 256x256",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "logo.png",
+      "src": "/logo.png",
       "sizes": "192x192",
       "type": "image/png"
     }
