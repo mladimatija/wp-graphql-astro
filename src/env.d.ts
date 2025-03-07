@@ -6,6 +6,7 @@ interface ImportMetaEnv {
   readonly PUBLIC_DISQUS_EMBED_URL: string;
   readonly PUBLIC_X_SHARE_USER: string;
   readonly PUBLIC_SITE_URL: string;
+  readonly PUBLIC_ANALYTICS_ENDPOINT: string;
 }
 
 interface ImportMeta {

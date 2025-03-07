@@ -165,8 +165,6 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
                   if (window.a11yManager) {
                     window.a11yManager.announce('New content is available. Refresh the page to update.', true);
                   }
-                  
-                  // Could also show a visible notification here
                 }
               });
             });
@@ -174,20 +172,6 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
             console.log('SW registration failed:', error);
           });
         });
-      }
-      
-      // Initialize Web Vitals monitoring
-      try {
-        // Use dynamic import to load the web-vitals module
-        import('/src/lib/webVitals').then(module => {
-          if (module && typeof module.initWebVitals === 'function') {
-            module.initWebVitals();
-          }
-        }).catch(error => {
-          console.error('Failed to load Web Vitals:', error);
-        });
-      } catch (error) {
-        console.error('Error initializing Web Vitals:', error);
       }
     </script>
   </body>

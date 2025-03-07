@@ -4,18 +4,21 @@ A modern headless WordPress implementation using [Astro](https://astro.build/) a
 
 ## Features
 
-- Static site generation with Astro
+- Server-side rendering with Astro
 - WordPress content management through GraphQL
 - Responsive design with SCSS
-- Dark mode support
-- SEO optimization
+- Dark mode support with automatic system preference detection
+- SEO optimization with detailed metadata control
 - Dynamic routing for WordPress content
-- Image optimization
-- View Transitions for smooth navigation
-- PWA support with offline capabilities
-- TypeScript integration
+- Image optimization and lazy loading
+- View Transitions API for smooth navigation
+- PWA support with offline capabilities and service worker
+- TypeScript integration for type safety
 - Content Collections for local/hybrid content management
-- Accessibility enhancements
+- Accessibility enhancements with A11y utilities
+- React integration for interactive components
+- Web Vitals monitoring for performance tracking
+- Comprehensive test suite with Vitest
 
 ## Requirements
 
@@ -38,6 +41,7 @@ WORDPRESS_API_URL=https://yoursitename.com/graphql
 PUBLIC_DISQUS_EMBED_URL=https://siteid.disqus.com/embed.js
 PUBLIC_X_SHARE_USER=your_twitter_handle
 PUBLIC_SITE_URL=https://yoursitename.com
+PUBLIC_ANALYTICS_ENDPOINT=https://your-analytics-endpoint.com/collect # Optional - for Web Vitals data
 ```
 
 ## Getting Started
@@ -61,7 +65,11 @@ npm run preview
 ```
 src/
 ├── components/        # UI components
-│   └── templates/     # Content type templates
+│   ├── __tests__/     # Component tests
+│   ├── client/        # Client-side only components
+│   ├── content-collections/ # Components for local content
+│   ├── react/         # React components
+│   ├── templates/     # Content type templates
 ├── content/           # Content collections
 │   ├── authors/       # Author information
 │   ├── components/    # Reusable content components
@@ -69,7 +77,10 @@ src/
 │   └── pages/         # Local markdown pages
 ├── layouts/           # Main layout wrappers
 ├── lib/               # Utilities and API functions
+│   └── __tests__/     # API and utility tests
 ├── pages/             # Astro pages and routes
+│   ├── api/           # API endpoints
+│   ├── local/         # Local content routes
 │   └── page/          # Pagination handling
 └── styles/            # SCSS styles
     ├── abstracts/     # Functions and variables
@@ -166,14 +177,19 @@ The project uses SCSS with a structured approach:
 
 ## Deployment
 
-The project is configured for Netlify:
+The project is configured for Netlify with server-side rendering:
 
 1. Connect your repository
 2. Set build command to `npm run build`
 3. Set publish directory to `dist`
-4. Add your environment variables
+4. Add your environment variables (WORDPRESS_API_URL, PUBLIC_SITE_URL, etc)
+5. Ensure the Netlify adapter is configured in `astro.config.mjs` (already included)
 
-The project can also be deployed on Vercel, GitHub Pages, or any static site host.
+The project can also be deployed on other platforms that support SSR:
+
+- **Vercel**: Replace the Netlify adapter with Vercel adapter
+- **Cloudflare**: Use the Cloudflare adapter
+- **Node.js**: Use the Node adapter for traditional hosting
 
 ## Development Workflow
 
@@ -212,6 +228,7 @@ The application includes built-in Web Vitals monitoring to track Core Web Vitals
 - **Cumulative Layout Shift (CLS)**: Measures visual stability
 - **First Contentful Paint (FCP)**: Measures when content first appears
 - **Time to First Byte (TTFB)**: Measures server response time
+- **Interaction to Next Paint (INP)**: Measures input responsiveness
 
 Web Vitals monitoring can be enabled with the `showWebVitals` prop on the MainLayout component:
 
@@ -220,11 +237,22 @@ Web Vitals monitoring can be enabled with the `showWebVitals` prop on the MainLa
 import MainLayout from "../layouts/MainLayout.astro";
 ---
 
+<MainLayout showWebVitals={true}>
   <!-- Page content -->
 </MainLayout>
 ```
 
 Metrics are automatically collected and displayed in a floating panel that can be toggled. In development mode, this is enabled by default.
+
+### Component Features
+
+The Web Vitals monitor component:
+
+- Displays all core web vitals metrics with visual indicators
+- Uses color-coded ratings (good, needs improvement, poor)
+- Adapts to light and dark mode automatically
+- Is fully encapsulated with scoped CSS to prevent style leakage
+- Only loads when explicitly enabled or in development mode
 
 ### Configuring Analytics Endpoint
 
@@ -242,7 +270,7 @@ PUBLIC_ANALYTICS_ENDPOINT=https://your-analytics-service.com/collect
    - **Vercel**: Add in the Environment Variables section of your project settings
    - **GitHub Pages**: Use GitHub Actions secrets
 
-3. Optionally, you can customize the analytics payload in `src/lib/webVitals.js` to match your analytics provider's requirements.
+3. Optionally, you can customize the analytics payload in `src/lib/webVitals.ts` to match your analytics provider's requirements.
 
 The Web Vitals data will be automatically sent to the configured endpoint using the `navigator.sendBeacon()` API when available, with a fallback to `fetch()` for older browsers.
 
