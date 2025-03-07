@@ -9,6 +9,7 @@
 
 // Import individual functions from web-vitals v4
 import { onCLS, onFID, onLCP, onFCP, onTTFB, onINP } from 'web-vitals';
+import { log } from './constants';
 
 import type {WebVitalsMetrics} from '../components/react/WebVitalsMonitor';
 
@@ -26,10 +27,8 @@ const analyticsEndpoint = import.meta.env.PUBLIC_ANALYTICS_ENDPOINT || '';
 function sendToAnalytics(metric) {
   // Early return if no analytics endpoint is configured
   if (!analyticsEndpoint) {
-    // Log metrics in development mode
-    if (import.meta.env.DEV) {
-      console.log(`Web Vitals: ${metric.name} = ${metric.value}`);
-    }
+    // Log metrics in development mode or if debugging is enabled
+    log.debug(`Web Vitals: ${metric.name} = ${metric.value}`);
     return;
   }
 
@@ -82,7 +81,7 @@ export function initWebVitals() {
     onTTFB(sendToAnalytics); // Time to First Byte
     onINP(sendToAnalytics);  // Interaction to Next Paint (new in v4)
   } catch (error) {
-    console.error('Failed to initialize Web Vitals:', error);
+    log.error('Failed to initialize Web Vitals:', error);
   }
 }
 
@@ -122,7 +121,7 @@ export async function getWebVitalsMetrics() {
       onTTFB(saveMetric);
       onINP(saveMetric); // New in v4
     } catch (error) {
-      console.error('Failed to get Web Vitals metrics:', error);
+      log.error('Failed to get Web Vitals metrics:', error);
       resolve({});
     }
   });

@@ -10,6 +10,9 @@ import { fileURLToPath } from 'url';
 import fetch from 'cross-fetch';
 import * as dotenv from 'dotenv';
 
+// Import logging utility
+import { log } from '../lib/constants.js';
+
 // Load environment variables
 dotenv.config();
 
@@ -47,7 +50,7 @@ async function getSiteNameFromWordPress() {
       headers['Authorization'] = `Basic ${auth}`;
     }
     
-    console.log("Fetching site name from WordPress...");
+    log.info("Fetching site name from WordPress...");
     const response = await fetch(process.env.WORDPRESS_API_URL, {
       method: 'POST',
       headers,
@@ -63,14 +66,14 @@ async function getSiteNameFromWordPress() {
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/(^-|-$)/g, '');
         
-        console.log(`Using site name for cache prefix: ${title}`);
+        log.info(`Using site name for cache prefix: ${title}`);
         return title;
       }
     }
     
     throw new Error("Couldn't get site name from WordPress");
   } catch (error) {
-    console.error("Error fetching site name:", error.message);
+    log.error("Error fetching site name: " + error.message);
     return null;
   }
 }
@@ -86,7 +89,7 @@ async function getCachePrefix() {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
       
-    console.log(`Using PUBLIC_SITE_NAME env var for cache prefix: ${siteName}`);
+    log.info(`Using PUBLIC_SITE_NAME env var for cache prefix: ${siteName}`);
     return siteName;
   }
   
@@ -98,10 +101,10 @@ async function getCachePrefix() {
         .replace('www.', '')
         .replace(/\./g, '-');
       
-      console.log(`Using hostname from PUBLIC_SITE_URL for cache prefix: ${hostname}`);
+      log.info(`Using hostname from PUBLIC_SITE_URL for cache prefix: ${hostname}`);
       return hostname;
     } catch (e) {
-      console.error("Error parsing PUBLIC_SITE_URL:", e);
+      log.error("Error parsing PUBLIC_SITE_URL: " + e);
     }
   }
   
@@ -112,7 +115,7 @@ async function getCachePrefix() {
   }
   
   // Fallback to default
-  console.log(`Using default cache prefix: ${DEFAULT_CACHE_PREFIX}`);
+  log.info(`Using default cache prefix: ${DEFAULT_CACHE_PREFIX}`);
   return DEFAULT_CACHE_PREFIX;
 }
 
@@ -126,7 +129,7 @@ async function generateServiceWorker() {
       // If not, copy current service worker to use as template
       if (fs.existsSync(outputPublicPath)) {
         fs.copyFileSync(outputPublicPath, templatePath);
-        console.log(`Created service worker template from existing file`);
+        log.info(`Created service worker template from existing file`);
       } else {
         throw new Error("Service worker template not found and no existing file to copy from");
       }
@@ -158,17 +161,17 @@ async function generateServiceWorker() {
     
     // Write to public directory
     fs.writeFileSync(outputPublicPath, serviceWorkerContent);
-    console.log(`Service worker generated with cache prefix "${cachePrefix}" in public dir`);
+    log.info(`Service worker generated with cache prefix "${cachePrefix}" in public dir`);
     
     // Write to dist directory if it exists (for production builds)
     if (fs.existsSync(path.dirname(outputDistPath))) {
       fs.writeFileSync(outputDistPath, serviceWorkerContent);
-      console.log(`Service worker generated with cache prefix "${cachePrefix}" in dist dir`);
+      log.info(`Service worker generated with cache prefix "${cachePrefix}" in dist dir`);
     }
     
     return true;
   } catch (error) {
-    console.error("Error generating service worker:", error);
+    log.error("Error generating service worker: " + error);
     return false;
   }
 }

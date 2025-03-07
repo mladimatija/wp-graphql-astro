@@ -36,6 +36,17 @@ const primaryMenu = menus.nodes[0];
 </nav>
 
 <script>
+  // Simple inline logging utility for client-side code
+  const clientLog = {
+    warn: (message) => {
+      const isDev = import.meta.env.DEV;
+      const isDebugEnabled = import.meta.env.PUBLIC_DEBUG === 'true';
+      if (isDev || isDebugEnabled) {
+        console.warn('[WARN]', message);
+      }
+    }
+  };
+
   // Helper function to initialize navigation
   function initNavigation() {
     const burgerMenu = document.querySelector(".burger-menu-icon");
@@ -43,7 +54,7 @@ const primaryMenu = menus.nodes[0];
     const burgerNav = document.querySelector(".header-nav");
     
     if (!burgerMenu || !burgerContainer || !burgerNav) {
-      console.warn("Navigation elements not found");
+      clientLog.warn("Navigation elements not found");
       return;
     }
     

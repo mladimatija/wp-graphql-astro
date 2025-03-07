@@ -4,6 +4,16 @@ import http from 'http';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
+// Simple logging utility for node scripts
+const log = {
+  info: (message) => {
+    console.log('[INFO]', message);
+  },
+  error: (message) => {
+    console.error('[ERROR]', message);
+  }
+};
+
 // WordPress API URL from environment
 const wpApiUrl = process.env.WORDPRESS_API_URL;
 
@@ -45,17 +55,17 @@ const requestBody = JSON.stringify({
   query
 });
 
-console.log('Testing WordPress GraphQL API connectivity...');
-console.log(`URL: ${wpApiUrl}`);
-console.log(`Username: ${username ? username : '(not set)'}`);
-console.log(`Password: ${password ? '(set)' : '(not set)'}`);
+log.info('Testing WordPress GraphQL API connectivity...');
+log.info(`URL: ${wpApiUrl}`);
+log.info(`Username: ${username ? username : '(not set)'}`);
+log.info(`Password: ${password ? '(set)' : '(not set)'}`);
 
 // Choose http or https based on the URL
 const requestModule = urlObj.protocol === 'https:' ? https : http;
 
 const req = requestModule.request(options, (res) => {
-  console.log(`Status: ${res.statusCode} ${res.statusMessage}`);
-  console.log('Headers:', res.headers);
+  log.info(`Status: ${res.statusCode} ${res.statusMessage}`);
+  log.info('Headers: ' + JSON.stringify(res.headers));
 
   let data = '';
   res.on('data', (chunk) => {
@@ -63,19 +73,19 @@ const req = requestModule.request(options, (res) => {
   });
 
   res.on('end', () => {
-    console.log('Response data:');
+    log.info('Response data:');
     try {
       const parsedData = JSON.parse(data);
-      console.log(JSON.stringify(parsedData, null, 2));
+      log.info(JSON.stringify(parsedData, null, 2));
     } catch (error) {
-      console.log('Could not parse response as JSON:');
-      console.log(data);
+      log.info('Could not parse response as JSON:');
+      log.info(data);
     }
   });
 });
 
 req.on('error', (error) => {
-  console.error('Error making request:', error.message);
+  log.error('Error making request: ' + error.message);
 });
 
 // Send request

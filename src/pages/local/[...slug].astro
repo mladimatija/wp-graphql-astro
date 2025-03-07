@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import LocalPage from '../../components/content-collections/LocalPage.astro';
 import MainLayout from '../../layouts/MainLayout.astro';
+import { log } from '../../lib/constants';
 
 // Set some pages for static pre-rendering
 export const prerender = true;
@@ -21,7 +22,8 @@ export async function getStaticPaths() {
         },
       }));
   } catch (error) {
-    console.error('Error generating static paths for local pages:', error);
+    // Always log this error as it's critical for page generation
+    log.error('Error generating static paths for local pages:', error);
     // Return a minimal set if content collections are not set up yet
     return [{ params: { slug: 'about-local' }, props: { page: null } }];
   }

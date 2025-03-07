@@ -6,12 +6,15 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Constants for templates
-const DEFAULT_APP_NAME = "WP GraphQL Astro";
-const DEFAULT_APP_SHORT_NAME = "WP Astro";
-const DEFAULT_APP_DESCRIPTION = "A modern headless WordPress implementation using Astro and GraphQL";
-const DEFAULT_THEME_COLOR = "#29aae1";
-const DEFAULT_BG_COLOR = "#ffffff";
+// Import constants and logging utilities
+import { 
+  DEFAULT_APP_NAME, 
+  DEFAULT_APP_SHORT_NAME, 
+  DEFAULT_APP_DESCRIPTION,
+  DEFAULT_THEME_COLOR,
+  DEFAULT_BG_COLOR,
+  log
+} from '../lib/constants.js';
 
 // Get the directory name
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -51,11 +54,11 @@ filesToProcess.forEach(file => {
     // Write the output file
     fs.writeFileSync(file.path, processedContent);
     
-    console.log(`Processed ${path.basename(file.path)} successfully!`);
+    log.info(`Processed ${path.basename(file.path)} successfully!`);
   } catch (error) {
-    console.error(`Error processing ${path.basename(file.path)}:`, error);
+    log.error(`Error processing ${path.basename(file.path)}: ${error}`);
     process.exit(1);
   }
 });
 
-console.log('All static files processed successfully!');
+log.info('All static files processed successfully!');

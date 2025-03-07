@@ -215,6 +215,10 @@
 <script>
     // Fetch and display cached pages when offline
     document.addEventListener('DOMContentLoaded', async () => {
+        // Check if we're in development mode
+        const isDev = window.location.hostname === 'localhost' || 
+                     window.location.hostname === '127.0.0.1';
+                     
         const pagesList = document.getElementById('cached-pages-list');
 
         try {
@@ -258,7 +262,10 @@
                 pagesList.innerHTML = '<p>No cached content found.</p>';
             }
         } catch (error) {
-            console.error('Error fetching cached pages:', error);
+            // Only log errors in development mode
+            if (isDev || localStorage.getItem('debug') === 'true') {
+                console.error('[ERROR] Error fetching cached pages:', error);
+            }
             pagesList.innerHTML = '<p>Unable to load cached pages.</p>';
         }
 

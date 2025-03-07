@@ -11,6 +11,19 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+// Simple logging utility for node scripts
+const log = {
+  info: (message) => {
+    // Always show in CI/CD
+    if (process.env.CI || process.env.NODE_ENV === 'development' || process.env.DEBUG === 'true') {
+      console.log('[INFO]', message);
+    }
+  },
+  error: (message, details) => {
+    console.error('[ERROR]', message, details || '');
+  }
+};
+
 // Import constants for fallbacks
 // Constants for manifest generation
 const DEFAULT_APP_NAME = "WP GraphQL Astro";
@@ -34,9 +47,9 @@ const DEFAULT_ICONS = [
 
 dotenv.config();
 
-console.log("Starting manifest generator");
-console.log(`WordPress API URL: ${process.env.WORDPRESS_API_URL}`);
-console.log(`Auth credentials: Username=${process.env.WP_APP_USERNAME ? 'Set' : 'Not set'}, Password=${process.env.WP_APP_PASSWORD ? 'Set' : 'Not set'}`);
+log.info("Starting manifest generator");
+log.info(`WordPress API URL: ${process.env.WORDPRESS_API_URL}`);
+log.info(`Auth credentials: Username=${process.env.WP_APP_USERNAME ? 'Set' : 'Not set'}, Password=${process.env.WP_APP_PASSWORD ? 'Set' : 'Not set'}`);
 
 // Get directories
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -82,33 +95,33 @@ async function generateManifest() {
   let wpData = null;
   
   try {
-    console.log("Fetching data from WordPress GraphQL API...");
+    log.info("Fetching data from WordPress GraphQL API...");
     const response = await fetch(process.env.WORDPRESS_API_URL, {
       method: 'POST',
       headers,
       body: JSON.stringify({ query })
     });
 
-    console.log(`Response status: ${response.status} ${response.statusText}`);
+    log.info(`Response status: ${response.status} ${response.statusText}`);
     
     if (response.ok) {
       const result = await response.json();
-      console.log("Successfully received WordPress data");
+      log.info("Successfully received WordPress data");
       
       if (!result.errors && result.data) {
         wpData = result.data;
       } else if (result.errors) {
-        console.error("GraphQL errors:", result.errors);
+        log.error("GraphQL errors:", result.errors);
       }
     } else {
-      console.error(`WordPress request failed: ${response.status}`);
+      log.error(`WordPress request failed: ${response.status}`);
       try {
         const errorText = await response.text();
-        console.error("Error response:", errorText);
+        log.error("Error response:", errorText);
       } catch (e) {}
     }
   } catch (error) {
-    console.error("Error fetching WordPress data:", error);
+    log.error("Error fetching WordPress data:", error);
   }
   
   // Create manifest data using WordPress with fallbacks
@@ -146,7 +159,7 @@ async function generateManifest() {
     );
     
     if (logoImages.length > 0) {
-      console.log(`Found ${logoImages.length} logo images in WordPress`);
+      log.info(`Found ${logoImages.length} logo images in WordPress`);
       
       // Get logo URLs for PWA icons
       const pwaLogos = logoImages.map(img => {
@@ -181,11 +194,11 @@ async function generateManifest() {
   };
   
   // Log the manifest data we're generating
-  console.log("Generated manifest data:");
-  console.log(`- name: ${manifest.name}`);
-  console.log(`- short_name: ${manifest.short_name}`);
-  console.log(`- description: ${manifest.description}`);
-  console.log(`- icons: ${manifest.icons.length}`);
+  log.info("Generated manifest data:");
+  log.info(`- name: ${manifest.name}`);
+  log.info(`- short_name: ${manifest.short_name}`);
+  log.info(`- description: ${manifest.description}`);
+  log.info(`- icons: ${manifest.icons.length}`);
   
   return manifest;
 }
@@ -197,10 +210,10 @@ function writeManifestFile(directory, manifest) {
   try {
     const manifestPath = path.join(directory, 'manifest.json');
     fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
-    console.log(`Manifest written to ${manifestPath}`);
+    log.info(`Manifest written to ${manifestPath}`);
     return true;
   } catch (error) {
-    console.error(`Error writing manifest to ${directory}:`, error);
+    log.error(`Error writing manifest to ${directory}:`, error);
     return false;
   }
 }
@@ -219,9 +232,9 @@ async function main() {
       writeManifestFile(distDir, manifest);
     }
     
-    console.log("Manifest generation completed successfully");
+    log.info("Manifest generation completed successfully");
   } catch (error) {
-    console.error("Manifest generation failed:", error);
+    log.error("Manifest generation failed:", error);
     process.exit(1);
   }
 }

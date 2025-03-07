@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { log } from '../../lib/constants';
 
 /**
  * API endpoint to revalidate pages on-demand
@@ -53,11 +54,11 @@ export const POST: APIRoute = async ({ request/*, locals*/ }) => {
           // For Astro v5, we need to use a different approach
           // This would typically integrate with your hosting platform's cache invalidation
           // For Netlify, this could use their cache invalidation API
-          console.log(`Would revalidate: ${normalizedPath}`);
+          log.info(`Would revalidate: ${normalizedPath}`);
           
           return { path: normalizedPath, success: true };
         } catch (error) {
-          console.error(`Error revalidating ${path}:`, error);
+          log.error(`Error revalidating ${path}:`, error);
           return { path, success: false, error: (error as Error).message };
         }
       })
@@ -75,7 +76,7 @@ export const POST: APIRoute = async ({ request/*, locals*/ }) => {
       }
     );
   } catch (error) {
-    console.error('Revalidation error:', error);
+    log.error('Revalidation error:', error);
     
     return new Response(
       JSON.stringify({ 

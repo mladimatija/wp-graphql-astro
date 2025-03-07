@@ -4,6 +4,16 @@ import { spawn } from 'child_process';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
+// Simple logging utility for node scripts
+const log = {
+  info: (message) => {
+    console.log('[INFO]', message);
+  },
+  error: (message) => {
+    console.error('[ERROR]', message);
+  }
+};
+
 // Pass environment variables to the Astro dev server
 const env = {
   ...process.env,
@@ -16,7 +26,7 @@ const env = {
 };
 
 // Start Astro dev server
-console.log('Starting Astro dev server...');
+log.info('Starting Astro dev server...');
 const astroServer = spawn('npm', ['run', 'dev'], { 
   env,
   stdio: ['ignore', 'pipe', 'pipe']
@@ -47,24 +57,24 @@ astroServer.stderr.on('data', (data) => {
 // Function to test the manifest.json API route
 async function testManifestRoute() {
   try {
-    console.log('\n\nTesting manifest.json API route...');
+    log.info('\n\nTesting manifest.json API route...');
     const response = await fetch('http://localhost:4321/api/manifest.json');
-    console.log(`Status: ${response.status} ${response.statusText}`);
+    log.info(`Status: ${response.status} ${response.statusText}`);
     
     const headers = {};
     response.headers.forEach((value, key) => {
       headers[key] = value;
     });
-    console.log('Headers:', headers);
+    log.info('Headers: ' + JSON.stringify(headers));
     
     const data = await response.json();
-    console.log('Response data:');
-    console.log(JSON.stringify(data, null, 2));
+    log.info('Response data:');
+    log.info(JSON.stringify(data, null, 2));
   } catch (error) {
-    console.error('Error testing manifest.json route:', error);
+    log.error('Error testing manifest.json route: ' + error);
   } finally {
     // Clean up - kill the server
-    console.log(`Shutting down Astro server (PID: ${astroServer.pid})...`);
+    log.info(`Shutting down Astro server (PID: ${astroServer.pid})...`);
     astroServer.kill('SIGTERM');
     process.exit(0);
   }
@@ -73,7 +83,7 @@ async function testManifestRoute() {
 // Set a timeout in case the server doesn't start
 setTimeout(() => {
   if (!serverStarted) {
-    console.error('Timeout waiting for Astro server to start');
+    log.error('Timeout waiting for Astro server to start');
     astroServer.kill('SIGTERM');
     process.exit(1);
   }

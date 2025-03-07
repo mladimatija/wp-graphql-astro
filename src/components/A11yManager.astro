@@ -142,16 +142,27 @@
   
   // Expose methods for use in other components
   document.addEventListener('DOMContentLoaded', () => {
+    // Simple inline logging utility for client-side code
+    const clientLog = {
+      warn: (message, element) => {
+        const isDev = import.meta.env.DEV;
+        const isDebugEnabled = import.meta.env.PUBLIC_DEBUG === 'true';
+        if (isDev || isDebugEnabled) {
+          console.warn('[WARN]', message, element);
+        }
+      }
+    };
+    
     // Add a11y features to all interactive elements
     document.querySelectorAll('button:not([aria-label]):not([aria-labelledby])').forEach(button => {
       if (!button.textContent.trim()) {
-        console.warn('Button without accessible label found', button);
+        clientLog.warn('Button without accessible label found', button);
       }
     });
     
     // Enhance image accessibility
     document.querySelectorAll('img:not([alt])').forEach(img => {
-      console.warn('Image without alt text found', img);
+      clientLog.warn('Image without alt text found', img);
     });
   });
 </script>

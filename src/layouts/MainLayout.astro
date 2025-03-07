@@ -18,6 +18,7 @@ import A11yManager from "../components/A11yManager.astro";
 import DarkMode from "../components/react/DarkMode";
 import WebVitalsMonitor from "../components/react/WebVitalsMonitor";
 import { settingsQuery } from "../lib/api";
+import { log } from "../lib/constants";
 
 // Prefetch site settings for optimal performance
 const { generalSettings } = await settingsQuery();
@@ -141,18 +142,33 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
       // Hide loading spinner when page is ready
       document.addEventListener('astro:page-load', () => {
         document.getElementById('page-loader').classList.remove('active');
+        
+        // Fix for dark mode layer issue on page load
+        setTimeout(() => {
+          if (window.resetDarkMode) {
+            window.resetDarkMode();
+          }
+        }, 200);
       });
 
       // Also hide spinner if navigation is canceled or fails
       document.addEventListener('astro:after-swap', () => {
         document.getElementById('page-loader').classList.remove('active');
+        
+        // Also fix dark mode after page transitions
+        setTimeout(() => {
+          if (window.resetDarkMode) {
+            window.resetDarkMode();
+          }
+        }, 200);
       });
       
       // Register service worker for PWA functionality
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/service-worker.js').then(registration => {
-            console.log('SW registered:', registration);
+            // Only log in DEV or DEBUG mode
+            log.info('SW registered successfully');
             
             // Listen for updates
             registration.addEventListener('updatefound', () => {
@@ -169,10 +185,59 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
               });
             });
           }).catch(error => {
-            console.log('SW registration failed:', error);
+            // Always log errors
+            log.error('SW registration failed: ' + error);
           });
         });
       }
+      
+      // Fix dark mode layer on initial page load
+      window.addEventListener('load', () => {
+        // Force fix any dark mode layer issues on initial page load
+        setTimeout(() => {
+          if (window.resetDarkMode) {
+            window.resetDarkMode();
+          } else {
+            // Fallback if resetDarkMode is not available yet
+            const isDarkModeActive = document.body.classList.contains('darkmode--activated');
+            // Use conditional logging based on environment
+            log.debug('Fallback darkmode fix, isDarkModeActive: ' + isDarkModeActive);
+            
+            // Handle both possible class names
+            const darkmodeLayer = document.querySelector('.darkmode-layer');
+            const darkmodeBackground = document.querySelector('.darkmode-background');
+            
+            if (!isDarkModeActive) {
+              // If dark mode is OFF
+              const hideStyle = 'opacity: 0 !important; pointer-events: none !important; mix-blend-mode: normal !important;';
+              
+              if (darkmodeLayer) {
+                darkmodeLayer.setAttribute('style', hideStyle);
+              }
+              
+              if (darkmodeBackground) {
+                darkmodeBackground.setAttribute('style', hideStyle);
+              }
+            } else {
+              // If dark mode is ON, reset styles to allow the library's toggle to work
+              if (darkmodeLayer) {
+                darkmodeLayer.removeAttribute('style');
+              }
+              
+              if (darkmodeBackground) {
+                darkmodeBackground.removeAttribute('style');
+              }
+            }
+            
+            // Log the elements found for debugging (only in dev/debug mode)
+            log.dir('Darkmode elements (fallback)', {
+              layer: darkmodeLayer,
+              background: darkmodeBackground,
+              isDarkModeActive
+            });
+          }
+        }, 300);
+      });
     </script>
   </body>
 </html>

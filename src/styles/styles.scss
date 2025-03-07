@@ -146,6 +146,19 @@ small {
 }
 
 // Dark Mode
+// Fix for darkmode.js layer when dark mode is not active
+body:not(.darkmode--activated) {
+  .darkmode-layer,
+  .darkmode-background {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    mix-blend-mode: normal !important;
+    // We're going to manage visibility and display via JavaScript
+    // to prevent conflicts with the toggle functionality
+  }
+}
+
+// Dark Mode Styles
 .darkmode--activated {
   color: #fff;
 

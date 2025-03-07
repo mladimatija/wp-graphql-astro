@@ -2,7 +2,7 @@
  * WordPress GraphQL API client
  * Provides functions for fetching data from WordPress via GraphQL
  */
-import { DEFAULT_APP_NAME, DEFAULT_APP_DESCRIPTION } from './constants';
+import { DEFAULT_APP_NAME, DEFAULT_APP_DESCRIPTION, log } from './constants';
 
 // Type definitions for GraphQL responses
 interface CacheEntry<T> {
@@ -210,18 +210,18 @@ async function executeQuery<T>(
   // Generate a cache key if not provided
   const finalCacheKey = cacheKey || `${query}${JSON.stringify(variables)}`;
   
-  console.log(`executeQuery called for ${cacheKey} (bypass cache: ${bypassCache})`);
+  log.debug(`executeQuery called for ${cacheKey} (bypass cache: ${bypassCache})`);
   
   // Check cache if not bypassing
   if (!bypassCache && queryCache.has(finalCacheKey)) {
     const { data, timestamp } = queryCache.get(finalCacheKey) as CacheEntry<T>;
     // Use cache if it's not expired
     if (Date.now() - timestamp < CACHE_DURATION) {
-      console.log(`Using cached data for ${cacheKey}, age: ${(Date.now() - timestamp) / 1000}s`);
+      log.debug(`Using cached data for ${cacheKey}, age: ${(Date.now() - timestamp) / 1000}s`);
       return data;
     }
     // Remove expired cache entry
-    console.log(`Cache expired for ${cacheKey}, fetching fresh data`);
+    log.debug(`Cache expired for ${cacheKey}, fetching fresh data`);
     queryCache.delete(finalCacheKey);
   }
   
@@ -232,34 +232,34 @@ async function executeQuery<T>(
       "Accept": "application/json"
     };
 
-    console.log("Preparing authentication headers...");
+    log.debug("Preparing authentication headers...");
     
     // Add authentication if environment variables are set
     // Method 1: Application Password (WordPress 5.6+)
     if (import.meta.env.WP_APP_USERNAME && import.meta.env.WP_APP_PASSWORD) {
       try {
-        console.log(`Using Basic Auth with username: ${import.meta.env.WP_APP_USERNAME}`);
+        log.debug(`Using Basic Auth with username: ${import.meta.env.WP_APP_USERNAME}`);
         // Use browser's btoa for compatibility
         const auth = typeof btoa === 'function'
             ? btoa(`${import.meta.env.WP_APP_USERNAME}:${import.meta.env.WP_APP_PASSWORD}`)
             : Buffer.from(`${import.meta.env.WP_APP_USERNAME}:${import.meta.env.WP_APP_PASSWORD}`).toString('base64');
 
         headers['Authorization'] = `Basic ${auth}`;
-        console.log("Added Basic Auth header for API request");
+        log.debug("Added Basic Auth header for API request");
       } catch (e) {
-        console.error("Error creating Basic Auth header:", e);
-        console.error("Error details:", e);
+        log.error("Error creating Basic Auth header:", e);
+        log.error("Error details:", e);
       }
     } else if (import.meta.env.WP_JWT_TOKEN) {
       // Method 2: JWT Authentication if using a JWT plugin
       headers['Authorization'] = `Bearer ${import.meta.env.WP_JWT_TOKEN}`;
-      console.log("Added JWT Auth header for API request");
+      log.debug("Added JWT Auth header for API request");
     } else if (import.meta.env.WP_AUTH_NONCE) {
       // Method 3: WPGraphQL Authentication plugin (nonce-based)
       headers['X-WP-Nonce'] = import.meta.env.WP_AUTH_NONCE;
-      console.log("Added WP Nonce header for API request");
+      log.debug("Added WP Nonce header for API request");
     } else {
-      console.log("No auth credentials found in environment variables");
+      log.debug("No auth credentials found in environment variables");
     }
     
     const fetchOptions: FetchOptions = {
@@ -275,40 +275,40 @@ async function executeQuery<T>(
     // Since we can't directly check for Astro, check if we're in a browser context
     if (typeof window === 'undefined') {
       fetchOptions.cache = bypassCache ? 'no-store' : 'force-cache';
-      console.log(`Using fetch cache policy: ${fetchOptions.cache}`);
+      log.debug(`Using fetch cache policy: ${fetchOptions.cache}`);
     } else {
-      console.log("Running in browser context, not setting fetch cache policy");
+      log.debug("Running in browser context, not setting fetch cache policy");
     }
     
-    console.log(`Fetching from WordPress API URL: ${import.meta.env.WORDPRESS_API_URL}`);
-    console.log("Headers:", Object.fromEntries(Object.entries(headers).map(([k, v]) => 
+    log.debug(`Fetching from WordPress API URL: ${import.meta.env.WORDPRESS_API_URL}`);
+    log.debug("Headers:", Object.fromEntries(Object.entries(headers).map(([k, v]) => 
       k === 'Authorization' ? [k, 'Basic ***'] : [k, v]
     )));
-    console.log("Request body length:", fetchOptions.body?.toString().length);
+    log.debug("Request body length:", fetchOptions.body?.toString().length);
     
     try {
-      console.log("Sending fetch request...");
+      log.debug("Sending fetch request...");
       const response = await fetch(import.meta.env.WORDPRESS_API_URL, fetchOptions);
       
-      console.log(`Response status: ${response.status} ${response.statusText}`);
-      console.log("Response headers:", Object.fromEntries([...response.headers.entries()]));
+      log.debug(`Response status: ${response.status} ${response.statusText}`);
+      log.debug("Response headers:", Object.fromEntries([...response.headers.entries()]));
       
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("Error response body:", errorText);
+        log.error("Error response body:", errorText);
         throw new Error(`GraphQL request failed: ${response.status} ${response.statusText}`);
       }
       
-      console.log("Response OK, parsing JSON...");
+      log.debug("Response OK, parsing JSON...");
       const result = await response.json() as GraphQLResponse<T>;
       
       // Check for GraphQL errors
       if (result.errors && result.errors.length) {
-        console.error("GraphQL result contains errors:", JSON.stringify(result.errors));
+        log.error("GraphQL result contains errors:", JSON.stringify(result.errors));
         throw new Error(`GraphQL errors: ${result.errors.map(e => e.message).join(', ')}`);
       }
       
-      console.log("GraphQL query successful");
+      log.debug("GraphQL query successful");
       
       // Cache the successful response
       queryCache.set(finalCacheKey, {
@@ -318,14 +318,14 @@ async function executeQuery<T>(
       
       return result.data;
     } catch (fetchError) {
-      console.error("Fetch operation failed:", fetchError);
-      console.error("Fetch error details:", JSON.stringify(fetchError));
+      log.error("Fetch operation failed:", fetchError);
+      log.error("Fetch error details:", JSON.stringify(fetchError));
       throw fetchError;
     }
   } catch (error) {
-    console.error(`GraphQL query error: ${(error as Error).message}`);
-    console.error("Full error:", error);
-    console.error("Stack trace:", error instanceof Error ? error.stack : "No stack trace available");
+    log.error(`GraphQL query error: ${(error as Error).message}`);
+    log.error("Full error:", error);
+    log.error("Stack trace:", error instanceof Error ? error.stack : "No stack trace available");
     throw error;
   }
 }
@@ -349,7 +349,7 @@ export async function settingsQuery(): Promise<SettingsResponse> {
     
     return await executeQuery<SettingsResponse>(query, {}, 'settings');
   } catch (error) {
-    console.error("Error fetching settings:", error);
+    log.error("Error fetching settings:", error);
     // Return fallback data for development
     return {
       generalSettings: {
@@ -387,7 +387,7 @@ export async function navQuery(): Promise<MenusResponse> {
     
     return await executeQuery<MenusResponse>(query, {}, 'navigation');
   } catch (error) {
-    console.error("Error fetching nav:", error);
+    log.error("Error fetching nav:", error);
     // Return fallback data for development
     return {
       menus: {
@@ -460,7 +460,7 @@ export async function getPosts($first: number = 20, $page: number = 1): Promise<
     // Pass both first and offset for proper pagination
     return await executeQuery<PostsResponse>(query, { first: $first, offset: $offset }, cacheKey);
   } catch (error) {
-    console.error("Error fetching posts:", error);
+    log.error("Error fetching posts:", error);
     // Return fallback data for development
     return {
       posts: {
@@ -558,7 +558,7 @@ export async function getPostsByCategory(
       cacheKey
     );
   } catch (error) {
-    console.error(`Error fetching posts for category ${$category}:`, error);
+    log.error(`Error fetching posts for category ${$category}:`, error);
     // Return fallback data for development
     return {
       category: {
@@ -715,7 +715,7 @@ export async function getNodeByURI(uri: string): Promise<NodeByUriResponse> {
     const bypassCache = true; // Always get fresh content when directly viewing a page
     return await executeQuery<NodeByUriResponse>(query, { uri }, `uri-${uri}`, bypassCache);
   } catch (error) {
-    console.error(`Error fetching node by URI ${uri}:`, error);
+    log.error(`Error fetching node by URI ${uri}:`, error);
     // Return fallback data for development
     return {
       nodeByUri: {
@@ -795,7 +795,7 @@ export async function getAllUris(): Promise<UriParams[]> {
           };
         });
   } catch (error) {
-    console.error("Error fetching all URIs:", error);
+    log.error("Error fetching all URIs:", error);
     // Return fallback data for development
     return [
       { params: { uri: "example-post-1" } },

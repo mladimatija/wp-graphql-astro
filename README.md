@@ -42,6 +42,7 @@ PUBLIC_DISQUS_EMBED_URL=https://siteid.disqus.com/embed.js
 PUBLIC_X_SHARE_USER=your_twitter_handle
 PUBLIC_SITE_URL=https://yoursitename.com
 PUBLIC_ANALYTICS_ENDPOINT=https://your-analytics-endpoint.com/collect # Optional - for Web Vitals data
+PUBLIC_DEBUG=true # Optional - enable verbose logging in development
 ```
 
 ## Getting Started
@@ -253,6 +254,46 @@ The Web Vitals monitor component:
 - Adapts to light and dark mode automatically
 - Is fully encapsulated with scoped CSS to prevent style leakage
 - Only loads when explicitly enabled or in development mode
+
+## Standardized Logging
+
+The project implements a centralized logging system that ensures consistent logging across all environments:
+
+### Log Utilities
+
+- **Server/API Logging**: Uses `log` utility from `src/lib/constants.ts`
+- **Client-Side Logging**: Uses `clientLog` utilities in Astro components
+- **Service Worker Logging**: Uses `swLog` utility for service worker context
+
+### Environment-Based Filtering
+
+Logs are automatically filtered based on the environment:
+
+- In development mode, all logs are displayed by default
+- In production, logs are suppressed unless explicitly enabled with `PUBLIC_DEBUG=true`
+- Error logs are always displayed to ensure critical issues are reported
+
+### Usage Examples
+
+```typescript
+// Server/API context
+import { log } from '../lib/constants';
+log.debug('Detailed information for debugging');
+log.info('General information about operation');
+log.warn('Warning that might need attention');
+log.error('Critical error that requires action');
+
+// Client-side context (in .astro files)
+const clientLog = {
+  debug: (msg) => isDev && console.log('[CLIENT DEBUG]', msg),
+  info: (msg) => isDev && console.log('[CLIENT INFO]', msg),
+  error: (msg, err) => console.error('[CLIENT ERROR]', msg, err || '')
+};
+
+// Service worker context
+swLog.info('Service worker information');
+swLog.error('Service worker error', errorObject);
+```
 
 ### Configuring Analytics Endpoint
 

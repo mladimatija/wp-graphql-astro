@@ -7,6 +7,113 @@
  */
 
 /**
+ * Logging utility for the application
+ * Logs will be displayed if:
+ * 1. The app is running in development mode (import.meta.env.DEV)
+ * 2. The PUBLIC_DEBUG environment variable is set to 'true'
+ * 3. The message is an error log
+ */
+
+interface LogOptions {
+  /**
+   * Force log to display regardless of environment
+   * @default false
+   */
+  force?: boolean;
+  
+  /**
+   * Mark this as an error log (always displayed)
+   * @default false
+   */
+  isError?: boolean;
+  
+  /**
+   * Log level (info, warn, error, debug)
+   * @default 'info'
+   */
+  level?: 'info' | 'warn' | 'error' | 'debug';
+}
+
+/**
+ * Conditionally log messages based on environment and options
+ */
+export const log = {
+  /**
+   * Log an informational message (only in DEV or if DEBUG=true)
+   */
+  info: (message: string | object, options: LogOptions = {}) => {
+    if (shouldLog(options)) {
+      console.info('[INFO]', message);
+    }
+  },
+  
+  /**
+   * Log a warning message (only in DEV or if DEBUG=true)
+   */
+  warn: (message: string | object, options: LogOptions = {}) => {
+    if (shouldLog({ ...options, level: 'warn' })) {
+      console.warn('[WARN]', message);
+    }
+  },
+  
+  /**
+   * Log an error message (always displayed)
+   */
+  error: (message: string | object, options: LogOptions = {}) => {
+    // Error logs are always displayed
+    console.error('[ERROR]', message);
+  },
+  
+  /**
+   * Log a debug message (only in DEV or if DEBUG=true)
+   */
+  debug: (message: string | object, options: LogOptions = {}) => {
+    if (shouldLog({ ...options, level: 'debug' })) {
+      console.debug('[DEBUG]', message);
+    }
+  },
+  
+  /**
+   * Log an object with label (only in DEV or if DEBUG=true)
+   */
+  dir: (label: string, obj: any, options: LogOptions = {}) => {
+    if (shouldLog(options)) {
+      console.group(label);
+      console.dir(obj);
+      console.groupEnd();
+    }
+  }
+};
+
+/**
+ * Determine if a log should be displayed based on environment and options
+ */
+function shouldLog(options: LogOptions = {}): boolean {
+  const { force = false, isError = false, level = 'info' } = options;
+  
+  // Always show error logs
+  if (isError || level === 'error') {
+    return true;
+  }
+  
+  // Always show forced logs
+  if (force) {
+    return true;
+  }
+  
+  // Check if we're in development mode
+  const isDev = typeof import.meta.env !== 'undefined' ? import.meta.env.DEV : false;
+  
+  // Check if debug is enabled via environment variable
+  const isDebugEnabled = typeof import.meta.env !== 'undefined' 
+    ? import.meta.env.PUBLIC_DEBUG === 'true'
+    : false;
+  
+  // Show logs in development or when debugging is enabled
+  return isDev || isDebugEnabled;
+}
+
+/**
  * Default application name
  * Used as fallback when WordPress title is not available
  */

@@ -13,6 +13,9 @@ interface ImportMetaEnv {
   readonly WP_APP_PASSWORD?: string;
   readonly WP_JWT_TOKEN?: string;
   readonly WP_AUTH_NONCE?: string;
+  
+  // Debug flag (optional)
+  readonly PUBLIC_DEBUG?: string;
 }
 
 interface ImportMeta {
