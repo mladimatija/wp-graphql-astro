@@ -30,7 +30,7 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
-    "astro": "^5.4.1",
+    "astro": "^5.4.2",
     "astro-seo": "^0.8.4",
     "darkmode-js": "^1.5.7",
     "http-server": "^14.1.1",
@@ -38,14 +38,14 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "string-strip-html": "^13.4.12",
-    "web-vitals": "^3.5.2"
+    "web-vitals": "^4.2.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
-    "@typescript-eslint/eslint-plugin": "^8.25.0",
-    "@typescript-eslint/parser": "^8.25.0",
+    "@typescript-eslint/eslint-plugin": "^8.26.0",
+    "@typescript-eslint/parser": "^8.26.0",
     "astro-eslint-parser": "^1.2.1",
     "autoprefixer": "^10.4.20",
     "cssnano": "^7.0.6",
@@ -60,13 +60,13 @@
     "postcss-import": "^16.1.0",
     "postcss-preset-env": "^10.1.5",
     "postcss-scss": "^4.0.9",
-    "prettier": "^3.5.2",
+    "prettier": "^3.5.3",
     "prettier-plugin-astro": "^0.14.1",
     "sass": "^1.85.1",
     "stylelint": "^16.15.0",
     "stylelint-config-recommended-scss": "^14.1.0",
     "stylelint-config-standard": "^37.0.0",
-    "typescript-eslint": "^8.25.0",
-    "vitest": "^3.0.7"
+    "typescript-eslint": "^8.26.0",
+    "vitest": "^3.0.8"
   }
 }

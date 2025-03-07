@@ -67,6 +67,8 @@ function formatMetricName(name: string): FormatMetricNameResult {
       return { full: 'First Contentful Paint', desc: 'Initial rendering' };
     case 'TTFB':
       return { full: 'Time to First Byte', desc: 'Server response time' };
+    case 'INP':
+      return { full: 'Interaction to Next Paint', desc: 'Input responsiveness' };
     default:
       return { full: name, desc: 'Performance metric' };
   }
