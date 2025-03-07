@@ -8,13 +8,11 @@ const API_CACHE = 'wp-graphql-astro-api-v1';
 // Assets to cache on install (critical assets for app shell)
 const PRECACHE_ASSETS = [
   '/',
-  '/index.html',
   '/favicon.svg',
   '/logo.png',
   '/manifest.json',
   '/404.webp',
-  '/offline.html',
-  '/css/styles.css'
+  '/offline.html'
 ];
 
 // Additional static assets to cache during use
@@ -35,7 +33,24 @@ self.addEventListener('install', event => {
     Promise.all([
       // Cache critical assets in main cache
       caches.open(CACHE_NAME)
-        .then(cache => cache.addAll(PRECACHE_ASSETS)),
+        .then(cache => {
+          // Add each asset individually to handle missing assets gracefully
+          const cachePromises = PRECACHE_ASSETS.map(url => {
+            return fetch(url)
+              .then(response => {
+                if (response.ok) {
+                  return cache.put(url, response);
+                }
+                console.warn(`Failed to cache asset: ${url}`);
+                return Promise.resolve(); // Continue regardless of failure
+              })
+              .catch(error => {
+                console.warn(`Failed to fetch asset for caching: ${url}`, error);
+                return Promise.resolve(); // Continue regardless of failure
+              });
+          });
+          return Promise.all(cachePromises);
+        }),
       
       // Pre-create other caches
       caches.open(CONTENT_CACHE),
@@ -148,14 +163,35 @@ self.addEventListener('fetch', event => {
           return response;
         })
         .catch(async () => {
-          // Try to get from cache first
-          const cachedResponse = await caches.match(event.request);
-          if (cachedResponse) {
-            return cachedResponse;
+          console.log('Navigation fetch failed, falling back to cache for:', event.request.url);
+          
+          try {
+            // Try to get from cache first
+            const cachedResponse = await caches.match(event.request);
+            if (cachedResponse) {
+              console.log('Returning cached version of:', event.request.url);
+              return cachedResponse;
+            }
+          } catch (error) {
+            console.warn('Error trying to match cache:', error);
           }
           
           // If not in cache, return the offline page
-          return caches.match('/offline.html');
+          console.log('No cached version found, returning offline page');
+          try {
+            const offlinePage = await caches.match('/offline.html');
+            if (offlinePage) {
+              return offlinePage;
+            }
+          } catch (error) {
+            console.warn('Error retrieving offline page:', error);
+          }
+          
+          // Last resort fallback
+          return new Response('You are offline and the offline page is not available.', {
+            status: 503,
+            headers: { 'Content-Type': 'text/plain' }
+          });
         })
     );
     return;
