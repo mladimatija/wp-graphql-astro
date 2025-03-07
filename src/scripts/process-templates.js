@@ -8,12 +8,10 @@ import { fileURLToPath } from 'url';
 
 // Import constants and logging utilities
 import { 
-  DEFAULT_APP_NAME, 
-  DEFAULT_APP_SHORT_NAME, 
+  DEFAULT_APP_NAME,
   DEFAULT_APP_DESCRIPTION,
-  DEFAULT_THEME_COLOR,
-  DEFAULT_BG_COLOR,
   log
+// eslint-disable-next-line import/extensions
 } from '../lib/constants.js';
 
 // Get the directory name
@@ -57,6 +55,7 @@ filesToProcess.forEach(file => {
     log.info(`Processed ${path.basename(file.path)} successfully!`);
   } catch (error) {
     log.error(`Error processing ${path.basename(file.path)}: ${error}`);
+    // eslint-disable-next-line no-undef
     process.exit(1);
   }
 });

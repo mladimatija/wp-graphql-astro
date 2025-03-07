@@ -59,7 +59,7 @@ export const log = {
   /**
    * Log an error message (always displayed)
    */
-  error: (message: string | object, options: LogOptions = {}) => {
+  error: (message: string | object) => {
     // Error logs are always displayed
     console.error('[ERROR]', message);
   },
@@ -76,7 +76,7 @@ export const log = {
   /**
    * Log an object with label (only in DEV or if DEBUG=true)
    */
-  dir: (label: string, obj: any, options: LogOptions = {}) => {
+  dir: (label: string, obj: unknown, options: LogOptions = {}) => {
     if (shouldLog(options)) {
       console.group(label);
       console.dir(obj);

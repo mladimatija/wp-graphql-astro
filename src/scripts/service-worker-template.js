@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * Service Worker for PWA functionality
  * 

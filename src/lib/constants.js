@@ -63,11 +63,13 @@ export const DEFAULT_ICONS = [
 
 // Helper function to determine if logging should be displayed
 function shouldLog() {
+  /* eslint-disable no-undef */
   // Check if we're in development mode
-  const isDev = process.env.NODE_ENV === 'development';
+  const isDev = typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'development';
   
   // Check if debug is enabled via environment variable
-  const isDebugEnabled = process.env.DEBUG === 'true';
+  const isDebugEnabled = typeof process !== 'undefined' && process.env && process.env.DEBUG === 'true';
+  /* eslint-enable no-undef */
   
   // Show logs in development or when debugging is enabled
   return isDev || isDebugEnabled;

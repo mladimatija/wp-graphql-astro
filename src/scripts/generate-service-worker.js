@@ -11,6 +11,7 @@ import fetch from 'cross-fetch';
 import * as dotenv from 'dotenv';
 
 // Import logging utility
+// eslint-disable-next-line import/extensions
 import { log } from '../lib/constants.js';
 
 // Load environment variables
@@ -45,12 +46,15 @@ async function getSiteNameFromWordPress() {
       'Content-Type': 'application/json'
     };
     
-    if (process.env.WP_APP_USERNAME && process.env.WP_APP_PASSWORD) {
+    // eslint-disable-next-line no-undef
+    if (typeof process !== 'undefined' && process.env && process.env.WP_APP_USERNAME && process.env.WP_APP_PASSWORD) {
+      // eslint-disable-next-line no-undef
       const auth = Buffer.from(`${process.env.WP_APP_USERNAME}:${process.env.WP_APP_PASSWORD}`).toString('base64');
       headers['Authorization'] = `Basic ${auth}`;
     }
     
     log.info("Fetching site name from WordPress...");
+    // eslint-disable-next-line no-undef
     const response = await fetch(process.env.WORDPRESS_API_URL, {
       method: 'POST',
       headers,
@@ -83,7 +87,9 @@ async function getSiteNameFromWordPress() {
  */
 async function getCachePrefix() {
   // First try from environment variable
-  if (process.env.PUBLIC_SITE_NAME) {
+  // eslint-disable-next-line no-undef
+  if (typeof process !== 'undefined' && process.env && process.env.PUBLIC_SITE_NAME) {
+    // eslint-disable-next-line no-undef
     const siteName = process.env.PUBLIC_SITE_NAME
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
@@ -94,8 +100,10 @@ async function getCachePrefix() {
   }
   
   // Then try extracting from PUBLIC_SITE_URL if available
-  if (process.env.PUBLIC_SITE_URL) {
+  // eslint-disable-next-line no-undef
+  if (typeof process !== 'undefined' && process.env && process.env.PUBLIC_SITE_URL) {
     try {
+      // eslint-disable-next-line no-undef
       const url = new URL(process.env.PUBLIC_SITE_URL);
       const hostname = url.hostname
         .replace('www.', '')
