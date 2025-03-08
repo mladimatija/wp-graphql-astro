@@ -2,10 +2,16 @@
 dist/
 .astro/
 .netlify/
+.output/
+.vercel/
+.cloudflare/
 
 # Dependencies
 node_modules/
 package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
 
 # Logs
 logs
@@ -31,16 +37,27 @@ coverage/
 # OS specific files
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
 .idea/
+.vim/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*.swp
+*.swo
+.sublime-workspace
+.sublime-project
+.atom/
+.editorconfig
+*.sublime-*
 
 # Temporary files
 temp/
@@ -48,3 +65,7 @@ tmp/
 
 # Cache
 .cache/
+.turbo/
+
+# Build artifacts
+*.tsbuildinfo
