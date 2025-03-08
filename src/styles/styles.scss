@@ -1,8 +1,10 @@
-// Main Stylesheet
-@use "config/variables.scss" as vars;
+// Main Stylesheet - All @use statements must come first
+@use "config/variables" as vars;
 @use "abstracts/functions/rem" as *;
+@use "common/view-transitions" as *;
 
-// Vendor
+// Note: Some imports need to remain as @import until migrated
+// For npm packages like normalize.css, we can keep using @import
 @import "normalize.css/normalize.css";
 @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
 
@@ -89,14 +91,6 @@ embed, iframe, object, img {
       margin: vars.$spacing-md 0 vars.$spacing-xs;
     }
   }
-}
-
-.single .entry-footer {
-  border-top: vars.$border-width solid vars.$color-border;
-}
-
-.updated:not(.published) {
-  display: none;
 }
 
 small {

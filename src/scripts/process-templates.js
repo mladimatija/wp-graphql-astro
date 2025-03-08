@@ -4,15 +4,10 @@
  */
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import {fileURLToPath} from 'url';
 
 // Import constants and logging utilities
-import { 
-  DEFAULT_APP_NAME,
-  DEFAULT_APP_DESCRIPTION,
-  log
-// eslint-disable-next-line import/extensions
-} from '../lib/constants.js';
+import {DEFAULT_APP_DESCRIPTION, DEFAULT_APP_NAME, log} from '../lib/constants';
 
 // Get the directory name
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -41,10 +36,8 @@ const filesToProcess = [
 filesToProcess.forEach(file => {
   try {
     // Read the template file
-    const templateContent = fs.readFileSync(file.path, 'utf8');
-    
     // Apply all replacements
-    let processedContent = templateContent;
+    let processedContent = fs.readFileSync(file.path, 'utf8');
     for (const [placeholder, value] of Object.entries(file.replacements)) {
       processedContent = processedContent.replaceAll(placeholder, value);
     }
@@ -55,7 +48,6 @@ filesToProcess.forEach(file => {
     log.info(`Processed ${path.basename(file.path)} successfully!`);
   } catch (error) {
     log.error(`Error processing ${path.basename(file.path)}: ${error}`);
-    // eslint-disable-next-line no-undef
     process.exit(1);
   }
 });

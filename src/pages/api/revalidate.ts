@@ -58,7 +58,7 @@ export const POST: APIRoute = async ({ request/*, locals*/ }) => {
           
           return { path: normalizedPath, success: true };
         } catch (error) {
-          log.error(`Error revalidating ${path}:`, error);
+          log.error(`Error revalidating ${path}: ` + error);
           return { path, success: false, error: (error as Error).message };
         }
       })
@@ -76,7 +76,7 @@ export const POST: APIRoute = async ({ request/*, locals*/ }) => {
       }
     );
   } catch (error) {
-    log.error('Revalidation error:', error);
+    log.error('Revalidation error: ' + error);
     
     return new Response(
       JSON.stringify({ 

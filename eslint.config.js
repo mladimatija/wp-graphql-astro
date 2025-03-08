@@ -2,16 +2,7 @@ import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import importPlugin from 'eslint-plugin-import';
 import astroPlugin from 'eslint-plugin-astro';
-
-const browserGlobals = {
-    document: 'readonly',
-    navigator: 'readonly',
-    window: 'readonly',
-    console: 'readonly',
-    fetch: 'readonly',
-    HTMLElement: 'readonly',
-    customElements: 'readonly',
-};
+import globals from 'globals';
 
 export default [
     {
@@ -31,7 +22,43 @@ export default [
         languageOptions: {
             ecmaVersion: 2023,
             sourceType: 'module',
-            globals: browserGlobals,
+            globals: {
+                // Add custom globals that might be missing from predefined lists
+                RequestInit: 'readonly',
+                ReadableStream: 'readonly',
+                Response: 'readonly',
+                Request: 'readonly',
+                Headers: 'readonly',
+                FormData: 'readonly',
+                Blob: 'readonly',
+                File: 'readonly',
+                URLSearchParams: 'readonly',
+                AbortController: 'readonly',
+                AbortSignal: 'readonly',
+                
+                // Include predefined global variables from ESLint globals
+                // Filter out any globals with leading/trailing whitespace
+                ...Object.entries(globals.browser)
+                    .reduce((acc, [key, value]) => {
+                        const trimmedKey = key.trim();
+                        if (trimmedKey === key) acc[key] = value;
+                        return acc;
+                    }, {}),
+                    
+                ...Object.entries(globals.node)
+                    .reduce((acc, [key, value]) => {
+                        const trimmedKey = key.trim();
+                        if (trimmedKey === key) acc[key] = value;
+                        return acc;
+                    }, {}),
+                    
+                ...Object.entries(globals.es2021)
+                    .reduce((acc, [key, value]) => {
+                        const trimmedKey = key.trim();
+                        if (trimmedKey === key) acc[key] = value;
+                        return acc;
+                    }, {}),
+            },
         },
         plugins: {
             import: importPlugin,
@@ -45,11 +72,17 @@ export default [
                 astro: 'never',
             }],
             'no-underscore-dangle': 'off',
+            'no-undef': ['error', { 'typeof': true }],
         },
         settings: {
             'import/resolver': {
                 node: {
                     extensions: ['.js', '.jsx', '.ts', '.tsx', '.astro'],
+                    paths: ['src'],
+                    // Configure alias
+                    alias: {
+                        '@': './src'
+                    }
                 },
             },
         },
@@ -62,7 +95,43 @@ export default [
           astro: astroPlugin,
         },
         languageOptions: {
-          globals: browserGlobals,
+          globals: {
+            // Add custom globals that might be missing from predefined lists
+            RequestInit: 'readonly',
+            ReadableStream: 'readonly',
+            Response: 'readonly',
+            Request: 'readonly',
+            Headers: 'readonly',
+            FormData: 'readonly',
+            Blob: 'readonly',
+            File: 'readonly',
+            URLSearchParams: 'readonly',
+            AbortController: 'readonly',
+            AbortSignal: 'readonly',
+            
+            // Include predefined global variables from ESLint globals
+            // Filter out any globals with leading/trailing whitespace
+            ...Object.entries(globals.browser)
+                .reduce((acc, [key, value]) => {
+                    const trimmedKey = key.trim();
+                    if (trimmedKey === key) acc[key] = value;
+                    return acc;
+                }, {}),
+                
+            ...Object.entries(globals.node)
+                .reduce((acc, [key, value]) => {
+                    const trimmedKey = key.trim();
+                    if (trimmedKey === key) acc[key] = value;
+                    return acc;
+                }, {}),
+                
+            ...Object.entries(globals.es2021)
+                .reduce((acc, [key, value]) => {
+                    const trimmedKey = key.trim();
+                    if (trimmedKey === key) acc[key] = value;
+                    return acc;
+                }, {}),
+          },
           parser: astroPlugin.parser,
           parserOptions: {
             parser: '@typescript-eslint/parser',

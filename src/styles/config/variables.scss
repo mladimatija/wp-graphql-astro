@@ -75,6 +75,18 @@ $transition-duration-slow: 0.5s;
 $transition-timing-default: ease;
 $transition-timing-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 
+/* View Transitions API Variables */
+:root {
+  --transition-duration: #{$transition-duration-normal};
+  --transition-easing: #{$transition-timing-smooth};
+  --page-transition-duration: #{$transition-duration-normal};
+  --page-transition-old: fade-out;
+  --page-transition-new: fade-in;
+  --image-transition-duration: #{$transition-duration-slow};
+  --header-transition-duration: #{$transition-duration-normal};
+  --content-transition-duration: #{$transition-duration-normal};
+}
+
 /* Breakpoints */
 $breakpoint-xs: 480px;
 $breakpoint-sm: 640px;

@@ -16,8 +16,26 @@ interface ImportMetaEnv {
   
   // Debug flag (optional)
   readonly PUBLIC_DEBUG?: string;
+  
+  // Revalidation token
+  readonly REVALIDATE_TOKEN?: string;
 }
 
 interface ImportMeta {
   readonly env: ImportMetaEnv;
+}
+
+// Add View Transitions API types
+// These extend the Document interface to include View Transitions API methods
+interface Document {
+  startViewTransition?: (callback: () => Promise<void> | void) => {
+    ready: Promise<void>;
+    finished: Promise<void>;
+    updateCallbackDone: Promise<void>;
+    skipTransition: () => void;
+  };
+}
+
+interface CSSStyleDeclaration {
+  viewTransitionName?: string;
 }

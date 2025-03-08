@@ -247,8 +247,7 @@ async function executeQuery<T>(
         headers['Authorization'] = `Basic ${auth}`;
         log.debug("Added Basic Auth header for API request");
       } catch (e) {
-        log.error("Error creating Basic Auth header:", e);
-        log.error("Error details:", e);
+        log.error("Error creating Basic Auth header: " + e);
       }
     } else if (import.meta.env.WP_JWT_TOKEN) {
       // Method 2: JWT Authentication if using a JWT plugin
@@ -281,10 +280,10 @@ async function executeQuery<T>(
     }
     
     log.debug(`Fetching from WordPress API URL: ${import.meta.env.WORDPRESS_API_URL}`);
-    log.debug("Headers:", Object.fromEntries(Object.entries(headers).map(([k, v]) => 
+    log.debug("Headers: " + Object.fromEntries(Object.entries(headers).map(([k, v]) => 
       k === 'Authorization' ? [k, 'Basic ***'] : [k, v]
     )));
-    log.debug("Request body length:", fetchOptions.body?.toString().length);
+    log.debug("Request body length: " + fetchOptions.body?.toString().length);
     
     try {
       log.debug("Sending fetch request...");
@@ -295,7 +294,7 @@ async function executeQuery<T>(
       
       if (!response.ok) {
         const errorText = await response.text();
-        log.error("Error response body:", errorText);
+        log.error("Error response body: " + errorText);
         throw new Error(`GraphQL request failed: ${response.status} ${response.statusText}`);
       }
       
@@ -304,7 +303,7 @@ async function executeQuery<T>(
       
       // Check for GraphQL errors
       if (result.errors && result.errors.length) {
-        log.error("GraphQL result contains errors:", JSON.stringify(result.errors));
+        log.error("GraphQL result contains errors: " + JSON.stringify(result.errors));
         throw new Error(`GraphQL errors: ${result.errors.map(e => e.message).join(', ')}`);
       }
       
@@ -318,14 +317,11 @@ async function executeQuery<T>(
       
       return result.data;
     } catch (fetchError) {
-      log.error("Fetch operation failed:", fetchError);
-      log.error("Fetch error details:", JSON.stringify(fetchError));
+      log.error("Fetch operation failed: " + fetchError);
       throw fetchError;
     }
   } catch (error) {
     log.error(`GraphQL query error: ${(error as Error).message}`);
-    log.error("Full error:", error);
-    log.error("Stack trace:", error instanceof Error ? error.stack : "No stack trace available");
     throw error;
   }
 }
@@ -349,7 +345,7 @@ export async function settingsQuery(): Promise<SettingsResponse> {
     
     return await executeQuery<SettingsResponse>(query, {}, 'settings');
   } catch (error) {
-    log.error("Error fetching settings:", error);
+    log.error("Error fetching settings: " + error);
     // Return fallback data for development
     return {
       generalSettings: {
@@ -387,7 +383,7 @@ export async function navQuery(): Promise<MenusResponse> {
     
     return await executeQuery<MenusResponse>(query, {}, 'navigation');
   } catch (error) {
-    log.error("Error fetching nav:", error);
+    log.error("Error fetching nav: " + error);
     // Return fallback data for development
     return {
       menus: {
@@ -460,7 +456,7 @@ export async function getPosts($first: number = 20, $page: number = 1): Promise<
     // Pass both first and offset for proper pagination
     return await executeQuery<PostsResponse>(query, { first: $first, offset: $offset }, cacheKey);
   } catch (error) {
-    log.error("Error fetching posts:", error);
+    log.error("Error fetching posts: " + error);
     // Return fallback data for development
     return {
       posts: {
@@ -558,7 +554,7 @@ export async function getPostsByCategory(
       cacheKey
     );
   } catch (error) {
-    log.error(`Error fetching posts for category ${$category}:`, error);
+    log.error(`Error fetching posts for category ${$category}: ` + error);
     // Return fallback data for development
     return {
       category: {
@@ -715,7 +711,7 @@ export async function getNodeByURI(uri: string): Promise<NodeByUriResponse> {
     const bypassCache = true; // Always get fresh content when directly viewing a page
     return await executeQuery<NodeByUriResponse>(query, { uri }, `uri-${uri}`, bypassCache);
   } catch (error) {
-    log.error(`Error fetching node by URI ${uri}:`, error);
+    log.error(`Error fetching node by URI ${uri}: ` + error);
     // Return fallback data for development
     return {
       nodeByUri: {
@@ -795,7 +791,7 @@ export async function getAllUris(): Promise<UriParams[]> {
           };
         });
   } catch (error) {
-    log.error("Error fetching all URIs:", error);
+    log.error("Error fetching all URIs: " + error);
     // Return fallback data for development
     return [
       { params: { uri: "example-post-1" } },

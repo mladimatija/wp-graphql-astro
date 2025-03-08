@@ -42,13 +42,26 @@
     },
     {
       "src": "/favicon.svg",
-      "sizes": "48x48 72x72 96x96 128x128 256x256",
+      "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
       "src": "/logo.png",
-      "sizes": "192x192",
+      "sizes": "149x149",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://wp.matijaculjak.com/wp-content/uploads/2016/05/cropped-matija-culjak-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "https://wp.matijaculjak.com/wp-content/uploads/2016/05/matija-culjak-logo.png",
+      "sizes": "1200x628",
       "type": "image/png"
     }
   ]

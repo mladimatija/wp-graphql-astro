@@ -127,17 +127,17 @@ showFeaturedImagesOnPostCard: true
 
 ### Available Configuration Options
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `defaultTitle` | string | Default page title |
-| `titleTemplate` | string | Format for page titles |
-| `description` | string | Default meta description |
-| `siteUrl` | string | Base URL of the website |
-| `ogImage` | string | Default Open Graph image |
-| `twitterHandle` | string | Twitter handle for cards |
-| `twitterCardType` | string | Twitter card format |
-| `showFeaturedImages` | boolean | Show featured images on single posts/pages |
-| `showFeaturedImagesOnPostCard` | boolean | Show featured images on post listings |
+| Option                         | Type    | Description                                |
+|--------------------------------|---------|--------------------------------------------|
+| `defaultTitle`                 | string  | Default page title                         |
+| `titleTemplate`                | string  | Format for page titles                     |
+| `description`                  | string  | Default meta description                   |
+| `siteUrl`                      | string  | Base URL of the website                    |
+| `ogImage`                      | string  | Default Open Graph image                   |
+| `twitterHandle`                | string  | Twitter handle for cards                   |
+| `twitterCardType`              | string  | Twitter card format                        |
+| `showFeaturedImages`           | boolean | Show featured images on single posts/pages |
+| `showFeaturedImagesOnPostCard` | boolean | Show featured images on post listings      |
 
 ## Pagination
 

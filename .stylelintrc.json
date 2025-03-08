@@ -13,11 +13,21 @@
     "no-descending-specificity": null,
     "no-duplicate-selectors": true,
     "font-family-no-missing-generic-family-keyword": null,
-    "property-no-unknown": null,
+    "property-no-unknown": [
+      true,
+      { "ignoreProperties": ["view-transition-name"] }
+    ],
     "property-no-vendor-prefix": null,
     "selector-pseudo-class-no-unknown": [
       true,
-      { "ignorePseudoClasses": ["global"] }
+      { "ignorePseudoClasses": [
+        "global", 
+        "view-transition", 
+        "view-transition-group", 
+        "view-transition-image-pair", 
+        "view-transition-new", 
+        "view-transition-old"
+      ] }
     ],
     "function-no-unknown": null,
     "declaration-property-value-no-unknown": null,
@@ -32,7 +42,8 @@
     "import-notation": null,
     "selector-class-pattern": [".*", {}],
     "scss/function-no-unknown": true,
-    "scss/at-extend-no-missing-placeholder": null
+    "scss/at-extend-no-missing-placeholder": null,
+    "scss/load-partial-extension": null
   },
   "ignoreFiles": ["node_modules/*", "dist/*"],
   "defaultSeverity": "error",

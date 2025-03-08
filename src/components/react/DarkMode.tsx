@@ -8,7 +8,7 @@ declare global {
         a11yManager?: {
             announce: (message: string, assertive?: boolean) => void;
         };
-        darkmode?: any; // To store the darkmode instance globally
+        darkmode?: any; // To store the dark mode instance globally
         resetDarkMode?: () => void; // Helper function to fix dark mode layer issues
     }
 }

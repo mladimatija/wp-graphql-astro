@@ -81,7 +81,7 @@ export function initWebVitals() {
     onTTFB(sendToAnalytics); // Time to First Byte
     onINP(sendToAnalytics);  // Interaction to Next Paint (new in v4)
   } catch (error) {
-    log.error('Failed to initialize Web Vitals:', error);
+    log.error('Failed to initialize Web Vitals: ' + error);
   }
 }
 
@@ -121,7 +121,7 @@ export async function getWebVitalsMetrics() {
       onTTFB(saveMetric);
       onINP(saveMetric); // New in v4
     } catch (error) {
-      log.error('Failed to get Web Vitals metrics:', error);
+      log.error('Failed to get Web Vitals metrics: ' + error);
       resolve({});
     }
   });
