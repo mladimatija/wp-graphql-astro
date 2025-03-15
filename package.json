@@ -24,7 +24,7 @@
     "generate-sw": "node src/scripts/generate-service-worker.js"
   },
   "dependencies": {
-    "@astrojs/netlify": "^6.2.2",
+    "@astrojs/netlify": "^6.2.3",
     "@astrojs/react": "^4.2.1",
     "@astrojs/sitemap": "^3.2.1",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
@@ -33,7 +33,7 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
-    "astro": "^5.4.2",
+    "astro": "^5.5.2",
     "astro-seo": "^0.8.4",
     "darkmode-js": "^1.5.7",
     "dotenv": "^16.4.7",
@@ -48,10 +48,10 @@
     "@eslint/js": "^9.22.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
-    "@typescript-eslint/eslint-plugin": "^8.26.0",
-    "@typescript-eslint/parser": "^8.26.0",
+    "@typescript-eslint/eslint-plugin": "^8.26.1",
+    "@typescript-eslint/parser": "^8.26.1",
     "astro-eslint-parser": "^1.2.1",
-    "autoprefixer": "^10.4.20",
+    "autoprefixer": "^10.4.21",
     "cross-fetch": "^4.1.0",
     "cssnano": "^7.0.6",
     "eslint": "^9.22.0",
@@ -61,7 +61,7 @@
     "globals": "^16.0.0",
     "jsdom": "^26.0.0",
     "postcss": "^8.5.3",
-    "postcss-cli": "^11.0.0",
+    "postcss-cli": "^11.0.1",
     "postcss-html": "^1.8.0",
     "postcss-import": "^16.1.0",
     "postcss-preset-env": "^10.1.5",
@@ -69,10 +69,10 @@
     "prettier": "^3.5.3",
     "prettier-plugin-astro": "^0.14.1",
     "sass": "^1.85.1",
-    "stylelint": "^16.15.0",
+    "stylelint": "^16.16.0",
     "stylelint-config-recommended-scss": "^14.1.0",
     "stylelint-config-standard": "^37.0.0",
-    "typescript-eslint": "^8.26.0",
+    "typescript-eslint": "^8.26.1",
     "vitest": "^3.0.8"
   }
 }
