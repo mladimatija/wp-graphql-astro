@@ -47,9 +47,10 @@ export const DEFAULT_ICONS = [
     purpose: "any"
   },
   {
-    src: "/logo.png",
+    src: "/logo.svg",
     sizes: "192x192",
-    type: "image/png"
+    type: "image/svg+xml",
+    purpose: "any"
   }
 ];
 

@@ -55,7 +55,7 @@ const API_CACHE = 'wp-graphql-astro-api-v1';
 const PRECACHE_ASSETS = [
   '/',
   '/favicon.svg',
-  '/logo.png',
+  '/logo.svg',
   '/manifest.json',
   '/404.webp',
   '/offline.html'
@@ -65,13 +65,13 @@ const PRECACHE_ASSETS = [
 const PWA_ASSETS = [
   '/manifest.json',
   '/favicon.svg',
-  '/logo.png'
+  '/logo.svg'
 ];
 
 // Map of URLs that might be requested from the manifest
 const MANIFEST_ASSET_MAP = {
   '/api/manifest.json': '/manifest.json',
-  '/api/logo.png': '/logo.png',
+  '/api/logo.svg': '/logo.svg',
   '/api/favicon.svg': '/favicon.svg'
 };
 
@@ -386,7 +386,7 @@ self.addEventListener('fetch', event => {
               swLog.error('Fetching failed:', error);
               // For images, we could return a fallback image
               if (event.request.destination === 'image') {
-                return caches.match('/logo.png');
+                return caches.match('/logo.svg');
               }
               
               throw error;
@@ -556,7 +556,7 @@ self.addEventListener('push', event => {
     const data = event.data.json();
     const options = {
       body: data.body || 'New content is available',
-      icon: data.icon || '/logo.png',
+      icon: data.icon || '/logo.svg',
       badge: data.badge || '/favicon.svg',
       data: data.data || {},
       actions: data.actions || []
@@ -570,7 +570,7 @@ self.addEventListener('push', event => {
     event.waitUntil(
       self.registration.showNotification('New Update', {
         body: event.data.text(),
-        icon: '/logo.png'
+        icon: '/logo.svg'
       })
     );
   }

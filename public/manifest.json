@@ -23,18 +23,6 @@
       "purpose": "any"
     },
     {
-      "src": "https://wp.matijaculjak.com/wp-content/uploads/2014/11/Logos-Edit-e1395028343477.png",
-      "sizes": "800x592",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "https://wp.matijaculjak.com/wp-content/uploads/2014/06/Oxidian-logo.png",
-      "sizes": "243x113",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
       "src": "https://wp.matijaculjak.com/wp-content/uploads/2014/04/logo-matija-culjak.png",
       "sizes": "1250x471",
       "type": "image/png",
@@ -47,9 +35,10 @@
       "purpose": "any"
     },
     {
-      "src": "/logo.png",
+      "src": "/logo.svg",
       "sizes": "149x149",
-      "type": "image/png"
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ],
   "screenshots": [

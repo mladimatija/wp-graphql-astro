@@ -477,7 +477,7 @@ export async function getPosts($first: number = 20, $page: number = 1): Promise<
               },
               featuredImage: {
                 node: {
-                  mediaItemUrl: "/logo.png",
+                  mediaItemUrl: "/logo.svg",
                   altText: "Example image"
                 }
               }
@@ -578,7 +578,7 @@ export async function getPostsByCategory(
                 content: "<p>This is sample post content in a category.</p>",
                 featuredImage: {
                   node: {
-                    mediaItemUrl: "/logo.png",
+                    mediaItemUrl: "/logo.svg",
                     altText: "Example image"
                   }
                 }
@@ -733,7 +733,7 @@ export async function getNodeByURI(uri: string): Promise<NodeByUriResponse> {
         },
         featuredImage: {
           node: {
-            mediaItemUrl: "/logo.png",
+            mediaItemUrl: "/logo.svg",
             altText: "Fallback image"
           }
         },

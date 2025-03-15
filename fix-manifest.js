@@ -39,9 +39,10 @@ const DEFAULT_ICONS = [
         purpose: "any"
     },
     {
-        src: "/logo.png",
+        src: "/logo.svg",
         sizes: "192x192",
-        type: "image/png"
+        type: "image/svg+xml",
+        purpose: "any"
     }
 ];
 
@@ -146,9 +147,10 @@ async function generateManifest() {
             purpose: "any"
         },
         {
-            src: "/logo.png",
+            src: "/logo.svg",
             sizes: "149x149",
-            type: "image/png"
+            type: "image/svg+xml",
+            purpose: "any"
         }
     ];
 
