@@ -39,8 +39,8 @@ const primaryMenu = menus.nodes[0];
   // Simple inline logging utility for client-side code
   const clientLog = {
     warn: (message) => {
-      const isDev = import.meta.env.DEV;
-      const isDebugEnabled = import.meta.env.PUBLIC_DEBUG === 'true';
+      const isDev = document.documentElement.dataset.dev === 'true';
+      const isDebugEnabled = document.documentElement.dataset.debug === 'true';
       if (isDev || isDebugEnabled) {
         console.warn('[WARN]', message);
       }

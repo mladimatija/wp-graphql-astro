@@ -133,7 +133,21 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
     {showWebVitals && <WebVitalsMonitor client:idle showByDefault={false} />}
     
     <!-- Register service worker, initialize Web Vitals, and handle page transitions -->
-    <script client:load>
+    <script client:load define:vars={{ isDev: import.meta.env.DEV, isDebugEnabled: import.meta.env.PUBLIC_DEBUG === 'true' }}>
+      // Define client-side logging utility
+      const clientLog = {
+        info: (message) => {
+          // Only log in development or when debugging is enabled
+          if (isDev || isDebugEnabled) {
+            console.info('[INFO]', message);
+          }
+        },
+        error: (message) => {
+          // Always log errors
+          console.error('[ERROR]', message);
+        }
+      };
+      
       // Show loading spinner on page navigation
       document.addEventListener('astro:before-preparation', () => {
         document.getElementById('page-loader').classList.add('active');
@@ -168,7 +182,7 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/service-worker.js').then(registration => {
             // Only log in DEV or DEBUG mode
-            log.info('SW registered successfully');
+            clientLog.info('SW registered successfully');
             
             // Listen for updates
             registration.addEventListener('updatefound', () => {
@@ -186,7 +200,7 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
             });
           }).catch(error => {
             // Always log errors
-            log.error('SW registration failed: ' + error);
+            clientLog.error('SW registration failed: ' + error);
           });
         });
       }
@@ -201,7 +215,7 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
             // Fallback if resetDarkMode is not available yet
             const isDarkModeActive = document.body.classList.contains('darkmode--activated');
             // Use conditional logging based on environment
-            log.debug('Fallback darkmode fix, isDarkModeActive: ' + isDarkModeActive);
+            clientLog.info('Fallback darkmode fix, isDarkModeActive: ' + isDarkModeActive);
             
             // Handle both possible class names
             const darkmodeLayer = document.querySelector('.darkmode-layer');
@@ -230,11 +244,15 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
             }
             
             // Log the elements found for debugging (only in dev/debug mode)
-            log.dir('Darkmode elements (fallback)', {
-              layer: darkmodeLayer,
-              background: darkmodeBackground,
-              isDarkModeActive
-            });
+            if (isDev || isDebugEnabled) {
+              console.group('Darkmode elements (fallback)');
+              console.dir({
+                layer: darkmodeLayer,
+                background: darkmodeBackground,
+                isDarkModeActive
+              });
+              console.groupEnd();
+            }
           }
         }, 300);
       });

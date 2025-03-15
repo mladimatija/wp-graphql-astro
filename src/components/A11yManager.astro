@@ -10,6 +10,12 @@
   <div id="a11y-focus-trap" tabindex="-1"></div>
 </div>
 
+<!-- Pass environment variables to the client -->
+<script>
+  document.documentElement.dataset.dev = import.meta.env.DEV;
+  document.documentElement.dataset.debug = import.meta.env.PUBLIC_DEBUG === 'true';
+</script>
+
 <script client:load>
   class A11yManager {
     constructor() {
@@ -145,8 +151,8 @@
     // Simple inline logging utility for client-side code
     const clientLog = {
       warn: (message, element) => {
-        const isDev = import.meta.env.DEV;
-        const isDebugEnabled = import.meta.env.PUBLIC_DEBUG === 'true';
+        const isDev = document.documentElement.dataset.dev === 'true';
+        const isDebugEnabled = document.documentElement.dataset.debug === 'true';
         if (isDev || isDebugEnabled) {
           console.warn('[WARN]', message, element);
         }
