@@ -11,7 +11,8 @@ import fetch from 'cross-fetch';
 import * as dotenv from 'dotenv';
 
 // Import logging utility
-import { log } from '../lib/constants';
+// eslint-disable-next-line import/extensions
+import { log } from '../lib/constants.js';
 
 // Load environment variables
 dotenv.config();

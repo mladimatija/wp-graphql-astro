@@ -7,7 +7,8 @@ import path from 'path';
 import {fileURLToPath} from 'url';
 
 // Import constants and logging utilities
-import {DEFAULT_APP_DESCRIPTION, DEFAULT_APP_NAME, log} from '../lib/constants';
+// eslint-disable-next-line import/extensions
+import {DEFAULT_APP_DESCRIPTION, DEFAULT_APP_NAME, log} from '../lib/constants.js';
 
 // Get the directory name
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
