@@ -9,15 +9,48 @@ interface Props {
       nodes: PostProps[];
     };
   };
-  page: Page;
+  page?: {
+    currentPage: number;
+    url: {
+      prev: string;
+      next: string;
+    };
+    lastPage: number;
+  };
 }
 
 import PostCard from "../PostCard.astro";
-import { getPostsByCategory } from "../../lib/api";
-import { PostProps } from "./Single.astro";
-import { Page } from "astro";
-const { node } = Astro.props;
-const data = await getPostsByCategory(node.slug);
+import Pagination from "../Pagination.astro";
+import { getPostsByCategory, settingsQuery } from "../../lib/api";
+import type { Props as PostProps } from "./Single.astro";
+
+const { node, page } = Astro.props;
+const { allSettings } = await settingsQuery();
+const postsPerPage = allSettings.readingSettingsPostsPerPage || 10;
+
+// Get the current page from URL or use default
+const currentPage = page?.currentPage || 1;
+
+// For categories, fetch posts with pagination
+// For tags; the posts are already included in the node
+const data = node.__typename === "Category" 
+  ? await getPostsByCategory(node.slug, postsPerPage, currentPage)
+  : { category: node };
+
+// Calculate total pages for pagination
+const totalPosts = data?.category?.posts?.pageInfo?.total || 0;
+const totalPages = Math.ceil(totalPosts / postsPerPage);
+
+// Create pagination URLs
+const baseUrl = `/${node.slug}`;
+const paginationData = {
+  currentPage,
+  lastPage: totalPages,
+  url: {
+    prev: currentPage > 1 ? (currentPage === 2 ? baseUrl : `${baseUrl}/page/${currentPage - 1}`) : null,
+    next: currentPage < totalPages ? `${baseUrl}/page/${currentPage + 1}` : null
+  }
+};
 ---
 
 <div class="header">
@@ -28,6 +61,11 @@ const data = await getPostsByCategory(node.slug);
 
 <main role="main">
   <div class="posts">
-    {data?.category?.posts?.edges.map((post) => <PostCard post={post.node} />)}
+    {node.__typename === "Category" && data?.category?.posts?.edges.map((post) => <PostCard post={post.node} />)}
+    {node.__typename === "Tag" && node?.posts?.nodes.map((post) => <PostCard post={post} />)}
   </div>
+  
+  {node.__typename === "Category" && totalPages > 1 && (
+    <Pagination page={paginationData} />
+  )}
 </main>

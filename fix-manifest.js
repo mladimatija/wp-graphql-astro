@@ -65,7 +65,7 @@ const query = `{
     url
     language
   }
-  mediaItems(first: 5, where: {search: "logo"}) {
+  mediaItems(first: 2, where: {search: "matija-culjak-logo"}) {
     nodes {
       id
       mediaItemUrl
@@ -159,7 +159,8 @@ async function generateManifest() {
         const logoImages = wpData?.mediaItems.nodes.filter(
             node => node.mimeType.startsWith('image/') &&
                 node.mediaDetails?.width &&
-                node.mediaDetails?.height
+                node.mediaDetails?.height &&
+                node.mediaItemUrl.includes('matija-culjak-logo') // Only include specific logos
         );
 
         if (logoImages.length > 0) {

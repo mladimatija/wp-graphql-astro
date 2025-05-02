@@ -4,7 +4,7 @@ import ContactForm from "../ContactForm.astro";
 import PostMeta from "../PostMeta.astro";
 import PostPagination from "../PostPagination.astro";
 
-interface Props {
+export interface Props {
     post: {
         id: string;
         postId: number;
@@ -41,9 +41,6 @@ interface Props {
             uri: string;
         };
     };
-}
-
-interface Props {
     node: any;
 }
 

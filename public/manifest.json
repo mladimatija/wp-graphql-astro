@@ -23,12 +23,6 @@
       "purpose": "any"
     },
     {
-      "src": "https://wp.matijaculjak.com/wp-content/uploads/2014/04/logo-matija-culjak.png",
-      "sizes": "1250x471",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
       "src": "/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",

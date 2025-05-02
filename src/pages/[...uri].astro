@@ -4,29 +4,22 @@ import Archive from "../components/templates/Archive.astro";
 import Single from "../components/templates/Single.astro";
 import { getNodeByURI, getAllUris } from "../lib/api";
 
-// Dynamic rendering for posts and content from WordPress
-export const prerender = false;
+// Static rendering for all posts and content from WordPress
+export const prerender = true;
 
 // Astro dynamic routing pattern
 const uri = `/${Astro.params.uri}/`;
 const data = await getNodeByURI(uri);
 const node = data.nodeByUri;
 
-// Get static paths for static site generation (homepage and other crucial pages)
+// Get static paths for static site generation (all pages and posts)
 export async function getStaticPaths() {
-  const allPaths = await getAllUris();
-  
-  // Filter to only prerender specific critical pages to save build time
-  // For a full static site, you could return all paths
-  return allPaths.filter(path => {
-    const uri = path.params.uri;
-    return uri === '' || // homepage
-        uri === 'about' ||
-        uri === 'contact';
-  });
+  // Return all paths without filtering to generate every page and post
+  // This ensures the entire site is pre-rendered at build time
+  return await getAllUris();
 }
 
-// Determine which template to use based on content type
+// Determine which template to use based on the content type
 function resolveContentTemplate(node) {
   let template;
   switch (node?.__typename) {
@@ -52,7 +45,7 @@ function resolveContentTemplate(node) {
 // Resolve the appropriate template component
 const Template = resolveContentTemplate(node);
 
-// Handle case of node not found
+// Handle case of a node not found
 if (!node) {
   return Astro.redirect('/404');
 }

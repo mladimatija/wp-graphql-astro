@@ -193,9 +193,16 @@ interface CategoryPostsResponse {
 const queryCache = new Map<string, CacheEntry<unknown>>();
 
 /**
- * Cache duration in milliseconds (5 minutes)
+ * Cache duration in milliseconds
+ * - 30 minutes for build-time operations
+ * - 5 minutes for runtime operations
  */
-const CACHE_DURATION = 5 * 60 * 1000;
+const RUNTIME_CACHE_DURATION = 5 * 60 * 1000;
+const BUILD_CACHE_DURATION = 30 * 60 * 1000;
+
+// Determine if we're in a build context
+const IS_BUILD_CONTEXT = typeof process !== 'undefined' && process.env.NODE_ENV === 'production';
+const CACHE_DURATION = IS_BUILD_CONTEXT ? BUILD_CACHE_DURATION : RUNTIME_CACHE_DURATION;
 
 /**
  * Execute a GraphQL query with caching
@@ -314,6 +321,13 @@ async function executeQuery<T>(
         data: result.data,
         timestamp: Date.now()
       });
+      
+      // Log the total number of entries when running getAllUris query
+      if (finalCacheKey === 'all-uris') {
+        const totalEntries = Object.values(result.data)
+          .reduce((count, value: never) => count + (value.nodes?.length || 0), 0);
+        log.debug(`Total URIs fetched for static paths: ${totalEntries}`);
+      }
       
       return result.data;
     } catch (fetchError) {
@@ -497,8 +511,7 @@ export async function getPosts($first: number = 20, $page: number = 1): Promise<
 /**
  * Get posts by category from WordPress with pagination support
  * 
- * @requires WPGraphQL Offset Pagination plugin (https://github.com/valu-digital/wp-graphql-offset-pagination)
- * This function uses the offsetPagination argument which requires the plugin to be installed on WordPress.
+ * Uses standard WPGraphQL cursor-based pagination
  */
 export async function getPostsByCategory(
   $category: string, 
@@ -506,14 +519,50 @@ export async function getPostsByCategory(
   $page: number = 1
 ): Promise<CategoryPostsResponse> {
   try {
-    // Calculate offset for pagination
-    const $offset = ($page - 1) * $first;
+    // Calculate cursor for pagination if not on first page
+    // We'll fetch the cursor in a separate query if needed
+    let afterCursor = null;
     
-    const query = `query GET_POSTS_BY_CATEGORY($category: ID!, $first: Int, $offset: Int) {
+    // If we're requesting beyond the first page, we need to get the cursor
+    if ($page > 1) {
+      // First get the cursor at the position we need
+      const cursorIndex = ($page - 1) * $first - 1; // Position of the last item on the previous page
+      
+      // Get the cursor for pagination
+      const cursorQuery = `query GET_CURSOR($category: ID!) {
+        category(id: $category, idType: SLUG) {
+          posts(first: ${cursorIndex + 1}) {
+            edges {
+              cursor
+            }
+          }
+        }
+      }`;
+      
+      try {
+        const cursorData = await executeQuery(
+          cursorQuery, 
+          { category: $category },
+          `cursor-${$category}-${cursorIndex}`
+        );
+        
+        // Get the last cursor
+        if (cursorData?.category?.posts?.edges?.[cursorIndex]) {
+          afterCursor = cursorData.category.posts.edges[cursorIndex].cursor;
+          log.debug(`Using cursor for page ${$page}: ${afterCursor}`);
+        }
+      } catch (cursorError) {
+        log.error(`Error getting cursor for pagination: ${cursorError}`);
+        // If we fail to get the cursor, we'll just try to get the first page
+      }
+    }
+    
+    // Build our main query, using the cursor if we have one
+    const query = `query GET_POSTS_BY_CATEGORY($category: ID!, $first: Int, $after: String) {
       category(id: $category, idType: SLUG) {
         name
         slug
-        posts(where: { offsetPagination: { offset: $offset, size: $first } }) {
+        posts(first: $first, after: $after) {
           edges {
             node {
               id
@@ -550,7 +599,11 @@ export async function getPostsByCategory(
     
     return await executeQuery<CategoryPostsResponse>(
       query, 
-      { category: $category, first: $first, offset: $offset }, 
+      { 
+        category: $category, 
+        first: $first,
+        after: afterCursor
+      }, 
       cacheKey
     );
   } catch (error) {
@@ -749,6 +802,8 @@ export async function getNodeByURI(uri: string): Promise<NodeByUriResponse> {
  */
 export async function getAllUris(): Promise<UriParams[]> {
   try {
+    // Using WPGraphQL's pagination to fetch all content without limits
+    // We're explicitly requesting a very high number to ensure we get everything
     const query = `query GetAllUris {
       terms {
         nodes {
@@ -760,12 +815,12 @@ export async function getAllUris(): Promise<UriParams[]> {
           uri
         }
       }            
-      posts(first: 100) {
+      posts(first: 1000) {
         nodes {
           uri
         }
       }
-      pages(first: 100) {
+      pages(first: 1000) {
         nodes {
           uri
         }
@@ -773,7 +828,8 @@ export async function getAllUris(): Promise<UriParams[]> {
     }`;
     
     // Use a long cache duration for this query as it's only used during build
-    const data = await executeQuery<AllUrisResponse>(query, {}, 'all-uris');
+    // Setting bypassCache to false to ensure we don't overwhelm the API during builds
+    const data = await executeQuery<AllUrisResponse>(query, {}, 'all-uris', false);
     
     // Process the URIs
     return Object.values(data)

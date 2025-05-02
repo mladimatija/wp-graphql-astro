@@ -4,6 +4,9 @@ import { log } from '../../lib/constants';
 /**
  * API endpoint to revalidate pages on-demand
  * Used by WordPress webhooks to trigger rebuilds when content changes
+ * 
+ * POST: Accepts webhook requests with paths to revalidate
+ * GET: Returns a friendly message explaining usage
  */
 export const POST: APIRoute = async ({ request/*, locals*/ }) => {
   try {
@@ -90,4 +93,29 @@ export const POST: APIRoute = async ({ request/*, locals*/ }) => {
       }
     );
   }
+};
+
+/**
+ * GET handler that explains how to use the revalidation endpoint
+ */
+export const GET: APIRoute = async () => {
+  return new Response(
+    JSON.stringify({
+      message: 'This endpoint requires a POST request with a JSON body and proper authentication',
+      usage: {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-revalidate-token': 'your-token-here'
+        },
+        body: {
+          paths: ['/path-to-revalidate', '/another-path']
+        }
+      }
+    }),
+    {
+      status: 405,
+      headers: { 'Content-Type': 'application/json' }
+    }
+  );
 };

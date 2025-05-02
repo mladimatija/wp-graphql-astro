@@ -122,7 +122,7 @@ describe('API Functions', () => {
         expect(result.posts.pageInfo.total).toBe(10);
     });
 
-    it('getPostsByCategory fetches posts for a specific category', async () => {
+    it('getPostsByCategory fetches posts for a specific category with pagination', async () => {
         const result = await getPostsByCategory('test-category', 20, 1);
 
         expect(getPostsByCategory).toHaveBeenCalledWith('test-category', 20, 1);

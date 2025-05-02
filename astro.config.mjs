@@ -5,8 +5,8 @@ import netlify from "@astrojs/netlify";
 
 // https://astro.build/config
 export default defineConfig({
-  site: import.meta.env.PUBLIC_SITE_URL,
-  output: "server", // Always use server output mode for consistent behavior
+  site: process.env.PUBLIC_SITE_URL,
+  output: "static", // Changed from server to static for build-time rendering
   integrations: [
     react(), 
     sitemap({

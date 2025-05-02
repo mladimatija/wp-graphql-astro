@@ -22,7 +22,7 @@ const getBreadCrumbs = (node) => {
     }
   }
 
-  out += node.title;
+  out += node.title || '';
 
   return out;
 };

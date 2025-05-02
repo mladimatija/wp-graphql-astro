@@ -4,7 +4,7 @@ A modern headless WordPress implementation using [Astro](https://astro.build/) a
 
 ## Features
 
-- Server-side rendering with Astro
+- Static site generation with Astro
 - WordPress content management through GraphQL
 - Responsive design with SCSS
 - Dark mode support with automatic system preference detection
@@ -29,8 +29,9 @@ Your WordPress installation needs these plugins:
 - [WPGraphQL](https://www.wpgraphql.com/docs/introduction) - GraphQL API for WordPress
 - [Total Counts for WPGraphQL](https://github.com/builtbycactus/total-counts-for-wp-graphql) - Adds total post counts
 - [WPGraphQL Next-Previous Post](https://github.com/valu-digital/wp-graphql-next-previous-post) - Adds navigation between posts
-- [WPGraphQL Offset Pagination](https://github.com/valu-digital/wp-graphql-offset-pagination) - **REQUIRED** for pagination
 - [JAMstack Deployments](https://github.com/crgeary/wp-jamstack-deployments) (optional) - For automatic builds
+
+For pagination support, the standard WPGraphQL cursor-based pagination is used, with no additional plugins required.
 
 ### Environment Variables
 
@@ -91,13 +92,14 @@ src/
 
 ## Routing and Templates
 
-The `[...uri].astro` component handles WordPress route paths:
+The `[...uri].astro` component handles WordPress route paths with static pre-rendering:
 
-1. A route is requested (e.g., `/blog/my-post/`)
-2. The `[...uri].astro` component captures the URI
+1. At build time, `getAllUris` generates static paths for all content
+2. For each path, the `[...uri].astro` component captures the URI
 3. `getNodeByURI` fetches data from WordPress GraphQL
 4. Content type is determined (Post, Page, Category, etc.)
 5. The appropriate template is rendered
+6. For categories and tags, pagination routes are also pre-generated
 
 To add support for custom post types:
 
@@ -141,13 +143,13 @@ showFeaturedImagesOnPostCard: true
 
 ## Pagination
 
-The app uses WPGraphQL Offset Pagination for handling pagination in the WordPress GraphQL API. The implementation in `src/lib/api.js` uses the `offsetPagination` argument:
+The app uses standard WPGraphQL cursor-based pagination for handling pagination in the WordPress GraphQL API. The implementation in `src/lib/api.ts` uses the standard `first` and `after` parameters:
 
 ```graphql
-posts(where: { offsetPagination: { offset: $offset, size: $first } })
+posts(first: $first, after: $after)
 ```
 
-This requires the WPGraphQL Offset Pagination plugin.
+For more complex pagination scenarios like category archives, the implementation fetches cursor positions as needed to navigate to specific pages.
 
 ## Data Fetching
 
@@ -178,7 +180,7 @@ The project uses SCSS with a structured approach:
 
 ## Deployment
 
-The project is configured for Netlify with server-side rendering:
+The project is configured for Netlify with static site generation:
 
 1. Connect your repository
 2. Set build command to `npm run build`
@@ -186,11 +188,12 @@ The project is configured for Netlify with server-side rendering:
 4. Add your environment variables (WORDPRESS_API_URL, PUBLIC_SITE_URL, etc)
 5. Ensure the Netlify adapter is configured in `astro.config.mjs` (already included)
 
-The project can also be deployed on other platforms that support SSR:
+The project can also be deployed on other platforms:
 
 - **Vercel**: Replace the Netlify adapter with Vercel adapter
 - **Cloudflare**: Use the Cloudflare adapter
 - **Node.js**: Use the Node adapter for traditional hosting
+- **Static hosting**: The default build produces static files that can be hosted anywhere
 
 ## Development Workflow
 
@@ -323,7 +326,7 @@ The site supports Progressive Web App (PWA) capabilities with a dynamic manifest
 
 This project uses a build-time manifest generation approach for its Progressive Web App features:
 
-1. The manifest.json is generated during the build process using data from WordPress
+1. The manifest.json is generated during the build process using data from WordPress (specifically looking for logo images)
 2. The `fix-manifest.js` script fetches site data from WordPress GraphQL API
 3. The generated manifest is placed in both `public/` and `dist/` directories
 4. The service worker includes dynamically generated cache names based on site identity
@@ -339,7 +342,7 @@ The manifest generator fetches data from WordPress during the build process:
     description  # Used for manifest description
     language     # Used for manifest language
   }
-  mediaItems {   # Used for PWA icons
+  mediaItems(where: {search: "logo"}) {   # Used for PWA icons
     nodes {
       mediaItemUrl
       mimeType
@@ -394,6 +397,13 @@ Required PWA assets are located in the `/public` directory:
 - `favicon.svg` - Vector icon used for app icons
 - `logo.png` - 192x192 PNG icon
 - `offline.html` - Offline fallback page
+
+## API Routes
+
+The application includes API routes:
+
+- `/api/revalidate` - Webhook endpoint for triggering rebuilds (accepts POST requests with security token)
+- `/api/manifest.json` - Route that redirects to the static manifest.json file
 
 ## License
 
