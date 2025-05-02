@@ -179,7 +179,7 @@ body:not(.darkmode--activated) {
 
     a, a[data-astro-cid-pux6a34n] {
       color: #fff !important;
-      border-left-color: rgba(255, 255, 255, 0);
+      border-left-color: rgb(255 255 255 / 0);
 
       &:hover,
       &:active,
@@ -295,7 +295,7 @@ body:not(.darkmode--activated) {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: rgb(255 255 255 / 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -305,7 +305,7 @@ body:not(.darkmode--activated) {
   transition: opacity 0.3s ease;
 
   .darkmode--activated & {
-    background-color: rgba(25, 34, 38, 0.7);
+    background-color: rgb(25 34 38 / 0.7);
   }
 
   &.active {
@@ -316,7 +316,7 @@ body:not(.darkmode--activated) {
   .spinner {
     width: 50px;
     height: 50px;
-    border: 5px solid rgba(0, 0, 0, 0.1);
+    border: 5px solid rgb(0 0 0 / 0.1);
     border-radius: 50%;
     border-top-color: vars.$color-blue;
     animation: spin 1s ease-in-out infinite;
