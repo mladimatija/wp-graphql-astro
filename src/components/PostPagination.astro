@@ -2,69 +2,69 @@
 import { PostProps } from "./templates/Single.astro";
 
 interface Props {
-  post: PostProps["post"];
+	post: PostProps["post"];
 }
 
 const { post } = Astro.props;
 ---
 
 <div class="post-pagination">
-  <p>
-    You've reached end of the line but you can check out some of the other
-    articles I wrote:
-  </p>
+	<p>
+		You've reached end of the line but you can check out some of the other
+		articles I wrote:
+	</p>
 
-  <div class="post-pagination-container">
-    {
-      post.previous && (
-        <div class="post-pagination-prev">
-          <span>«</span>
-          <a href={post.previous.uri} rel="prev">
-            {post.previous.title}
-          </a>
-        </div>
-      )
-    }
+	<div class="post-pagination-container">
+		{
+			post.previous && (
+				<div class="post-pagination-prev">
+					<span>«</span>
+					<a href={post.previous.uri} rel="prev">
+						{post.previous.title}
+					</a>
+				</div>
+			)
+		}
 
-    {
-      post.next && (
-        <div class="post-pagination-next">
-          <a href={post.next.uri} rel="next">
-            {post.next.title}
-          </a>
-          <span>»</span>
-        </div>
-      )
-    }
-  </div>
+		{
+			post.next && (
+				<div class="post-pagination-next">
+					<a href={post.next.uri} rel="next">
+						{post.next.title}
+					</a>
+					<span>»</span>
+				</div>
+			)
+		}
+	</div>
 </div>
 
 <style>
-  .post-pagination {
-    margin: var(--size-30px) 0;
-  }
+	.post-pagination {
+		margin: var(--size-30px) 0;
+	}
 
-  .post-pagination p {
-    margin: var(--size-30px) 0;
-    font-weight: bold;
-    text-align: center;
-  }
+	.post-pagination p {
+		margin: var(--size-30px) 0;
+		font-weight: bold;
+		text-align: center;
+	}
 
-  .post-pagination-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10%;
-  }
+	.post-pagination-container {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10%;
+	}
 
-  .post-pagination-container > * {
-    flex-basis: 45%;
-  }
+	.post-pagination-container > * {
+		flex-basis: 45%;
+	}
 
-  .post-pagination-prev {
-    text-align: left;
-  }
+	.post-pagination-prev {
+		text-align: left;
+	}
 
-  .post-pagination-next {
-    text-align: right;
-  }
+	.post-pagination-next {
+		text-align: right;
+	}
 </style>

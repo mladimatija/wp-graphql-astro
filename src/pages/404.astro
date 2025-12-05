@@ -3,20 +3,20 @@ import MainLayout from "../layouts/MainLayout.astro";
 ---
 
 <MainLayout showFooter={false}>
-  <main role="main">
-    <div class="error-page">
-      <img src="/404.webp" alt="404 error" />
-      <p>
-        Oh boy, the page you're looking for doesn't seem to exist. Luckily, you
-        got lost on this website and not on the trails :)
-      </p>
-    </div>
-  </main>
+	<main role="main">
+		<div class="error-page">
+			<img src="/404.webp" alt="404 error" />
+			<p>
+				Oh boy, the page you're looking for doesn't seem to exist. Luckily, you
+				got lost on this website and not on the trails :)
+			</p>
+		</div>
+	</main>
 </MainLayout>
 
 <style>
-  .error-page p {
-    margin-top: var(--size-30px);
-    text-align: center;
-  }
+	.error-page p {
+		margin-top: var(--size-30px);
+		text-align: center;
+	}
 </style>

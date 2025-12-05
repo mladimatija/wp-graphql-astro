@@ -17,56 +17,63 @@ const node = data.nodeByUri;
 
 // Determine how many category pages to generate at build time
 export async function getStaticPaths() {
-  // Get all categories
-  const uris = await getAllUris();
-  const { allSettings } = await settingsQuery();
-  const postsPerPage = allSettings.readingSettingsPostsPerPage || 10;
-  
-  // Filter for category URIs
-  const categoryUris = uris
-    .filter(uri => uri.params.uri.startsWith('category/'))
-    .map(uri => ({
-      slug: uri.params.uri.split('/')[1] // Extract the category slug
-    }));
-  
-  // Generate paths for each category (up to 5 pages)
-  // This limit is to avoid excessive pages at build time
-  // Runtime rendering will handle any pages beyond this
-  const maxPagesToGenerate = 5;
-  
-  const paths = [];
-  
-  for (const category of categoryUris) {
-    for (let i = 2; i <= maxPagesToGenerate; i++) {
-      paths.push({
-        params: { 
-          slug: category.slug,
-          page: i.toString()
-        }
-      });
-    }
-  }
-  
-  return paths;
+	// Get all categories
+	const uris = await getAllUris();
+	const { allSettings } = await settingsQuery();
+	const postsPerPage = allSettings.readingSettingsPostsPerPage || 10;
+
+	// Filter for category URIs
+	const categoryUris = uris
+		.filter((uri) => uri.params.uri.startsWith("category/"))
+		.map((uri) => ({
+			slug: uri.params.uri.split("/")[1], // Extract the category slug
+		}));
+
+	// Generate paths for each category (up to 5 pages)
+	// This limit is to avoid excessive pages at build time
+	// Runtime rendering will handle any pages beyond this
+	const maxPagesToGenerate = 5;
+
+	const paths = [];
+
+	for (const category of categoryUris) {
+		for (let i = 2; i <= maxPagesToGenerate; i++) {
+			paths.push({
+				params: {
+					slug: category.slug,
+					page: i.toString(),
+				},
+			});
+		}
+	}
+
+	return paths;
 }
 
 // If node not found, redirect to 404
 if (!node) {
-  return Astro.redirect('/404');
+	return Astro.redirect("/404");
 }
 
 // Create page object for pagination component
 const pageData = {
-  currentPage: pageNumber,
-  url: {
-    prev: pageNumber > 2 ? `/${slug}/page/${pageNumber - 1}` : (pageNumber === 2 ? `/${slug}` : null),
-    next: `/${slug}/page/${pageNumber + 1}`
-  },
-  lastPage: 10 // This is a placeholder, the actual value is determined in the Archive component
+	currentPage: pageNumber,
+	url: {
+		prev:
+			pageNumber > 2
+				? `/${slug}/page/${pageNumber - 1}`
+				: pageNumber === 2
+					? `/${slug}`
+					: null,
+		next: `/${slug}/page/${pageNumber + 1}`,
+	},
+	lastPage: 10, // This is a placeholder, the actual value is determined in the Archive component
 };
-
 ---
 
-<MainLayout title={`${node.name} - Page ${pageNumber}`} description={`Page ${pageNumber} of posts in ${node.name} category`}>
-  <Archive node={node} page={pageData} />
+<MainLayout
+	title={`${node.name} - Page ${pageNumber}`}
+	description={`Page ${pageNumber} of posts in ${node.name} category`}
+>
+	<Archive node={node} page={pageData} />
 </MainLayout>

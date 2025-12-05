@@ -1,8 +1,8 @@
 ---
-import type { CollectionEntry } from 'astro:content';
+import type { CollectionEntry } from "astro:content";
 
 interface Props {
-  component: CollectionEntry<'components'>;
+	component: CollectionEntry<"components">;
 }
 
 const { component } = Astro.props;
@@ -10,124 +10,129 @@ const { data } = component.data;
 ---
 
 <section class="newsletter-cta" aria-labelledby="newsletter-heading">
-  <div class="newsletter-content">
-    <h2 id="newsletter-heading">{data.headline}</h2>
-    <p>{data.subheadline}</p>
-    
-    <form class="newsletter-form" method="post" action="/api/newsletter" netlify>
-      <div class="form-group">
-        <label for="email" class="sr-only">Email address</label>
-        <input 
-          type="email" 
-          id="email" 
-          name="email" 
-          placeholder={data.placeholder}
-          required
-          aria-required="true"
-          autocomplete="email"
-        />
-      </div>
-      
-      <button type="submit">{data.buttonText}</button>
-    </form>
-    
-    <p class="privacy-notice">
-      We respect your privacy. Unsubscribe at any time.
-    </p>
-  </div>
+	<div class="newsletter-content">
+		<h2 id="newsletter-heading">{data.headline}</h2>
+		<p>{data.subheadline}</p>
+
+		<form
+			class="newsletter-form"
+			method="post"
+			action="/api/newsletter"
+			netlify
+		>
+			<div class="form-group">
+				<label for="email" class="sr-only">Email address</label>
+				<input
+					type="email"
+					id="email"
+					name="email"
+					placeholder={data.placeholder}
+					required
+					aria-required="true"
+					autocomplete="email"
+				/>
+			</div>
+
+			<button type="submit">{data.buttonText}</button>
+		</form>
+
+		<p class="privacy-notice">
+			We respect your privacy. Unsubscribe at any time.
+		</p>
+	</div>
 </section>
 
 <style>
-  .newsletter-cta {
-    background-color: #f5f7fa;
-    border-radius: 8px;
-    padding: 2.5rem;
-    margin: 3rem 0;
-    text-align: center;
-  }
+	.newsletter-cta {
+		background-color: #f5f7fa;
+		border-radius: 8px;
+		padding: 2.5rem;
+		margin: 3rem 0;
+		text-align: center;
+	}
 
-  .newsletter-content {
-    max-width: 500px;
-    margin: 0 auto;
-  }
+	.newsletter-content {
+		max-width: 500px;
+		margin: 0 auto;
+	}
 
-  h2 {
-    font-size: 1.75rem;
-    margin-bottom: 0.75rem;
-    color: #2c3e50;
-  }
+	h2 {
+		font-size: 1.75rem;
+		margin-bottom: 0.75rem;
+		color: #2c3e50;
+	}
 
-  p {
-    color: #556575;
-    margin-bottom: 1.5rem;
-    line-height: 1.5;
-  }
+	p {
+		color: #556575;
+		margin-bottom: 1.5rem;
+		line-height: 1.5;
+	}
 
-  .newsletter-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin: 1.5rem 0;
-  }
+	.newsletter-form {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		margin: 1.5rem 0;
+	}
 
-  .form-group {
-    flex: 1;
-  }
+	.form-group {
+		flex: 1;
+	}
 
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-    border-width: 0;
-  }
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+		border-width: 0;
+	}
 
-  input {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-  }
+	input {
+		width: 100%;
+		padding: 0.75rem 1rem;
+		border: 1px solid #ddd;
+		border-radius: 4px;
+		font-size: 1rem;
+	}
 
-  button {
-    background-color: #4a76c4;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
+	button {
+		background-color: #4a76c4;
+		color: #fff;
+		border: none;
+		border-radius: 4px;
+		padding: 0.75rem 1.5rem;
+		font-size: 1rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background-color 0.2s ease;
+	}
 
-  button:hover {
-    background-color: #3a66b4;
-  }
+	button:hover {
+		background-color: #3a66b4;
+	}
 
-  button:focus {
-    outline: 2px solid #3a66b4;
-    outline-offset: 2px;
-  }
+	button:focus {
+		outline: 2px solid #3a66b4;
+		outline-offset: 2px;
+	}
 
-  .privacy-notice {
-    font-size: 0.875rem;
-    color: #718096;
-    margin-top: 1rem;
-  }
+	.privacy-notice {
+		font-size: 0.875rem;
+		color: #718096;
+		margin-top: 1rem;
+	}
 
-  @media (min-width: 640px) {
-    .newsletter-form {
-      flex-direction: row;
-    }
+	@media (min-width: 640px) {
+		.newsletter-form {
+			flex-direction: row;
+		}
 
-    button {
-      flex-shrink: 0;
-    }
-  }
+		button {
+			flex-shrink: 0;
+		}
+	}
 </style>

@@ -22,7 +22,7 @@ export const DEFAULT_APP_SHORT_NAME = "WP Astro";
  * Used as fallback when WordPress description is not available
  */
 export const DEFAULT_APP_DESCRIPTION =
-  "A modern headless WordPress implementation using Astro and GraphQL";
+	"A modern headless WordPress implementation using Astro and GraphQL";
 
 /**
  * Default theme color
@@ -41,18 +41,18 @@ export const DEFAULT_BG_COLOR = "#ffffff";
  * Used for service worker and manifest
  */
 export const DEFAULT_ICONS = [
-  {
-    src: "/favicon.svg",
-    sizes: "48x48 72x72 96x96 128x128 256x256",
-    type: "image/svg+xml",
-    purpose: "any",
-  },
-  {
-    src: "/logo.svg",
-    sizes: "192x192",
-    type: "image/svg+xml",
-    purpose: "any",
-  },
+	{
+		src: "/favicon.svg",
+		sizes: "48x48 72x72 96x96 128x128 256x256",
+		type: "image/svg+xml",
+		purpose: "any",
+	},
+	{
+		src: "/logo.svg",
+		sizes: "192x192",
+		type: "image/svg+xml",
+		purpose: "any",
+	},
 ];
 
 /**
@@ -65,51 +65,51 @@ export const DEFAULT_ICONS = [
 
 // Helper function to determine if logging should be displayed
 function shouldLog() {
-  // Check if we're in development mode
-  const isDev =
-    typeof process !== "undefined" &&
-    process.env &&
-    process.env.NODE_ENV === "development";
+	// Check if we're in development mode
+	const isDev =
+		typeof process !== "undefined" &&
+		process.env &&
+		process.env.NODE_ENV === "development";
 
-  // Check if debug is enabled via environment variable
-  const isDebugEnabled =
-    typeof process !== "undefined" &&
-    process.env &&
-    process.env.DEBUG === "true";
+	// Check if debug is enabled via environment variable
+	const isDebugEnabled =
+		typeof process !== "undefined" &&
+		process.env &&
+		process.env.DEBUG === "true";
 
-  // Show logs in development or when debugging is enabled
-  return isDev || isDebugEnabled;
+	// Show logs in development or when debugging is enabled
+	return isDev || isDebugEnabled;
 }
 
 export const log = {
-  info: (message) => {
-    if (shouldLog()) {
-      console.info("[INFO]", message);
-    }
-  },
+	info: (message) => {
+		if (shouldLog()) {
+			console.info("[INFO]", message);
+		}
+	},
 
-  warn: (message) => {
-    if (shouldLog()) {
-      console.warn("[WARN]", message);
-    }
-  },
+	warn: (message) => {
+		if (shouldLog()) {
+			console.warn("[WARN]", message);
+		}
+	},
 
-  error: (message) => {
-    // Error logs are always displayed
-    console.error("[ERROR]", message);
-  },
+	error: (message) => {
+		// Error logs are always displayed
+		console.error("[ERROR]", message);
+	},
 
-  debug: (message) => {
-    if (shouldLog()) {
-      console.debug("[DEBUG]", message);
-    }
-  },
+	debug: (message) => {
+		if (shouldLog()) {
+			console.debug("[DEBUG]", message);
+		}
+	},
 
-  dir: (label, obj) => {
-    if (shouldLog()) {
-      console.group(label);
-      console.dir(obj);
-      console.groupEnd();
-    }
-  },
+	dir: (label, obj) => {
+		if (shouldLog()) {
+			console.group(label);
+			console.dir(obj);
+			console.groupEnd();
+		}
+	},
 };

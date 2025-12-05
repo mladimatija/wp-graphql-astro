@@ -5,50 +5,50 @@ import { stripHtml } from "string-strip-html";
 
 const { post } = Astro.props;
 const estimatedReadingTime = (postContent: string) => {
-  if (!postContent || postContent === "") {
-    return "less than a minute read";
-  }
+	if (!postContent || postContent === "") {
+		return "less than a minute read";
+	}
 
-  const wordCount = stripHtml(postContent).result.trim().split(/\s+/).length;
-  const minutes = Math.trunc(wordCount / 250);
+	const wordCount = stripHtml(postContent).result.trim().split(/\s+/).length;
+	const minutes = Math.trunc(wordCount / 250);
 
-  if (minutes >= 1) {
-    return `${minutes} minute${minutes === 1 ? "" : "s"} read`;
-  } else {
-    return "less than a minute read";
-  }
+	if (minutes >= 1) {
+		return `${minutes} minute${minutes === 1 ? "" : "s"} read`;
+	} else {
+		return "less than a minute read";
+	}
 };
 ---
 
 {
-  post && (
-    <div class="post-meta">
-      <FontAwesomeIcon icon={faClock} size={"1x"} className="post-meta-icon" />
-      <time datetime={post.dateGmt} class="post-date published">
-        {new Date(post.date).toLocaleDateString()}
-      </time>
-      <time datetime={post.modifiedGmt} class="post-date updated modified">
-        {new Date(post.modified).toLocaleDateString()}
-      </time>
-      <span>-</span>
-      <span>{estimatedReadingTime(post.content)}</span>
-    </div>
-  )
+	post && (
+		<div class="post-meta">
+			<FontAwesomeIcon icon={faClock} size={"1x"} className="post-meta-icon" />
+			<time datetime={post.dateGmt} class="post-date published">
+				{new Date(post.date).toLocaleDateString()}
+			</time>
+			<time datetime={post.modifiedGmt} class="post-date updated modified">
+				{new Date(post.modified).toLocaleDateString()}
+			</time>
+			<span>-</span>
+			<span>{estimatedReadingTime(post.content)}</span>
+		</div>
+	)
 }
 
 <style>
-  .post-meta {
-    font-size: var(--size-13px);
-    line-height: 1;
-    margin-bottom: 0.5rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 5px;
-  }
+	.post-meta {
+		font-size: var(--size-13px);
+		line-height: 1;
+		margin-bottom: 0.5rem;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 5px;
+	}
 
-  .post-meta .post-meta-icon {
-    width: var(--size-15px);
-    height: var(--size-15px);
-  }
+	.post-meta .post-meta-icon {
+		width: var(--size-15px);
+		height: var(--size-15px);
+	}
 </style>

@@ -6,65 +6,65 @@ const { generalSettings } = await settingsQuery();
 ---
 
 <header class="header" role="banner">
-  <Navigation />
-  <h1 class="header-title">
-    <a href="/" rel="home">
-      <img
-        class="header-logo"
-        src="/logo.svg"
-        alt={`${generalSettings.title} logo`}
-        width="192"
-        height="192"
-        transition:name="logo"
-      />
-    </a>
-  </h1>
+	<Navigation />
+	<h1 class="header-title">
+		<a href="/" rel="home">
+			<img
+				class="header-logo"
+				src="/logo.svg"
+				alt={`${generalSettings.title} logo`}
+				width="192"
+				height="192"
+				transition:name="logo"
+			/>
+		</a>
+	</h1>
 
-  {
-    (Astro.url.pathname === "/" || "page" in Astro.params) && ( // show only on homepage
-      <>
-        <div class="header-description">
-          <h1>Hi, I'm Matija, a frontend / web engineer</h1>
-          <h4>
-            <a href="/about/">get to know me</a>, check out the{" "}
-            <a
-              href="https://www.linkedin.com/in/matijaculjak"
-              target="_blank"
-              title="Linkedin profile"
-            >
-              projects I worked on
-            </a>{" "}
-            or read on some of the stuff I wrote
-          </h4>
-        </div>
-      </>
-    )
-  }
+	{
+		(Astro.url.pathname === "/" || "page" in Astro.params) && ( // show only on homepage
+			<>
+				<div class="header-description">
+					<h1>Hi, I'm Matija, a frontend / web engineer</h1>
+					<h4>
+						<a href="/about/">get to know me</a>, check out the{" "}
+						<a
+							href="https://www.linkedin.com/in/matijaculjak"
+							target="_blank"
+							title="Linkedin profile"
+						>
+							projects I worked on
+						</a>{" "}
+						or read on some of the stuff I wrote
+					</h4>
+				</div>
+			</>
+		)
+	}
 </header>
 
 <style is:global>
-  .header {
-    text-align: center;
-  }
+	.header {
+		text-align: center;
+	}
 
-  .header-title {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
+	.header-title {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
 
-  .header-title img {
-    display: block;
-  }
+	.header-title img {
+		display: block;
+	}
 
-  @media (max-width: 767px) {
-    .header-description h1 {
-      line-height: 1.2;
-      font-size: 1.3125rem;
-    }
+	@media (max-width: 767px) {
+		.header-description h1 {
+			line-height: 1.2;
+			font-size: 1.3125rem;
+		}
 
-    .header-description h4 {
-      display: none;
-    }
-  }
+		.header-description h4 {
+			display: none;
+		}
+	}
 </style>

@@ -1,8 +1,8 @@
 ---
 interface Props {
-  isHomepage?: boolean;
-  totalPosts?: number;
-  page?: Page;
+	isHomepage?: boolean;
+	totalPosts?: number;
+	page?: Page;
 }
 
 import { Page } from "astro";
@@ -12,61 +12,59 @@ const { allSettings } = await settingsQuery();
 const { isHomepage, totalPosts, page } = Astro.props;
 
 function getPaginationText() {
-  let text = "Page ";
+	let text = "Page ";
 
-  if (isHomepage) {
-    text += "1";
+	if (isHomepage) {
+		text += "1";
 
-    if (totalPosts) {
-      text += ` of ${Math.ceil(
-        totalPosts / allSettings.readingSettingsPostsPerPage
-      )}`;
-    }
-  } else if (page) {
-    text += `${page.currentPage} of ${page.lastPage}`;
-  }
+		if (totalPosts) {
+			text += ` of ${Math.ceil(
+				totalPosts / allSettings.readingSettingsPostsPerPage,
+			)}`;
+		}
+	} else if (page) {
+		text += `${page.currentPage} of ${page.lastPage}`;
+	}
 
-  return text;
+	return text;
 }
 ---
 
 <div class="pagination">
-  {
-    !isHomepage && page.url.prev && (
-      <a href={page.url.prev === "/page" ? "/" : page.url.prev}>« Prev</a>
-    )
-  }
-  <span set:text={getPaginationText()} />
-  {
-    isHomepage || page.currentPage !== page.lastPage ? (
-      <a href={isHomepage ? "/page/2" : page.url.next}>
-        Next »
-      </a>
-    ) : null
-  }
+	{
+		!isHomepage && page.url.prev && (
+			<a href={page.url.prev === "/page" ? "/" : page.url.prev}>« Prev</a>
+		)
+	}
+	<span set:text={getPaginationText()} />
+	{
+		isHomepage || page.currentPage !== page.lastPage ? (
+			<a href={isHomepage ? "/page/2" : page.url.next}>Next »</a>
+		) : null
+	}
 </div>
 
 <style>
-  .pagination {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 1.25rem;
-    padding: 0.5rem 0;
-  }
+	.pagination {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: 1.25rem;
+		padding: 0.5rem 0;
+	}
 
-  .pagination > * {
-    font-size: var(--size-13px);
-    color: var(--color-black);
-  }
+	.pagination > * {
+		font-size: var(--size-13px);
+		color: var(--color-black);
+	}
 
-  .pagination a {
-    color: var(--color-blue);
-  }
+	.pagination a {
+		color: var(--color-blue);
+	}
 
-  .pagination a:hover {
-    text-decoration: underline;
-    color: var(--color-black);
-  }
+	.pagination a:hover {
+		text-decoration: underline;
+		color: var(--color-black);
+	}
 </style>

@@ -5,10 +5,10 @@ import { getCollection, type CollectionEntry } from "astro:content";
  * @returns {Promise<CollectionEntry<'config'> | undefined>} Site configuration
  */
 export async function getSiteConfig(): Promise<
-  CollectionEntry<"config"> | undefined
+	CollectionEntry<"config"> | undefined
 > {
-  const configs = await getCollection("config");
-  return configs.find((config) => config.slug === "seo");
+	const configs = await getCollection("config");
+	return configs.find((config) => config.slug === "seo");
 }
 
 /**
@@ -17,10 +17,10 @@ export async function getSiteConfig(): Promise<
  * @returns {Promise<CollectionEntry<'components'> | undefined>} Component data
  */
 export async function getComponentBySlug(
-  slug: string,
+	slug: string,
 ): Promise<CollectionEntry<"components"> | undefined> {
-  const components = await getCollection("components");
-  return components.find((component) => component.slug === slug);
+	const components = await getCollection("components");
+	return components.find((component) => component.slug === slug);
 }
 
 /**
@@ -29,12 +29,12 @@ export async function getComponentBySlug(
  * @returns {Promise<CollectionEntry<'components'>[]>} Component data array
  */
 export async function getComponentsByTemplate(
-  template: string,
+	template: string,
 ): Promise<CollectionEntry<"components">[]> {
-  const components = await getCollection("components");
-  return components
-    .filter((component) => component.data.template === template)
-    .sort((a, b) => (a.data.order || 0) - (b.data.order || 0));
+	const components = await getCollection("components");
+	return components
+		.filter((component) => component.data.template === template)
+		.sort((a, b) => (a.data.order || 0) - (b.data.order || 0));
 }
 
 /**
@@ -43,10 +43,10 @@ export async function getComponentsByTemplate(
  * @returns {Promise<CollectionEntry<'pages'> | undefined>} Page data
  */
 export async function getPageBySlug(
-  slug: string,
+	slug: string,
 ): Promise<CollectionEntry<"pages"> | undefined> {
-  const pages = await getCollection("pages");
-  return pages.find((page) => page.slug === slug);
+	const pages = await getCollection("pages");
+	return pages.find((page) => page.slug === slug);
 }
 
 /**
@@ -54,8 +54,8 @@ export async function getPageBySlug(
  * @returns {Promise<CollectionEntry<'pages'>[]>} Array of page data
  */
 export async function getPublishedPages(): Promise<CollectionEntry<"pages">[]> {
-  const pages = await getCollection("pages");
-  return pages.filter((page) => !page.data.draft);
+	const pages = await getCollection("pages");
+	return pages.filter((page) => !page.data.draft);
 }
 
 /**
@@ -64,10 +64,10 @@ export async function getPublishedPages(): Promise<CollectionEntry<"pages">[]> {
  * @returns {Promise<CollectionEntry<'authors'> | undefined>} Author data
  */
 export async function getAuthorBySlug(
-  slug: string,
+	slug: string,
 ): Promise<CollectionEntry<"authors"> | undefined> {
-  const authors = await getCollection("authors");
-  return authors.find((author) => author.slug === slug);
+	const authors = await getCollection("authors");
+	return authors.find((author) => author.slug === slug);
 }
 
 /**
@@ -75,5 +75,5 @@ export async function getAuthorBySlug(
  * @returns {Promise<CollectionEntry<'authors'>[]>} Array of author data
  */
 export async function getAllAuthors(): Promise<CollectionEntry<"authors">[]> {
-  return await getCollection("authors");
+	return await getCollection("authors");
 }

@@ -1,22 +1,22 @@
 ---
 interface Props {
-  node: {
-    __typename: string;
-    id: string;
-    name: string;
-    slug: string;
-    posts?: {
-      nodes: PostProps[];
-    };
-  };
-  page?: {
-    currentPage: number;
-    url: {
-      prev: string;
-      next: string;
-    };
-    lastPage: number;
-  };
+	node: {
+		__typename: string;
+		id: string;
+		name: string;
+		slug: string;
+		posts?: {
+			nodes: PostProps[];
+		};
+	};
+	page?: {
+		currentPage: number;
+		url: {
+			prev: string;
+			next: string;
+		};
+		lastPage: number;
+	};
 }
 
 import PostCard from "../PostCard.astro";
@@ -33,9 +33,10 @@ const currentPage = page?.currentPage || 1;
 
 // For categories, fetch posts with pagination
 // For tags; the posts are already included in the node
-const data = node.__typename === "Category" 
-  ? await getPostsByCategory(node.slug, postsPerPage, currentPage)
-  : { category: node };
+const data =
+	node.__typename === "Category"
+		? await getPostsByCategory(node.slug, postsPerPage, currentPage)
+		: { category: node };
 
 // Calculate total pages for pagination
 const totalPosts = data?.category?.posts?.pageInfo?.total || 0;
@@ -44,28 +45,44 @@ const totalPages = Math.ceil(totalPosts / postsPerPage);
 // Create pagination URLs
 const baseUrl = `/${node.slug}`;
 const paginationData = {
-  currentPage,
-  lastPage: totalPages,
-  url: {
-    prev: currentPage > 1 ? (currentPage === 2 ? baseUrl : `${baseUrl}/page/${currentPage - 1}`) : null,
-    next: currentPage < totalPages ? `${baseUrl}/page/${currentPage + 1}` : null
-  }
+	currentPage,
+	lastPage: totalPages,
+	url: {
+		prev:
+			currentPage > 1
+				? currentPage === 2
+					? baseUrl
+					: `${baseUrl}/page/${currentPage - 1}`
+				: null,
+		next:
+			currentPage < totalPages ? `${baseUrl}/page/${currentPage + 1}` : null,
+	},
 };
 ---
 
 <div class="header">
-  <div class="header-description">
-    <h1 class="header-title">{node.__typename}: {node.name}</h1>
-  </div>
+	<div class="header-description">
+		<h1 class="header-title">{node.__typename}: {node.name}</h1>
+	</div>
 </div>
 
 <main role="main">
-  <div class="posts">
-    {node.__typename === "Category" && data?.category?.posts?.edges.map((post) => <PostCard post={post.node} />)}
-    {node.__typename === "Tag" && node?.posts?.nodes.map((post) => <PostCard post={post} />)}
-  </div>
-  
-  {node.__typename === "Category" && totalPages > 1 && (
-    <Pagination page={paginationData} />
-  )}
+	<div class="posts">
+		{
+			node.__typename === "Category" &&
+				data?.category?.posts?.edges.map((post) => (
+					<PostCard post={post.node} />
+				))
+		}
+		{
+			node.__typename === "Tag" &&
+				node?.posts?.nodes.map((post) => <PostCard post={post} />)
+		}
+	</div>
+
+	{
+		node.__typename === "Category" && totalPages > 1 && (
+			<Pagination page={paginationData} />
+		)
+	}
 </main>

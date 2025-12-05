@@ -6,12 +6,12 @@ dotenv.config();
 
 // Simple logging utility for node scripts
 const log = {
-  info: (message) => {
-    console.log("[INFO]", message);
-  },
-  error: (message) => {
-    console.error("[ERROR]", message);
-  },
+	info: (message) => {
+		console.log("[INFO]", message);
+	},
+	error: (message) => {
+		console.error("[ERROR]", message);
+	},
 };
 
 // WordPress API URL from environment
@@ -36,12 +36,12 @@ const query = `{
 
 // Request options
 const options = {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-    Authorization: `Basic ${auth}`,
-  },
+	method: "POST",
+	headers: {
+		"Content-Type": "application/json",
+		Accept: "application/json",
+		Authorization: `Basic ${auth}`,
+	},
 };
 
 // Parse URL to get hostname, path, etc.
@@ -52,7 +52,7 @@ options.port = urlObj.port || (urlObj.protocol === "https:" ? 443 : 80);
 
 // Create the request body
 const requestBody = JSON.stringify({
-  query,
+	query,
 });
 
 log.info("Testing WordPress GraphQL API connectivity...");
@@ -64,28 +64,28 @@ log.info(`Password: ${password ? "(set)" : "(not set)"}`);
 const requestModule = urlObj.protocol === "https:" ? https : http;
 
 const req = requestModule.request(options, (res) => {
-  log.info(`Status: ${res.statusCode} ${res.statusMessage}`);
-  log.info("Headers: " + JSON.stringify(res.headers));
+	log.info(`Status: ${res.statusCode} ${res.statusMessage}`);
+	log.info("Headers: " + JSON.stringify(res.headers));
 
-  let data = "";
-  res.on("data", (chunk) => {
-    data += chunk;
-  });
+	let data = "";
+	res.on("data", (chunk) => {
+		data += chunk;
+	});
 
-  res.on("end", () => {
-    log.info("Response data:");
-    try {
-      const parsedData = JSON.parse(data);
-      log.info(JSON.stringify(parsedData, null, 2));
-    } catch (error) {
-      log.info("Could not parse response as JSON:");
-      log.info(data);
-    }
-  });
+	res.on("end", () => {
+		log.info("Response data:");
+		try {
+			const parsedData = JSON.parse(data);
+			log.info(JSON.stringify(parsedData, null, 2));
+		} catch {
+			log.info("Could not parse response as JSON:");
+			log.info(data);
+		}
+	});
 });
 
 req.on("error", (error) => {
-  log.error("Error making request: " + error.message);
+	log.error("Error making request: " + error.message);
 });
 
 // Send request

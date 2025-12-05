@@ -3,8 +3,8 @@ import { vi } from "vitest";
 
 // Mock Astro components
 global.astroConfig = {
-  site: "https://example.com",
-  base: "/",
+	site: "https://example.com",
+	base: "/",
 };
 
 // Mock Astro's environment variable access
@@ -16,12 +16,12 @@ global.fetch = vi.fn();
 
 // Mock astro:assets
 vi.mock("astro:assets", () => {
-  return {
-    Image: ({ src, alt, ...props }) => {
-      return {
-        type: "img",
-        props: { src, alt, ...props },
-      };
-    },
-  };
+	return {
+		Image: ({ src, alt, ...props }) => {
+			return {
+				type: "img",
+				props: { src, alt, ...props },
+			};
+		},
+	};
 });

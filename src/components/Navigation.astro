@@ -6,322 +6,326 @@ const primaryMenu = menus.nodes[0];
 ---
 
 <nav role="navigation">
-  <ul class="header-nav">
-    {
-      primaryMenu.menuItems.nodes.map((menuItem) => (
-        <li>
-          <a
-            href={menuItem.uri || generalSettings.url}
-            class={
-              menuItem.uri.includes(Astro.params.uri) ||
-              (menuItem.uri === "/" && Astro.params.uri === undefined)
-                ? "active"
-                : ""
-            }
-          >
-            {menuItem.label}
-          </a>
-        </li>
-      ))
-    }
-  </ul>
+	<ul class="header-nav">
+		{
+			primaryMenu.menuItems.nodes.map((menuItem) => (
+				<li>
+					<a
+						href={menuItem.uri || generalSettings.url}
+						class={
+							menuItem.uri.includes(Astro.params.uri) ||
+							(menuItem.uri === "/" && Astro.params.uri === undefined)
+								? "active"
+								: ""
+						}
+					>
+						{menuItem.label}
+					</a>
+				</li>
+			))
+		}
+	</ul>
 
-  <div class="burger-menu-icon-container">
-    <div class="burger-menu-icon">
-      <div class="burger-bun burger-bun--top"></div>
-      <div class="burger-bun burger-bun--mid"></div>
-      <div class="burger-bun burger-bun--bottom"></div>
-    </div>
-  </div>
+	<div class="burger-menu-icon-container">
+		<div class="burger-menu-icon">
+			<div class="burger-bun burger-bun--top"></div>
+			<div class="burger-bun burger-bun--mid"></div>
+			<div class="burger-bun burger-bun--bottom"></div>
+		</div>
+	</div>
 </nav>
 
 <script>
-  // Simple inline logging utility for client-side code
-  const clientLog = {
-    warn: (message) => {
-      const isDev = document.documentElement.dataset.dev === 'true';
-      const isDebugEnabled = document.documentElement.dataset.debug === 'true';
-      if (isDev || isDebugEnabled) {
-        console.warn('[WARN]', message);
-      }
-    }
-  };
+	// Simple inline logging utility for client-side code
+	const clientLog = {
+		warn: (message) => {
+			const isDev = document.documentElement.dataset.dev === "true";
+			const isDebugEnabled = document.documentElement.dataset.debug === "true";
+			if (isDev || isDebugEnabled) {
+				console.warn("[WARN]", message);
+			}
+		},
+	};
 
-  // Helper function to initialize navigation
-  function initNavigation() {
-    const burgerMenu = document.querySelector(".burger-menu-icon");
-    const burgerContainer = document.querySelector(".burger-menu-icon-container");
-    const burgerNav = document.querySelector(".header-nav");
-    
-    if (!burgerMenu || !burgerContainer || !burgerNav) {
-      clientLog.warn("Navigation elements not found");
-      return;
-    }
-    
-    // Remove existing event listener if any (to prevent duplicates)
-    const existingHandler = burgerMenu.getAttribute('data-has-click-handler');
-    if (existingHandler) {
-      burgerMenu.removeEventListener("click", window.navClickHandler);
-    }
-    
-    // Define the click handler
-    window.navClickHandler = () => {
-      if (burgerNav.classList.contains("open")) {
-        burgerNav.classList.add("animating");
-        setTimeout(() => {
-          burgerNav.classList.remove("animating");
-        }, 400);
-      }
-      
-      [document.body, burgerContainer, burgerNav].forEach(function (el) {
-        if (el === document.body) {
-          el.classList.toggle("nav-open");
-        } else {
-          el.classList.toggle("open");
-        }
-      });
-    };
-    
-    // Add the click handler and mark the element
-    burgerMenu.addEventListener("click", window.navClickHandler);
-    burgerMenu.setAttribute('data-has-click-handler', 'true');
-    
-    // Define keyboard handler
-    const keydownHandler = (evt) => {
-      let isEscape = false;
-      if ("key" in evt) {
-        isEscape = evt.key === "Escape" || evt.key === "Esc";
-      }
+	// Helper function to initialize navigation
+	function initNavigation() {
+		const burgerMenu = document.querySelector(".burger-menu-icon");
+		const burgerContainer = document.querySelector(
+			".burger-menu-icon-container",
+		);
+		const burgerNav = document.querySelector(".header-nav");
 
-      if (
-        isEscape &&
-        burgerContainer.classList.contains("open") &&
-        burgerNav.classList.contains("open")
-      ) {
-        burgerNav.classList.add("animating");
-        setTimeout(() => {
-          burgerNav.classList.remove("animating");
-        }, 400);
-        
-        burgerMenu.click();
-      }
-    };
-    
-    // Remove existing keyboard handler
-    document.removeEventListener("keydown", window.navKeydownHandler);
-    
-    // Add the keyboard handler
-    window.navKeydownHandler = keydownHandler;
-    document.addEventListener("keydown", window.navKeydownHandler);
-  }
-  
-  // Initialize on first load
-  initNavigation();
-  
-  // Re-initialize on page transitions
-  document.addEventListener('astro:page-load', () => {
-    initNavigation();
-  });
-  
-  // Clean up before transitions
-  document.addEventListener('astro:before-swap', () => {
-    // Remove event listeners before page swap
-    document.removeEventListener("keydown", window.navKeydownHandler);
-    const burgerMenu = document.querySelector(".burger-menu-icon");
-    if (burgerMenu) {
-      burgerMenu.removeEventListener("click", window.navClickHandler);
-    }
-  });
+		if (!burgerMenu || !burgerContainer || !burgerNav) {
+			clientLog.warn("Navigation elements not found");
+			return;
+		}
+
+		// Remove existing event listener if any (to prevent duplicates)
+		const existingHandler = burgerMenu.getAttribute("data-has-click-handler");
+		if (existingHandler) {
+			burgerMenu.removeEventListener("click", window.navClickHandler);
+		}
+
+		// Define the click handler
+		window.navClickHandler = () => {
+			if (burgerNav.classList.contains("open")) {
+				burgerNav.classList.add("animating");
+				setTimeout(() => {
+					burgerNav.classList.remove("animating");
+				}, 400);
+			}
+
+			[document.body, burgerContainer, burgerNav].forEach(function (el) {
+				if (el === document.body) {
+					el.classList.toggle("nav-open");
+				} else {
+					el.classList.toggle("open");
+				}
+			});
+		};
+
+		// Add the click handler and mark the element
+		burgerMenu.addEventListener("click", window.navClickHandler);
+		burgerMenu.setAttribute("data-has-click-handler", "true");
+
+		// Define keyboard handler
+		const keydownHandler = (evt) => {
+			let isEscape = false;
+			if ("key" in evt) {
+				isEscape = evt.key === "Escape" || evt.key === "Esc";
+			}
+
+			if (
+				isEscape &&
+				burgerContainer.classList.contains("open") &&
+				burgerNav.classList.contains("open")
+			) {
+				burgerNav.classList.add("animating");
+				setTimeout(() => {
+					burgerNav.classList.remove("animating");
+				}, 400);
+
+				burgerMenu.click();
+			}
+		};
+
+		// Remove existing keyboard handler
+		document.removeEventListener("keydown", window.navKeydownHandler);
+
+		// Add the keyboard handler
+		window.navKeydownHandler = keydownHandler;
+		document.addEventListener("keydown", window.navKeydownHandler);
+	}
+
+	// Initialize on first load
+	initNavigation();
+
+	// Re-initialize on page transitions
+	document.addEventListener("astro:page-load", () => {
+		initNavigation();
+	});
+
+	// Clean up before transitions
+	document.addEventListener("astro:before-swap", () => {
+		// Remove event listeners before page swap
+		document.removeEventListener("keydown", window.navKeydownHandler);
+		const burgerMenu = document.querySelector(".burger-menu-icon");
+		if (burgerMenu) {
+			burgerMenu.removeEventListener("click", window.navClickHandler);
+		}
+	});
 </script>
 
 <style>
-  body.nav-open {
-    overflow: hidden;
-  }
+	body.nav-open {
+		overflow: hidden;
+	}
 
-  body.nav-open::after {
-    opacity: 1;
-    visibility: visible;
-  }
+	body.nav-open::after {
+		opacity: 1;
+		visibility: visible;
+	}
 
-  body::after {
-    background: #fff;
-    content: '';
-    height: 100%;
-    left: 0;
-    opacity: 0;
-    overflow: auto;
-    position: fixed;
-    top: 0;
-    transition: all 0.4s ease;
-    width: 100%;
-    visibility: hidden;
-    z-index: 100;
-  }
+	body::after {
+		background: #fff;
+		content: "";
+		height: 100%;
+		left: 0;
+		opacity: 0;
+		overflow: auto;
+		position: fixed;
+		top: 0;
+		transition: all 0.4s ease;
+		width: 100%;
+		visibility: hidden;
+		z-index: 100;
+	}
 
-  .header-nav {
-    padding: 6.25rem 0 0 0;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 101;
-  }
+	.header-nav {
+		padding: 6.25rem 0 0 0;
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 101;
+	}
 
-  .header-nav li {
-    color: var(--color-black);
-    list-style-type: none;
-    margin-bottom: 0.9375rem;
-    text-align: left;
-    transform: translateX(0);
-  }
+	.header-nav li {
+		color: var(--color-black);
+		list-style-type: none;
+		margin-bottom: 0.9375rem;
+		text-align: left;
+		transform: translateX(0);
+	}
 
-  .header-nav li:last-child {
-    margin-bottom: 0;
-  }
+	.header-nav li:last-child {
+		margin-bottom: 0;
+	}
 
-  .header-nav a {
-    border-left: rgb(255 255 255 / 0) solid var(--size-2px);
-    color: var(--color-black);
-    font-family: Helvetica-Neue, Helvetica, Arial, sans-serif;
-    font-size: var(--size-24px);
-    font-weight: 300;
-    margin-left: var(--size-30px);
-    text-decoration: none;
-    transition: all 0.4s ease;
-    width: auto;
-  }
+	.header-nav a {
+		border-left: rgb(255 255 255 / 0) solid var(--size-2px);
+		color: var(--color-black);
+		font-family: Helvetica-Neue, Helvetica, Arial, sans-serif;
+		font-size: var(--size-24px);
+		font-weight: 300;
+		margin-left: var(--size-30px);
+		text-decoration: none;
+		transition: all 0.4s ease;
+		width: auto;
+	}
 
-  .header-nav a:hover,
-  .header-nav a:active,
-  .header-nav a:focus,
-  .header-nav a.active {
-    border-left: var(--color-black) solid var(--size-2px);
-    color: var(--color-blue);
-    padding-left: var(--size-30px);
-  }
+	.header-nav a:hover,
+	.header-nav a:active,
+	.header-nav a:focus,
+	.header-nav a.active {
+		border-left: var(--color-black) solid var(--size-2px);
+		color: var(--color-blue);
+		padding-left: var(--size-30px);
+	}
 
-  .header-nav:not(.open) {
-    opacity: 0;
-    transition: opacity 0.4s, visibility 0s linear 0.4s;
-  }
+	.header-nav:not(.open) {
+		opacity: 0;
+		transition:
+			opacity 0.4s,
+			visibility 0s linear 0.4s;
+	}
 
-  .header-nav:not(.open) li {
-    animation-duration: 0.4s;
-    animation-fill-mode: both;
-    animation-name: slideOutLeft;
-  }
+	.header-nav:not(.open) li {
+		animation-duration: 0.4s;
+		animation-fill-mode: both;
+		animation-name: slideOutLeft;
+	}
 
-  .header-nav:not(.open, .animating) {
-    visibility: hidden;
-  }
+	.header-nav:not(.open, .animating) {
+		visibility: hidden;
+	}
 
-  .header-nav.open {
-    visibility: visible;
-    opacity: 1;
-    transition: visibility 0s linear 0s;
-  }
+	.header-nav.open {
+		visibility: visible;
+		opacity: 1;
+		transition: visibility 0s linear 0s;
+	}
 
-  .header-nav.open li {
-    animation-duration: 0.4s;
-    animation-fill-mode: both;
-    animation-name: slideInLeft;
-  }
+	.header-nav.open li {
+		animation-duration: 0.4s;
+		animation-fill-mode: both;
+		animation-name: slideInLeft;
+	}
 
-  .burger-menu-icon {
-    background: transparent;
-    border: transparent solid var(--size-2px);
-    border-radius: 50%;
-    cursor: pointer;
-    height: var(--size-60px);
-    padding: 1.0625rem 0.9375rem 0.9375rem;
-    position: relative;
-    transition: all 0.4s ease;
-    user-select: none;
-    width: var(--size-60px);
-  }
+	.burger-menu-icon {
+		background: transparent;
+		border: transparent solid var(--size-2px);
+		border-radius: 50%;
+		cursor: pointer;
+		height: var(--size-60px);
+		padding: 1.0625rem 0.9375rem 0.9375rem;
+		position: relative;
+		transition: all 0.4s ease;
+		user-select: none;
+		width: var(--size-60px);
+	}
 
-  .burger-menu-icon:hover {
-    border: var(--color-black) solid var(--size-2px);
-  }
+	.burger-menu-icon:hover {
+		border: var(--color-black) solid var(--size-2px);
+	}
 
-  .burger-bun {
-    background: var(--color-black);
-    position: relative;
-    transition: all 0.4s ease;
-  }
+	.burger-bun {
+		background: var(--color-black);
+		position: relative;
+		transition: all 0.4s ease;
+	}
 
-  .burger-bun--top {
-    height: var(--size-2px);
-    top: 0;
-    width: 1.5625rem;
-  }
+	.burger-bun--top {
+		height: var(--size-2px);
+		top: 0;
+		width: 1.5625rem;
+	}
 
-  .burger-bun--mid {
-    height: var(--size-2px);
-    top: 0.5rem;
-    width: 1.5625rem;
-  }
+	.burger-bun--mid {
+		height: var(--size-2px);
+		top: 0.5rem;
+		width: 1.5625rem;
+	}
 
-  .burger-bun--bottom {
-    height: var(--size-2px);
-    top: 1rem;
-    width: 1.5625rem;
-  }
+	.burger-bun--bottom {
+		height: var(--size-2px);
+		top: 1rem;
+		width: 1.5625rem;
+	}
 
-  .burger-menu-icon-container {
-    height: var(--size-60px);
-    left: 0.9375rem;
-    position: fixed;
-    top: 0.9375rem;
-    z-index: 101;
-  }
+	.burger-menu-icon-container {
+		height: var(--size-60px);
+		left: 0.9375rem;
+		position: fixed;
+		top: 0.9375rem;
+		z-index: 101;
+	}
 
-  .burger-menu-icon-container.open .burger-menu-icon {
-    border: #fff solid var(--size-2px);
-    background: #fff;
-  }
+	.burger-menu-icon-container.open .burger-menu-icon {
+		border: #fff solid var(--size-2px);
+		background: #fff;
+	}
 
-  .burger-menu-icon-container.open:hover .burger-menu-icon {
-    border: var(--color-black) solid var(--size-2px);
-  }
+	.burger-menu-icon-container.open:hover .burger-menu-icon {
+		border: var(--color-black) solid var(--size-2px);
+	}
 
-  .burger-menu-icon-container.open .burger-bun--top {
-    background: var(--color-black);
-    top: 0.5625rem;
-    transform: rotate(45deg);
-  }
+	.burger-menu-icon-container.open .burger-bun--top {
+		background: var(--color-black);
+		top: 0.5625rem;
+		transform: rotate(45deg);
+	}
 
-  .burger-menu-icon-container.open .burger-bun--mid {
-    opacity: 0;
-  }
+	.burger-menu-icon-container.open .burger-bun--mid {
+		opacity: 0;
+	}
 
-  .burger-menu-icon-container.open .burger-bun--bottom {
-    background: var(--color-black);
-    top: 0.3125rem;
-    transform: rotate(-45deg);
-  }
+	.burger-menu-icon-container.open .burger-bun--bottom {
+		background: var(--color-black);
+		top: 0.3125rem;
+		transform: rotate(-45deg);
+	}
 
-  @keyframes slideInLeft {
-    0% {
-      transform: translate3d(calc(-1 * var(--size-250px)), 0, 0);
-      visibility: visible;
-      opacity: 0;
-    }
-    100% {
-      transform: translate3d(0, 0, 0);
-      opacity: 1;
-    }
-  }
+	@keyframes slideInLeft {
+		0% {
+			transform: translate3d(calc(-1 * var(--size-250px)), 0, 0);
+			visibility: visible;
+			opacity: 0;
+		}
+		100% {
+			transform: translate3d(0, 0, 0);
+			opacity: 1;
+		}
+	}
 
-  @keyframes slideOutLeft {
-    0% {
-      transform: translate3d(0, 0, 0);
-      opacity: 1;
-    }
-    100% {
-      transform: translate3d(calc(-1 * var(--size-250px)), 0, 0);
-      opacity: 0;
-      visibility: hidden;
-    }
-  }
+	@keyframes slideOutLeft {
+		0% {
+			transform: translate3d(0, 0, 0);
+			opacity: 1;
+		}
+		100% {
+			transform: translate3d(calc(-1 * var(--size-250px)), 0, 0);
+			opacity: 0;
+			visibility: hidden;
+		}
+	}
 </style>

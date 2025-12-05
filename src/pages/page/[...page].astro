@@ -9,27 +9,27 @@ import Pagination from "../../components/Pagination.astro";
 export const prerender = true;
 
 export async function getStaticPaths({ paginate }) {
-  const { allSettings } = await settingsQuery();
-  // Fetch ALL posts for static generation
-  // Use the total count to determine how many posts to fetch
-  const initialData = await getPosts();
-  const totalPosts = initialData.posts.pageInfo.total;
+	const { allSettings } = await settingsQuery();
+	// Fetch ALL posts for static generation
+	// Use the total count to determine how many posts to fetch
+	const initialData = await getPosts();
+	const totalPosts = initialData.posts.pageInfo.total;
 
-  // Fetch all posts in one query
-  const data = await getPosts(totalPosts, 1);
+	// Fetch all posts in one query
+	const data = await getPosts(totalPosts, 1);
 
-  return paginate(data.posts.edges, {
-    pageSize: allSettings.readingSettingsPostsPerPage,
-  });
+	return paginate(data.posts.edges, {
+		pageSize: allSettings.readingSettingsPostsPerPage,
+	});
 }
 let { page } = Astro.props;
 ---
 
 <MainLayout>
-  <main role="main">
-    <div class="posts">
-      {page.data.map((post) => <PostCard post={post.node} />)}
-    </div>
-    <Pagination page={page as Page} />
-  </main>
+	<main role="main">
+		<div class="posts">
+			{page.data.map((post) => <PostCard post={post.node} />)}
+		</div>
+		<Pagination page={page as Page} />
+	</main>
 </MainLayout>

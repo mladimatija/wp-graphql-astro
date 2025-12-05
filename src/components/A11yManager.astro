@@ -3,185 +3,197 @@
 ---
 
 <div id="a11y-root">
-  <!-- Announcer for screen readers -->
-  <div id="a11y-status" class="sr-only" aria-live="polite" aria-relevant="additions"></div>
-  
-  <!-- Container for focus trap in modals -->
-  <div id="a11y-focus-trap" tabindex="-1"></div>
+	<!-- Announcer for screen readers -->
+	<div
+		id="a11y-status"
+		class="sr-only"
+		aria-live="polite"
+		aria-relevant="additions"
+	>
+	</div>
+
+	<!-- Container for focus trap in modals -->
+	<div id="a11y-focus-trap" tabindex="-1"></div>
 </div>
 
 <!-- Pass environment variables to the client -->
 <script>
-  document.documentElement.dataset.dev = import.meta.env.DEV;
-  document.documentElement.dataset.debug = import.meta.env.PUBLIC_DEBUG === 'true';
+	document.documentElement.dataset.dev = import.meta.env.DEV;
+	document.documentElement.dataset.debug =
+		import.meta.env.PUBLIC_DEBUG === "true";
 </script>
 
 <script client:load>
-  class A11yManager {
-    constructor() {
-      this.statusElement = document.getElementById('a11y-status');
-      this.focusTrap = document.getElementById('a11y-focus-trap');
-      this.previousFocus = null;
-      
-      this.init();
-    }
-    
-    /**
-     * Initialize the accessibility manager
-     */
-    init() {
-      // Listen for Escape key to close modals
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          const modal = document.querySelector('[role="dialog"][aria-modal="true"]');
-          if (modal) {
-            // Find and trigger the close button
-            const closeButton = modal.querySelector('[data-a11y-close]');
-            if (closeButton) {
-              closeButton.click();
-            }
-          }
-        }
-      });
-      
-      // Add listener for page transitions
-      document.addEventListener('astro:page-load', () => {
-        // Reset status announcer when page changes
-        this.announce('Page loaded');
-        
-        // Re-run our initialization for View Transitions support
-        this.init();
-      });
-      
-      // Add focus monitoring for keyboard users
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Tab') {
-          document.body.classList.add('keyboard-user');
-        }
-      });
-      
-      document.addEventListener('mousedown', () => {
-        document.body.classList.remove('keyboard-user');
-      });
-    }
-    
-    /**
-     * Announce a message to screen readers
-     * @param {string} message - The message to announce
-     * @param {boolean} assertive - Whether to use assertive (true) or polite (false) announcement
-     */
-    announce(message, assertive = false) {
-      if (!this.statusElement) return;
-      
-      if (assertive) {
-        this.statusElement.setAttribute('aria-live', 'assertive');
-      } else {
-        this.statusElement.setAttribute('aria-live', 'polite');
-      }
-      
-      // Clear previous message
-      this.statusElement.textContent = '';
-      
-      // Set new message (in a timeout to ensure it's seen as a change)
-      setTimeout(() => {
-        this.statusElement.textContent = message;
-      }, 50);
-      
-      // Reset to polite after announcement
-      if (assertive) {
-        setTimeout(() => {
-          this.statusElement.setAttribute('aria-live', 'polite');
-        }, 1000);
-      }
-    }
-    
-    /**
-     * Trap focus within a modal dialog
-     * @param {HTMLElement} element - The element to trap focus within
-     */
-    trapFocusIn(element) {
-      if (!element) return;
-      
-      // Save current focus
-      this.previousFocus = document.activeElement;
-      
-      // Set up the focus trap
-      const focusableElements = element.querySelectorAll(
-        'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      );
-      
-      if (focusableElements.length === 0) return;
-      
-      const firstFocusable = focusableElements[0];
-      const lastFocusable = focusableElements[focusableElements.length - 1];
-      
-      // Focus the first element
-      firstFocusable.focus();
-      
-      // Trap focus
-      element.addEventListener('keydown', (e) => {
-        if (e.key === 'Tab') {
-          if (e.shiftKey && document.activeElement === firstFocusable) {
-            e.preventDefault();
-            lastFocusable.focus();
-          } else if (!e.shiftKey && document.activeElement === lastFocusable) {
-            e.preventDefault();
-            firstFocusable.focus();
-          }
-        }
-      });
-    }
-    
-    /**
-     * Release the focus trap and restore focus
-     */
-    releaseFocusTrap() {
-      if (this.previousFocus) {
-        this.previousFocus.focus();
-        this.previousFocus = null;
-      }
-    }
-  }
-  
-  // Initialize and make globally available
-  window.a11yManager = new A11yManager();
-  
-  // Expose methods for use in other components
-  document.addEventListener('DOMContentLoaded', () => {
-    // Simple inline logging utility for client-side code
-    const clientLog = {
-      warn: (message, element) => {
-        const isDev = document.documentElement.dataset.dev === 'true';
-        const isDebugEnabled = document.documentElement.dataset.debug === 'true';
-        if (isDev || isDebugEnabled) {
-          console.warn('[WARN]', message, element);
-        }
-      }
-    };
-    
-    // Add a11y features to all interactive elements
-    document.querySelectorAll('button:not([aria-label]):not([aria-labelledby])').forEach(button => {
-      if (!button.textContent.trim()) {
-        clientLog.warn('Button without accessible label found', button);
-      }
-    });
-    
-    // Enhance image accessibility
-    document.querySelectorAll('img:not([alt])').forEach(img => {
-      clientLog.warn('Image without alt text found', img);
-    });
-  });
+	class A11yManager {
+		constructor() {
+			this.statusElement = document.getElementById("a11y-status");
+			this.focusTrap = document.getElementById("a11y-focus-trap");
+			this.previousFocus = null;
+
+			this.init();
+		}
+
+		/**
+		 * Initialize the accessibility manager
+		 */
+		init() {
+			// Listen for Escape key to close modals
+			document.addEventListener("keydown", (e) => {
+				if (e.key === "Escape") {
+					const modal = document.querySelector(
+						'[role="dialog"][aria-modal="true"]',
+					);
+					if (modal) {
+						// Find and trigger the close button
+						const closeButton = modal.querySelector("[data-a11y-close]");
+						if (closeButton) {
+							closeButton.click();
+						}
+					}
+				}
+			});
+
+			// Add listener for page transitions
+			document.addEventListener("astro:page-load", () => {
+				// Reset status announcer when page changes
+				this.announce("Page loaded");
+
+				// Re-run our initialization for View Transitions support
+				this.init();
+			});
+
+			// Add focus monitoring for keyboard users
+			document.addEventListener("keydown", (e) => {
+				if (e.key === "Tab") {
+					document.body.classList.add("keyboard-user");
+				}
+			});
+
+			document.addEventListener("mousedown", () => {
+				document.body.classList.remove("keyboard-user");
+			});
+		}
+
+		/**
+		 * Announce a message to screen readers
+		 * @param {string} message - The message to announce
+		 * @param {boolean} assertive - Whether to use assertive (true) or polite (false) announcement
+		 */
+		announce(message, assertive = false) {
+			if (!this.statusElement) return;
+
+			if (assertive) {
+				this.statusElement.setAttribute("aria-live", "assertive");
+			} else {
+				this.statusElement.setAttribute("aria-live", "polite");
+			}
+
+			// Clear previous message
+			this.statusElement.textContent = "";
+
+			// Set new message (in a timeout to ensure it's seen as a change)
+			setTimeout(() => {
+				this.statusElement.textContent = message;
+			}, 50);
+
+			// Reset to polite after announcement
+			if (assertive) {
+				setTimeout(() => {
+					this.statusElement.setAttribute("aria-live", "polite");
+				}, 1000);
+			}
+		}
+
+		/**
+		 * Trap focus within a modal dialog
+		 * @param {HTMLElement} element - The element to trap focus within
+		 */
+		trapFocusIn(element) {
+			if (!element) return;
+
+			// Save current focus
+			this.previousFocus = document.activeElement;
+
+			// Set up the focus trap
+			const focusableElements = element.querySelectorAll(
+				'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+			);
+
+			if (focusableElements.length === 0) return;
+
+			const firstFocusable = focusableElements[0];
+			const lastFocusable = focusableElements[focusableElements.length - 1];
+
+			// Focus the first element
+			firstFocusable.focus();
+
+			// Trap focus
+			element.addEventListener("keydown", (e) => {
+				if (e.key === "Tab") {
+					if (e.shiftKey && document.activeElement === firstFocusable) {
+						e.preventDefault();
+						lastFocusable.focus();
+					} else if (!e.shiftKey && document.activeElement === lastFocusable) {
+						e.preventDefault();
+						firstFocusable.focus();
+					}
+				}
+			});
+		}
+
+		/**
+		 * Release the focus trap and restore focus
+		 */
+		releaseFocusTrap() {
+			if (this.previousFocus) {
+				this.previousFocus.focus();
+				this.previousFocus = null;
+			}
+		}
+	}
+
+	// Initialize and make globally available
+	window.a11yManager = new A11yManager();
+
+	// Expose methods for use in other components
+	document.addEventListener("DOMContentLoaded", () => {
+		// Simple inline logging utility for client-side code
+		const clientLog = {
+			warn: (message, element) => {
+				const isDev = document.documentElement.dataset.dev === "true";
+				const isDebugEnabled =
+					document.documentElement.dataset.debug === "true";
+				if (isDev || isDebugEnabled) {
+					console.warn("[WARN]", message, element);
+				}
+			},
+		};
+
+		// Add a11y features to all interactive elements
+		document
+			.querySelectorAll("button:not([aria-label]):not([aria-labelledby])")
+			.forEach((button) => {
+				if (!button.textContent.trim()) {
+					clientLog.warn("Button without accessible label found", button);
+				}
+			});
+
+		// Enhance image accessibility
+		document.querySelectorAll("img:not([alt])").forEach((img) => {
+			clientLog.warn("Image without alt text found", img);
+		});
+	});
 </script>
 
 <style>
-  /* Focus styles for keyboard users only */
-  .keyboard-user :focus {
-    outline: 3px solid var(--color-primary);
-    outline-offset: 2px;
-    text-decoration: none;
-  }
-  
-  .keyboard-user a:focus {
-    text-decoration: none;
-  }
+	/* Focus styles for keyboard users only */
+	.keyboard-user :focus {
+		outline: 3px solid var(--color-primary);
+		outline-offset: 2px;
+		text-decoration: none;
+	}
+
+	.keyboard-user a:focus {
+		text-decoration: none;
+	}
 </style>

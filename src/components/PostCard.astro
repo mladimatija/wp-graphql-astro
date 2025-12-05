@@ -6,122 +6,128 @@ import { getSiteConfig } from "../lib/content";
 
 // Define types for component props
 interface Props {
-  post: {
-    title: string;
-    uri: string;
-    content: string;
-    featuredImage?: {
-      node?: {
-        mediaItemUrl: string;
-        altText: string;
-      }
-    }
-    // Other post properties used by PostMeta component
-    [key: string]: any;
-  };
+	post: {
+		title: string;
+		uri: string;
+		content: string;
+		featuredImage?: {
+			node?: {
+				mediaItemUrl: string;
+				altText: string;
+			};
+		};
+		// Other post properties used by PostMeta component
+		[key: string]: any;
+	};
 }
 
 const { post } = Astro.props;
 
 // Get site configuration
 const siteConfig = await getSiteConfig();
-const showFeaturedImagesOnPostCard = siteConfig?.data.showFeaturedImagesOnPostCard ?? true;
+const showFeaturedImagesOnPostCard =
+	siteConfig?.data.showFeaturedImagesOnPostCard ?? true;
 
 // Extract clean excerpt for better display
 const excerpt = stripHtml(post.content.substring(0, 150)).result;
-const hasFeaturedImage = post.featuredImage?.node?.mediaItemUrl && showFeaturedImagesOnPostCard;
+const hasFeaturedImage =
+	post.featuredImage?.node?.mediaItemUrl && showFeaturedImagesOnPostCard;
 ---
 
 <article class="post" transition:name={`post-${post.id}`}>
-  <header class="post-header">
-    {hasFeaturedImage && (
-      <div class="post-thumbnail">
-        <a href={post.uri} aria-label={`View ${post.title}`}>
-          <img 
-            src={post.featuredImage.node.mediaItemUrl} 
-            alt={post.featuredImage.node.altText || post.title}
-            width="300"
-            height="200"
-            loading="lazy"
-            decoding="async"
-            transition:name={`image-${post.id}`}
-          />
-        </a>
-      </div>
-    )}
-    
-    <h2 class="post-title" transition:name={`title-${post.id}`}>
-      <a
-        class="post-link"
-        href={post.uri}
-        aria-label={post.title}
-        rel="bookmark">{post.title}</a
-      >
-    </h2>
+	<header class="post-header">
+		{
+			hasFeaturedImage && (
+				<div class="post-thumbnail">
+					<a href={post.uri} aria-label={`View ${post.title}`}>
+						<img
+							src={post.featuredImage.node.mediaItemUrl}
+							alt={post.featuredImage.node.altText || post.title}
+							width="300"
+							height="200"
+							loading="lazy"
+							decoding="async"
+							transition:name={`image-${post.id}`}
+						/>
+					</a>
+				</div>
+			)
+		}
 
-    <PostMeta post={post} />
-  </header>
+		<h2 class="post-title" transition:name={`title-${post.id}`}>
+			<a
+				class="post-link"
+				href={post.uri}
+				aria-label={post.title}
+				rel="bookmark">{post.title}</a
+			>
+		</h2>
 
-  <!-- Post excerpt with clean content -->
-  <div class="post-content">
-    <p>{excerpt}... <a href={post.uri} class="read-more">continue reading</a></p>
-  </div>
+		<PostMeta post={post} />
+	</header>
+
+	<!-- Post excerpt with clean content -->
+	<div class="post-content">
+		<p>
+			{excerpt}... <a href={post.uri} class="read-more">continue reading</a>
+		</p>
+	</div>
 </article>
 
 <style>
-  .post {
-    margin-bottom: 2rem;
-    transition: transform 0.2s ease;
-  }
+	.post {
+		margin-bottom: 2rem;
+		transition: transform 0.2s ease;
+	}
 
-  .post:hover {
-    transform: translateY(-3px);
-  }
+	.post:hover {
+		transform: translateY(-3px);
+	}
 
-  .post-thumbnail {
-    margin-bottom: 1rem;
-    overflow: hidden;
-    border-radius: 8px;
-  }
+	.post-thumbnail {
+		margin-bottom: 1rem;
+		overflow: hidden;
+		border-radius: 8px;
+	}
 
-  .post-thumbnail img {
-    display: block;
-    width: 100%;
-    height: auto;
-    transition: transform 0.3s ease;
-  }
+	.post-thumbnail img {
+		display: block;
+		width: 100%;
+		height: auto;
+		transition: transform 0.3s ease;
+	}
 
-  .post-thumbnail img:hover {
-    transform: scale(1.05);
-  }
+	.post-thumbnail img:hover {
+		transform: scale(1.05);
+	}
 
-  .post-title {
-    margin-top: 0;
-    margin-bottom: 0.5rem;
-  }
+	.post-title {
+		margin-top: 0;
+		margin-bottom: 0.5rem;
+	}
 
-  .post-link {
-    text-decoration: none;
-    color: #29aae1;
-  }
+	.post-link {
+		text-decoration: none;
+		color: #29aae1;
+	}
 
-  .post-link:hover {
-    text-decoration: underline;
-    color: #333;
-  }
+	.post-link:hover {
+		text-decoration: underline;
+		color: #333;
+	}
 
-  .post-content {
-    margin-top: 1rem;
-  }
+	.post-content {
+		margin-top: 1rem;
+	}
 
-  .read-more {
-    font-weight: 600;
-    text-decoration: none;
-    color: #29aae1;
-  }
+	.read-more {
+		font-weight: 600;
+		text-decoration: none;
+		color: #29aae1;
+	}
 
-  .read-more:hover {
-    text-decoration: underline;
-    color: #333;
-  }
+	.read-more:hover {
+		text-decoration: underline;
+		color: #333;
+	}
 </style>

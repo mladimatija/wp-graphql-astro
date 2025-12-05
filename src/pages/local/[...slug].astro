@@ -1,39 +1,39 @@
 ---
-import { getCollection } from 'astro:content';
-import LocalPage from '../../components/content-collections/LocalPage.astro';
-import MainLayout from '../../layouts/MainLayout.astro';
-import { log } from '../../lib/constants';
+import { getCollection } from "astro:content";
+import LocalPage from "../../components/content-collections/LocalPage.astro";
+import MainLayout from "../../layouts/MainLayout.astro";
+import { log } from "../../lib/constants";
 
 // Set some pages for static pre-rendering
 export const prerender = true;
 
 export async function getStaticPaths() {
-  try {
-    const pagesEntries = await getCollection('pages');
-    
-    return pagesEntries
-      .filter(page => !page.data.draft) // Only include non-draft pages
-      .map(page => ({
-        params: { 
-          slug: page.slug 
-        },
-        props: { 
-          page 
-        },
-      }));
-  } catch (error) {
-    // Always log this error as it's critical for page generation
-    log.error('Error generating static paths for local pages:', error);
-    // Return a minimal set if content collections are not set up yet
-    return [{ params: { slug: 'about-local' }, props: { page: null } }];
-  }
+	try {
+		const pagesEntries = await getCollection("pages");
+
+		return pagesEntries
+			.filter((page) => !page.data.draft) // Only include non-draft pages
+			.map((page) => ({
+				params: {
+					slug: page.slug,
+				},
+				props: {
+					page,
+				},
+			}));
+	} catch (error) {
+		// Always log this error as it's critical for page generation
+		log.error("Error generating static paths for local pages:", error);
+		// Return a minimal set if content collections are not set up yet
+		return [{ params: { slug: "about-local" }, props: { page: null } }];
+	}
 }
 
 const { page } = Astro.props;
 
 // Handle case where page is not found - will be caught by error handling
 if (!page) {
-  return Astro.redirect('/404');
+	return Astro.redirect("/404");
 }
 ---
 

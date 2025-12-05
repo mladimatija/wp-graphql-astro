@@ -1,106 +1,107 @@
 ---
+
 ---
 
 <div class="contact-form">
-  <form
-    netlify
-    netlify-honeypot="bot-field"
-    data-netlify-recaptcha="true"
-    name="contact-form"
-    method="POST"
-    action="/success"
-  >
-    <p class="hidden">
-      <label>
-        Don't fill this out if you're human: <input name="bot-field" />
-      </label>
-    </p>
-    <input type="hidden" name="form-name" value="contact-form" />
-    <label for="name" hidden>Name</label>
-    <input id="name" type="text" name="name" placeholder="Name" required />
-    <label for="email" hidden>Email</label>
-    <input id="email" type="email" name="email" placeholder="Email" required />
-    <label for="message" hidden>Message</label>
-    <textarea
-      id="message"
-      wrap="soft"
-      name="message"
-      required
-      placeholder="Message"
-      rows="7"></textarea>
-    <div data-netlify-recaptcha="true"></div>
-    <button type="submit">Submit</button>
-  </form>
+	<form
+		netlify
+		netlify-honeypot="bot-field"
+		data-netlify-recaptcha="true"
+		name="contact-form"
+		method="POST"
+		action="/success"
+	>
+		<p class="hidden">
+			<label>
+				Don't fill this out if you're human: <input name="bot-field" />
+			</label>
+		</p>
+		<input type="hidden" name="form-name" value="contact-form" />
+		<label for="name" hidden>Name</label>
+		<input id="name" type="text" name="name" placeholder="Name" required />
+		<label for="email" hidden>Email</label>
+		<input id="email" type="email" name="email" placeholder="Email" required />
+		<label for="message" hidden>Message</label>
+		<textarea
+			id="message"
+			wrap="soft"
+			name="message"
+			required
+			placeholder="Message"
+			rows="7"></textarea>
+		<div data-netlify-recaptcha="true"></div>
+		<button type="submit">Submit</button>
+	</form>
 </div>
 
 <style>
-  .contact-form {
-    margin: 2rem 0;
-  }
+	.contact-form {
+		margin: 2rem 0;
+	}
 
-  .contact-form form {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-  }
+	.contact-form form {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1.5rem;
+	}
 
-  .contact-form form .hidden {
-    clip-path: inset(50%);
-    height: 1px;
-    overflow: hidden;
-    position: absolute;
-    white-space: nowrap;
-    width: 1px;
-  }
+	.contact-form form .hidden {
+		clip-path: inset(50%);
+		height: 1px;
+		overflow: hidden;
+		position: absolute;
+		white-space: nowrap;
+		width: 1px;
+	}
 
-  .contact-form form input {
-    flex-basis: calc(50% - 0.75rem);
-  }
+	.contact-form form input {
+		flex-basis: calc(50% - 0.75rem);
+	}
 
-  .contact-form form textarea {
-    flex-basis: 100%;
-    resize: none;
-  }
+	.contact-form form textarea {
+		flex-basis: 100%;
+		resize: none;
+	}
 
-  .contact-form form input,
-  .contact-form form textarea {
-    padding: 1rem 1.5rem;
-    font-size: 1rem;
-    border: 0.0625rem solid var(--color-black);
-    border-radius: 0.5rem;
-    outline: 0;
-    transition: border-color 0.4s ease;
-  }
+	.contact-form form input,
+	.contact-form form textarea {
+		padding: 1rem 1.5rem;
+		font-size: 1rem;
+		border: 0.0625rem solid var(--color-black);
+		border-radius: 0.5rem;
+		outline: 0;
+		transition: border-color 0.4s ease;
+	}
 
-  .contact-form form input::placeholder,
-  .contact-form form textarea::placeholder {
-    color: rgb(25 34 38 / 0.5);
-  }
+	.contact-form form input::placeholder,
+	.contact-form form textarea::placeholder {
+		color: rgb(25 34 38 / 0.5);
+	}
 
-  .contact-form form input:hover,
-  .contact-form form input:focus,
-  .contact-form form input:active,
-  .contact-form form textarea:hover,
-  .contact-form form textarea:focus,
-  .contact-form form textarea:active {
-    border-color: var(--color-blue);
-  }
+	.contact-form form input:hover,
+	.contact-form form input:focus,
+	.contact-form form input:active,
+	.contact-form form textarea:hover,
+	.contact-form form textarea:focus,
+	.contact-form form textarea:active {
+		border-color: var(--color-blue);
+	}
 
-  .contact-form form button[type='submit'] {
-    margin: 0 auto;
-    padding: 1rem 1.5rem;
-    color: #fff;
-    font-size: 1rem;
-    background-color: var(--color-blue);
-    border: none;
-    border-radius: 0.5rem;
-    text-transform: uppercase;
-    font-weight: normal;
-    cursor: pointer;
-    transition: background-color 0.4s ease;
-  }
+	.contact-form form button[type="submit"] {
+		margin: 0 auto;
+		padding: 1rem 1.5rem;
+		color: #fff;
+		font-size: 1rem;
+		background-color: var(--color-blue);
+		border: none;
+		border-radius: 0.5rem;
+		text-transform: uppercase;
+		font-weight: normal;
+		cursor: pointer;
+		transition: background-color 0.4s ease;
+	}
 
-  .contact-form form button[type='submit']:hover {
-    background-color: rgb(41 170 225 / 0.8);
-  }
+	.contact-form form button[type="submit"]:hover {
+		background-color: rgb(41 170 225 / 0.8);
+	}
 </style>

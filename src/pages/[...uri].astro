@@ -14,32 +14,32 @@ const node = data.nodeByUri;
 
 // Get static paths for static site generation (all pages and posts)
 export async function getStaticPaths() {
-  // Return all paths without filtering to generate every page and post
-  // This ensures the entire site is pre-rendered at build time
-  return await getAllUris();
+	// Return all paths without filtering to generate every page and post
+	// This ensures the entire site is pre-rendered at build time
+	return await getAllUris();
 }
 
 // Determine which template to use based on the content type
 function resolveContentTemplate(node) {
-  let template;
-  switch (node?.__typename) {
-    case "Post":
-      template = Single;
-      break;
-    case "Page":
-      template = Single;
-      break;
-    case "Category":
-      template = Archive;
-      break;
-    case "Tag":
-      template = Archive;
-      break;
-    default:
-      template = Single;
-  }
+	let template;
+	switch (node?.__typename) {
+		case "Post":
+			template = Single;
+			break;
+		case "Page":
+			template = Single;
+			break;
+		case "Category":
+			template = Archive;
+			break;
+		case "Tag":
+			template = Archive;
+			break;
+		default:
+			template = Single;
+	}
 
-  return template;
+	return template;
 }
 
 // Resolve the appropriate template component
@@ -47,10 +47,10 @@ const Template = resolveContentTemplate(node);
 
 // Handle case of a node not found
 if (!node) {
-  return Astro.redirect('/404');
+	return Astro.redirect("/404");
 }
 ---
 
 <MainLayout title={node.title || node.name} description={node.excerpt}>
-  <Template node={node} />
+	<Template node={node} />
 </MainLayout>

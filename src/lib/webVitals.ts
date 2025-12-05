@@ -25,43 +25,43 @@ const analyticsEndpoint = import.meta.env.PUBLIC_ANALYTICS_ENDPOINT || "";
  * @param {Object} metric - Web Vitals metric object
  */
 function sendToAnalytics(metric) {
-  // Early return if no analytics endpoint is configured
-  if (!analyticsEndpoint) {
-    // Log metrics in development mode or if debugging is enabled
-    log.debug(`Web Vitals: ${metric.name} = ${metric.value}`);
-    return;
-  }
+	// Early return if no analytics endpoint is configured
+	if (!analyticsEndpoint) {
+		// Log metrics in development mode or if debugging is enabled
+		log.debug(`Web Vitals: ${metric.name} = ${metric.value}`);
+		return;
+	}
 
-  // Prepare the data to send
-  const body = {
-    name: metric.name,
-    value: metric.value,
-    rating: metric.rating, // "good", "needs-improvement", or "poor"
-    delta: metric.delta,
-    id: metric.id,
-    page: window.location.pathname,
-    // Add any additional data you want to collect
-    screenWidth: window.innerWidth,
-    dpr: window.devicePixelRatio,
-    timestamp: new Date().toISOString(),
-    navigationType: metric.navigationType,
-  };
+	// Prepare the data to send
+	const body = {
+		name: metric.name,
+		value: metric.value,
+		rating: metric.rating, // "good", "needs-improvement", or "poor"
+		delta: metric.delta,
+		id: metric.id,
+		page: window.location.pathname,
+		// Add any additional data you want to collect
+		screenWidth: window.innerWidth,
+		dpr: window.devicePixelRatio,
+		timestamp: new Date().toISOString(),
+		navigationType: metric.navigationType,
+	};
 
-  // Use `navigator.sendBeacon()` if available
-  if (navigator.sendBeacon && typeof Blob !== "undefined") {
-    const blob = new Blob([JSON.stringify(body)], { type: "application/json" });
-    navigator.sendBeacon(analyticsEndpoint, blob);
-  } else {
-    // Fall back to fetch() for older browsers
-    fetch(analyticsEndpoint, {
-      body: JSON.stringify(body),
-      method: "POST",
-      keepalive: true,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  }
+	// Use `navigator.sendBeacon()` if available
+	if (navigator.sendBeacon && typeof Blob !== "undefined") {
+		const blob = new Blob([JSON.stringify(body)], { type: "application/json" });
+		navigator.sendBeacon(analyticsEndpoint, blob);
+	} else {
+		// Fall back to fetch() for older browsers
+		fetch(analyticsEndpoint, {
+			body: JSON.stringify(body),
+			method: "POST",
+			keepalive: true,
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
 }
 
 /**
@@ -69,19 +69,19 @@ function sendToAnalytics(metric) {
  * Call this function when your app loads to start monitoring
  */
 export function initWebVitals() {
-  // Only run in the browser
-  if (typeof window === "undefined") return;
+	// Only run in the browser
+	if (typeof window === "undefined") return;
 
-  try {
-    // Measure and report each Core Web Vital
-    onCLS(sendToAnalytics); // Cumulative Layout Shift
-    onLCP(sendToAnalytics); // Largest Contentful Paint
-    onFCP(sendToAnalytics); // First Contentful Paint
-    onTTFB(sendToAnalytics); // Time to First Byte
-    onINP(sendToAnalytics); // Interaction to Next Paint (replaces FID in v5)
-  } catch (error) {
-    log.error("Failed to initialize Web Vitals: " + error);
-  }
+	try {
+		// Measure and report each Core Web Vital
+		onCLS(sendToAnalytics); // Cumulative Layout Shift
+		onLCP(sendToAnalytics); // Largest Contentful Paint
+		onFCP(sendToAnalytics); // First Contentful Paint
+		onTTFB(sendToAnalytics); // Time to First Byte
+		onINP(sendToAnalytics); // Interaction to Next Paint (replaces FID in v5)
+	} catch (error) {
+		log.error("Failed to initialize Web Vitals: " + error);
+	}
 }
 
 /**
@@ -91,38 +91,38 @@ export function initWebVitals() {
  * @returns {Promise<Object>} Object containing all core metrics
  */
 export async function getWebVitalsMetrics() {
-  return new Promise<WebVitalsMetrics>((resolve) => {
-    if (typeof window === "undefined") {
-      resolve({});
-      return;
-    }
+	return new Promise<WebVitalsMetrics>((resolve) => {
+		if (typeof window === "undefined") {
+			resolve({});
+			return;
+		}
 
-    try {
-      const metrics = {};
-      let remaining = 5; // Number of metrics we're waiting for (FID removed in v5)
+		try {
+			const metrics = {};
+			let remaining = 5; // Number of metrics we're waiting for (FID removed in v5)
 
-      function saveMetric(metric) {
-        metrics[metric.name] = {
-          value: metric.value,
-          rating: metric.rating,
-        };
-        remaining--;
+			function saveMetric(metric) {
+				metrics[metric.name] = {
+					value: metric.value,
+					rating: metric.rating,
+				};
+				remaining--;
 
-        if (remaining <= 0) {
-          resolve(metrics);
-        }
-      }
+				if (remaining <= 0) {
+					resolve(metrics);
+				}
+			}
 
-      onCLS(saveMetric);
-      onLCP(saveMetric);
-      onFCP(saveMetric);
-      onTTFB(saveMetric);
-      onINP(saveMetric);
-    } catch (error) {
-      log.error("Failed to get Web Vitals metrics: " + error);
-      resolve({});
-    }
-  });
+			onCLS(saveMetric);
+			onLCP(saveMetric);
+			onFCP(saveMetric);
+			onTTFB(saveMetric);
+			onINP(saveMetric);
+		} catch (error) {
+			log.error("Failed to get Web Vitals metrics: " + error);
+			resolve({});
+		}
+	});
 }
 
 // Export the individual metrics functions for custom use

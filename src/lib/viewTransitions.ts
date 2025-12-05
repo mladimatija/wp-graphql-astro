@@ -13,12 +13,12 @@
  * @returns An object with the style attribute containing the view-transition-name
  */
 export function transitionName(
-  name: string,
-  id?: string | number,
+	name: string,
+	id?: string | number,
 ): { style: string } {
-  return {
-    style: `view-transition-name: ${id ? `${name}-${id}` : name};`,
-  };
+	return {
+		style: `view-transition-name: ${id ? `${name}-${id}` : name};`,
+	};
 }
 
 /**
@@ -30,10 +30,10 @@ export function transitionName(
  * @returns HTML attribute object with transition name
  */
 export function pageTransition(
-  element: string,
-  id?: string | number,
+	element: string,
+	id?: string | number,
 ): { style: string } {
-  return transitionName(element, id);
+	return transitionName(element, id);
 }
 
 /**
@@ -42,7 +42,7 @@ export function pageTransition(
  * @returns Boolean indicating if the View Transitions API is supported
  */
 export function supportsViewTransitions(): boolean {
-  return typeof document !== "undefined" && "startViewTransition" in document;
+	return typeof document !== "undefined" && "startViewTransition" in document;
 }
 
 /**
@@ -53,25 +53,25 @@ export function supportsViewTransitions(): boolean {
  * @returns String of combined CSS classes
  */
 export function getTransitionClasses(
-  baseClasses: string,
-  transitionType?: string,
+	baseClasses: string,
+	transitionType?: string,
 ): string {
-  if (!supportsViewTransitions() || !transitionType) {
-    return baseClasses;
-  }
+	if (!supportsViewTransitions() || !transitionType) {
+		return baseClasses;
+	}
 
-  return `${baseClasses} transition-${transitionType}`;
+	return `${baseClasses} transition-${transitionType}`;
 }
 
 /**
  * Constants for common transition names
  */
 export const TRANSITIONS = {
-  ROOT: "root",
-  HEADER: "header",
-  CONTENT: "content",
-  HERO: "hero",
-  FOOTER: "footer",
-  IMAGE: "image",
-  CARD: "card",
+	ROOT: "root",
+	HEADER: "header",
+	CONTENT: "content",
+	HERO: "hero",
+	FOOTER: "footer",
+	IMAGE: "image",
+	CARD: "card",
 };

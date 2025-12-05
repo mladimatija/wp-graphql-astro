@@ -8,133 +8,133 @@
 
 /* Base transition styles */
 ::view-transition-group(*) {
-  animation-duration: var(--transition-duration, 0.3s);
-  animation-timing-function: var(
-    --transition-easing,
-    cubic-bezier(0.4, 0, 0.2, 1)
-  );
+	animation-duration: var(--transition-duration, 0.3s);
+	animation-timing-function: var(
+		--transition-easing,
+		cubic-bezier(0.4, 0, 0.2, 1)
+	);
 }
 
 ::view-transition-old(*) {
-  animation-duration: var(--transition-duration, 0.3s);
-  animation-timing-function: var(
-    --transition-easing,
-    cubic-bezier(0.4, 0, 0.2, 1)
-  );
-  animation-fill-mode: forwards;
+	animation-duration: var(--transition-duration, 0.3s);
+	animation-timing-function: var(
+		--transition-easing,
+		cubic-bezier(0.4, 0, 0.2, 1)
+	);
+	animation-fill-mode: forwards;
 }
 
 ::view-transition-new(*) {
-  animation-duration: var(--transition-duration, 0.3s);
-  animation-timing-function: var(
-    --transition-easing,
-    cubic-bezier(0.4, 0, 0.2, 1)
-  );
-  animation-fill-mode: forwards;
+	animation-duration: var(--transition-duration, 0.3s);
+	animation-timing-function: var(
+		--transition-easing,
+		cubic-bezier(0.4, 0, 0.2, 1)
+	);
+	animation-fill-mode: forwards;
 }
 
 /* Specific element transitions */
 ::view-transition-group(root) {
-  animation-duration: var(--page-transition-duration, 0.3s);
+	animation-duration: var(--page-transition-duration, 0.3s);
 }
 
 ::view-transition-old(root) {
-  animation: var(--page-transition-duration, 0.3s) both
-    var(--page-transition-old, fade-out);
+	animation: var(--page-transition-duration, 0.3s) both
+		var(--page-transition-old, fade-out);
 }
 
 ::view-transition-new(root) {
-  animation: var(--page-transition-duration, 0.3s) both
-    var(--page-transition-new, fade-in);
+	animation: var(--page-transition-duration, 0.3s) both
+		var(--page-transition-new, fade-in);
 }
 
 /* Image transitions */
 ::view-transition-group(image) {
-  animation-duration: var(--image-transition-duration, 0.5s);
-  z-index: 1;
+	animation-duration: var(--image-transition-duration, 0.5s);
+	z-index: 1;
 }
 
 ::view-transition-old(image) {
-  animation: var(--image-transition-duration, 0.5s) both fade-out;
+	animation: var(--image-transition-duration, 0.5s) both fade-out;
 }
 
 ::view-transition-new(image) {
-  animation: var(--image-transition-duration, 0.5s) both fade-in;
+	animation: var(--image-transition-duration, 0.5s) both fade-in;
 }
 
 /* Header transitions */
 ::view-transition-group(header) {
-  animation-duration: var(--header-transition-duration, 0.4s);
-  z-index: 2;
+	animation-duration: var(--header-transition-duration, 0.4s);
+	z-index: 2;
 }
 
 ::view-transition-old(header) {
-  animation: var(--header-transition-duration, 0.4s) both slide-out-top;
+	animation: var(--header-transition-duration, 0.4s) both slide-out-top;
 }
 
 ::view-transition-new(header) {
-  animation: var(--header-transition-duration, 0.4s) both slide-in-top;
+	animation: var(--header-transition-duration, 0.4s) both slide-in-top;
 }
 
 /* Content transitions */
 ::view-transition-group(content) {
-  animation-duration: var(--content-transition-duration, 0.4s);
+	animation-duration: var(--content-transition-duration, 0.4s);
 }
 
 ::view-transition-old(content) {
-  animation: var(--content-transition-duration, 0.4s) both fade-out;
+	animation: var(--content-transition-duration, 0.4s) both fade-out;
 }
 
 ::view-transition-new(content) {
-  animation: var(--content-transition-duration, 0.4s) both fade-in;
+	animation: var(--content-transition-duration, 0.4s) both fade-in;
 }
 
 /* Animation keyframes */
 @keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
 }
 
 @keyframes fade-out {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
 }
 
 @keyframes slide-in-top {
-  from {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+	from {
+		transform: translateY(-20px);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
 }
 
 @keyframes slide-out-top {
-  from {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
+	from {
+		transform: translateY(0);
+		opacity: 1;
+	}
+	to {
+		transform: translateY(-20px);
+		opacity: 0;
+	}
 }
 
 /* Media query for reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(*),
-  ::view-transition-old(*),
-  ::view-transition-new(*) {
-    animation: none !important;
-  }
+	::view-transition-group(*),
+	::view-transition-old(*),
+	::view-transition-new(*) {
+		animation: none !important;
+	}
 }

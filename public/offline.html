@@ -1,308 +1,308 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>You're Offline | WP GraphQL Astro</title>
-    <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml" />
-    <style>
-      :root {
-        --color-primary: #29aae1;
-        --color-text: #333;
-        --color-text-light: #666;
-        --color-background: #fff;
-        --color-border: #eaeaea;
-        --font-sans:
-          "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
-        --font-serif: "Lora", Georgia, "Times New Roman", serif;
-      }
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>You're Offline | WP GraphQL Astro</title>
+		<link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml" />
+		<style>
+			:root {
+				--color-primary: #29aae1;
+				--color-text: #333;
+				--color-text-light: #666;
+				--color-background: #fff;
+				--color-border: #eaeaea;
+				--font-sans:
+					"Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+					Helvetica, Arial, sans-serif;
+				--font-serif: "Lora", Georgia, "Times New Roman", serif;
+			}
 
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --color-primary: #4a76c4;
-          --color-text: #e5e5e5;
-          --color-text-light: #a0a0a0;
-          --color-background: #121212;
-          --color-border: #333;
-        }
-      }
+			@media (prefers-color-scheme: dark) {
+				:root {
+					--color-primary: #4a76c4;
+					--color-text: #e5e5e5;
+					--color-text-light: #a0a0a0;
+					--color-background: #121212;
+					--color-border: #333;
+				}
+			}
 
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+			* {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
 
-      body {
-        font-family: var(--font-sans), serif;
-        line-height: 1.6;
-        color: var(--color-text);
-        background-color: var(--color-background);
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        padding: 0;
-      }
+			body {
+				font-family: var(--font-sans), serif;
+				line-height: 1.6;
+				color: var(--color-text);
+				background-color: var(--color-background);
+				display: flex;
+				flex-direction: column;
+				min-height: 100vh;
+				padding: 0;
+			}
 
-      .container {
-        width: 90%;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 2rem 0;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-      }
+			.container {
+				width: 90%;
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 2rem 0;
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				text-align: center;
+			}
 
-      header {
-        padding: 1rem 0;
-        border-bottom: 1px solid var(--color-border);
-        width: 100%;
-        text-align: center;
-      }
+			header {
+				padding: 1rem 0;
+				border-bottom: 1px solid var(--color-border);
+				width: 100%;
+				text-align: center;
+			}
 
-      .logo {
-        max-width: 150px;
-        height: auto;
-      }
+			.logo {
+				max-width: 150px;
+				height: auto;
+			}
 
-      main {
-        padding: 2rem 0;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-      }
+			main {
+				padding: 2rem 0;
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				width: 100%;
+			}
 
-      .offline-icon {
-        width: 120px;
-        height: 120px;
-        margin-bottom: 2rem;
-        color: var(--color-primary);
-      }
+			.offline-icon {
+				width: 120px;
+				height: 120px;
+				margin-bottom: 2rem;
+				color: var(--color-primary);
+			}
 
-      h1 {
-        font-family: var(--font-serif), serif;
-        font-size: 2rem;
-        margin-bottom: 1rem;
-        color: var(--color-primary);
-      }
+			h1 {
+				font-family: var(--font-serif), serif;
+				font-size: 2rem;
+				margin-bottom: 1rem;
+				color: var(--color-primary);
+			}
 
-      p {
-        margin-bottom: 1.5rem;
-        color: var(--color-text-light);
-      }
+			p {
+				margin-bottom: 1.5rem;
+				color: var(--color-text-light);
+			}
 
-      .button {
-        display: inline-block;
-        background-color: var(--color-primary);
-        color: #fff;
-        padding: 0.75rem 1.5rem;
-        border-radius: 4px;
-        text-decoration: none;
-        font-weight: 600;
-        margin-top: 1rem;
-        transition: background-color 0.2s ease;
-      }
+			.button {
+				display: inline-block;
+				background-color: var(--color-primary);
+				color: #fff;
+				padding: 0.75rem 1.5rem;
+				border-radius: 4px;
+				text-decoration: none;
+				font-weight: 600;
+				margin-top: 1rem;
+				transition: background-color 0.2s ease;
+			}
 
-      .button:hover {
-        background-color: #1c8bc0;
-      }
+			.button:hover {
+				background-color: #1c8bc0;
+			}
 
-      .cached-pages {
-        margin-top: 2rem;
-        width: 100%;
-        max-width: 500px;
-        text-align: left;
-      }
+			.cached-pages {
+				margin-top: 2rem;
+				width: 100%;
+				max-width: 500px;
+				text-align: left;
+			}
 
-      .cached-pages h2 {
-        font-size: 1.25rem;
-        margin-bottom: 1rem;
-        text-align: center;
-      }
+			.cached-pages h2 {
+				font-size: 1.25rem;
+				margin-bottom: 1rem;
+				text-align: center;
+			}
 
-      .pages-list {
-        border: 1px solid var(--color-border);
-        border-radius: 4px;
-        max-height: 200px;
-        overflow-y: auto;
-        padding: 0.5rem;
-        margin-top: 1rem;
-      }
+			.pages-list {
+				border: 1px solid var(--color-border);
+				border-radius: 4px;
+				max-height: 200px;
+				overflow-y: auto;
+				padding: 0.5rem;
+				margin-top: 1rem;
+			}
 
-      .pages-list p {
-        padding: 0.5rem;
-        margin: 0;
-        border-bottom: 1px solid var(--color-border);
-      }
+			.pages-list p {
+				padding: 0.5rem;
+				margin: 0;
+				border-bottom: 1px solid var(--color-border);
+			}
 
-      .pages-list p:last-child {
-        border-bottom: none;
-      }
+			.pages-list p:last-child {
+				border-bottom: none;
+			}
 
-      .pages-list a {
-        color: var(--color-primary);
-        text-decoration: none;
-      }
+			.pages-list a {
+				color: var(--color-primary);
+				text-decoration: none;
+			}
 
-      .pages-list a:hover {
-        text-decoration: underline;
-      }
+			.pages-list a:hover {
+				text-decoration: underline;
+			}
 
-      footer {
-        padding: 1rem 0;
-        border-top: 1px solid var(--color-border);
-        text-align: center;
-        font-size: 0.875rem;
-        color: var(--color-text-light);
-      }
+			footer {
+				padding: 1rem 0;
+				border-top: 1px solid var(--color-border);
+				text-align: center;
+				font-size: 0.875rem;
+				color: var(--color-text-light);
+			}
 
-      @media (max-width: 768px) {
-        h1 {
-          font-size: 1.75rem;
-        }
+			@media (max-width: 768px) {
+				h1 {
+					font-size: 1.75rem;
+				}
 
-        .offline-icon {
-          width: 80px;
-          height: 80px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <header>
-        <a href="/"
-          ><img src="/logo.png" alt="WP GraphQL Astro" class="logo"
-        /></a>
-      </header>
+				.offline-icon {
+					width: 80px;
+					height: 80px;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<header>
+				<a href="/"
+					><img src="/logo.png" alt="WP GraphQL Astro" class="logo"
+				/></a>
+			</header>
 
-      <main>
-        <svg
-          class="offline-icon"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <line x1="1" y1="1" x2="23" y2="23"></line>
-          <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
-          <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
-          <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
-          <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
-          <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
-          <line x1="12" y1="20" x2="12.01" y2="20"></line>
-        </svg>
+			<main>
+				<svg
+					class="offline-icon"
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<line x1="1" y1="1" x2="23" y2="23"></line>
+					<path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+					<path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+					<path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+					<path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+					<path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+					<line x1="12" y1="20" x2="12.01" y2="20"></line>
+				</svg>
 
-        <h1>You're Offline</h1>
-        <p>
-          It seems you're not connected to the internet right now. Some features
-          may be unavailable until you reconnect.
-        </p>
+				<h1>You're Offline</h1>
+				<p>
+					It seems you're not connected to the internet right now. Some features
+					may be unavailable until you reconnect.
+				</p>
 
-        <a href="/" class="button">Try Again</a>
+				<a href="/" class="button">Try Again</a>
 
-        <div class="cached-pages">
-          <h2>Available Offline</h2>
-          <p>Here are some pages you can still visit while offline:</p>
-          <div class="pages-list" id="cached-pages-list">
-            <p>Loading cached pages...</p>
-          </div>
-        </div>
-      </main>
+				<div class="cached-pages">
+					<h2>Available Offline</h2>
+					<p>Here are some pages you can still visit while offline:</p>
+					<div class="pages-list" id="cached-pages-list">
+						<p>Loading cached pages...</p>
+					</div>
+				</div>
+			</main>
 
-      <footer>
-        <p>&copy; WP GraphQL Astro. All rights reserved.</p>
-      </footer>
-    </div>
+			<footer>
+				<p>&copy; WP GraphQL Astro. All rights reserved.</p>
+			</footer>
+		</div>
 
-    <script>
-      // Fetch and display cached pages when offline
-      document.addEventListener("DOMContentLoaded", async () => {
-        // Check if we're in development mode
-        const isDev =
-          window.location.hostname === "localhost" ||
-          window.location.hostname === "127.0.0.1";
+		<script>
+			// Fetch and display cached pages when offline
+			document.addEventListener("DOMContentLoaded", async () => {
+				// Check if we're in development mode
+				const isDev =
+					window.location.hostname === "localhost" ||
+					window.location.hostname === "127.0.0.1";
 
-        const pagesList = document.getElementById("cached-pages-list");
+				const pagesList = document.getElementById("cached-pages-list");
 
-        try {
-          // Try to get the list of cached pages from the content cache
-          const cacheNames = await caches.keys();
-          const contentCache = cacheNames.find((name) =>
-            name.includes("content"),
-          );
+				try {
+					// Try to get the list of cached pages from the content cache
+					const cacheNames = await caches.keys();
+					const contentCache = cacheNames.find((name) =>
+						name.includes("content"),
+					);
 
-          if (contentCache) {
-            const cache = await caches.open(contentCache);
-            const requests = await cache.keys();
+					if (contentCache) {
+						const cache = await caches.open(contentCache);
+						const requests = await cache.keys();
 
-            if (requests.length > 0) {
-              pagesList.innerHTML = "";
+						if (requests.length > 0) {
+							pagesList.innerHTML = "";
 
-              // Display cached URLs
-              requests
-                .filter(
-                  (request) =>
-                    request.url.endsWith("/") || request.url.endsWith(".html"),
-                )
-                .forEach((request) => {
-                  const url = new URL(request.url);
-                  let displayPath = url.pathname;
+							// Display cached URLs
+							requests
+								.filter(
+									(request) =>
+										request.url.endsWith("/") || request.url.endsWith(".html"),
+								)
+								.forEach((request) => {
+									const url = new URL(request.url);
+									let displayPath = url.pathname;
 
-                  // Clean up the path for display
-                  if (displayPath === "/") {
-                    displayPath = "Home Page";
-                  } else {
-                    // Remove trailing slashes and make more readable
-                    displayPath = displayPath
-                      .replace(/\/$/, "")
-                      .replace(/^\//, "");
-                    displayPath = displayPath
-                      .split("/")
-                      .map(
-                        (part) =>
-                          part.charAt(0).toUpperCase() +
-                          part.slice(1).replace(/-/g, " "),
-                      )
-                      .join(" / ");
-                  }
+									// Clean up the path for display
+									if (displayPath === "/") {
+										displayPath = "Home Page";
+									} else {
+										// Remove trailing slashes and make more readable
+										displayPath = displayPath
+											.replace(/\/$/, "")
+											.replace(/^\//, "");
+										displayPath = displayPath
+											.split("/")
+											.map(
+												(part) =>
+													part.charAt(0).toUpperCase() +
+													part.slice(1).replace(/-/g, " "),
+											)
+											.join(" / ");
+									}
 
-                  const pageElement = document.createElement("p");
-                  pageElement.innerHTML = `<a href="${url.pathname}">${displayPath}</a>`;
-                  pagesList.appendChild(pageElement);
-                });
-            } else {
-              pagesList.innerHTML = "<p>No cached pages available.</p>";
-            }
-          } else {
-            pagesList.innerHTML = "<p>No cached content found.</p>";
-          }
-        } catch (error) {
-          // Only log errors in development mode
-          if (isDev || localStorage.getItem("debug") === "true") {
-            console.error("[ERROR] Error fetching cached pages:", error);
-          }
-          pagesList.innerHTML = "<p>Unable to load cached pages.</p>";
-        }
+									const pageElement = document.createElement("p");
+									pageElement.innerHTML = `<a href="${url.pathname}">${displayPath}</a>`;
+									pagesList.appendChild(pageElement);
+								});
+						} else {
+							pagesList.innerHTML = "<p>No cached pages available.</p>";
+						}
+					} else {
+						pagesList.innerHTML = "<p>No cached content found.</p>";
+					}
+				} catch (error) {
+					// Only log errors in development mode
+					if (isDev || localStorage.getItem("debug") === "true") {
+						console.error("[ERROR] Error fetching cached pages:", error);
+					}
+					pagesList.innerHTML = "<p>Unable to load cached pages.</p>";
+				}
 
-        // Listen for online status changes
-        window.addEventListener("online", () => {
-          const button = document.querySelector(".button");
-          button.textContent = "Reload Page";
-          button.style.backgroundColor = "#28a745";
-        });
-      });
-    </script>
-  </body>
+				// Listen for online status changes
+				window.addEventListener("online", () => {
+					const button = document.querySelector(".button");
+					button.textContent = "Reload Page";
+					button.style.backgroundColor = "#28a745";
+				});
+			});
+		</script>
+	</body>
 </html>

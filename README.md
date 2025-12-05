@@ -1,5 +1,10 @@
 # Headless WordPress with Astro and GraphQL
 
+[![CI](https://github.com/mladimatija/wp-graphql-astro/actions/workflows/ci.yml/badge.svg)](https://github.com/mladimatija/wp-graphql-astro/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node Version](https://img.shields.io/badge/node-25.x-brightgreen.svg)](https://nodejs.org)
+[![Astro](https://img.shields.io/badge/Astro-5.16-FF5D01.svg?logo=astro&logoColor=white)](https://astro.build/)
+
 A headless WordPress site built with [Astro](https://astro.build/) and GraphQL. Fast, modern, and fully static.
 
 ## What's Inside
@@ -237,7 +242,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 ---
 
 <MainLayout showWebVitals={true}>
-  <!-- Page content -->
+	<!-- Page content -->
 </MainLayout>
 ```
 
@@ -267,9 +272,9 @@ log.error("Critical error that requires action");
 
 // Client-side context (in .astro files)
 const clientLog = {
-  debug: (msg) => isDev && console.log("[CLIENT DEBUG]", msg),
-  info: (msg) => isDev && console.log("[CLIENT INFO]", msg),
-  error: (msg, err) => console.error("[CLIENT ERROR]", msg, err || ""),
+	debug: (msg) => isDev && console.log("[CLIENT DEBUG]", msg),
+	info: (msg) => isDev && console.log("[CLIENT INFO]", msg),
+	error: (msg, err) => console.error("[CLIENT ERROR]", msg, err || ""),
 };
 
 // Service worker context
@@ -308,22 +313,22 @@ The manifest generator fetches data from WordPress during the build process:
 
 ```graphql
 {
-  generalSettings {
-    title # Used for manifest name
-    description # Used for manifest description
-    language # Used for manifest language
-  }
-  mediaItems(where: { search: "logo" }) {
-    # Used for PWA icons
-    nodes {
-      mediaItemUrl
-      mimeType
-      mediaDetails {
-        width
-        height
-      }
-    }
-  }
+	generalSettings {
+		title # Used for manifest name
+		description # Used for manifest description
+		language # Used for manifest language
+	}
+	mediaItems(where: { search: "logo" }) {
+		# Used for PWA icons
+		nodes {
+			mediaItemUrl
+			mimeType
+			mediaDetails {
+				width
+				height
+			}
+		}
+	}
 }
 ```
 
@@ -335,7 +340,7 @@ If WordPress data is unavailable during build time, the system falls back to def
 const DEFAULT_APP_NAME = "WP GraphQL Astro";
 const DEFAULT_APP_SHORT_NAME = "WP Astro";
 const DEFAULT_APP_DESCRIPTION =
-  "A modern headless WordPress implementation using Astro and GraphQL";
+	"A modern headless WordPress implementation using Astro and GraphQL";
 const DEFAULT_THEME_COLOR = "#29aae1";
 const DEFAULT_BG_COLOR = "#ffffff";
 ```

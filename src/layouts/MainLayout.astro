@@ -1,9 +1,9 @@
 ---
 interface Props {
-  title?: string;
-  description?: string;
-  showFooter?: boolean;
-  showWebVitals?: boolean;
+	title?: string;
+	description?: string;
+	showFooter?: boolean;
+	showWebVitals?: boolean;
 }
 
 import { getNodeByURI } from "../lib/api";
@@ -22,11 +22,11 @@ import { log } from "../lib/constants";
 
 // Prefetch site settings for optimal performance
 const { generalSettings } = await settingsQuery();
-const { 
-  title, 
-  description, 
-  showFooter = true,
-  showWebVitals = import.meta.env.DEV // Show Web Vitals in development by default
+const {
+	title,
+	description,
+	showFooter = true,
+	showWebVitals = import.meta.env.DEV, // Show Web Vitals in development by default
 } = Astro.props;
 
 // Only fetch node data if we have a URI parameter
@@ -36,226 +36,259 @@ const node = data.nodeByUri;
 
 // Generate clean description and title with fallbacks
 const cleanDescription =
-  (description && stripHtml(description).result) || generalSettings.description;
+	(description && stripHtml(description).result) || generalSettings.description;
 const generatedTitle = `${title ? title + " | " : ""}${generalSettings.title}`;
 const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
 ---
 
 <html lang="en" transition:animate="none">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="generator" content={Astro.generator} />
-    
-    <!-- Accessibility meta tags -->
-    <meta name="description" content={cleanDescription} />
-    
-    <!-- Preload critical assets -->
-    <link rel="preconnect" href={import.meta.env.WORDPRESS_API_URL} />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
 
-    <!-- PWA support with manifest -->
-    <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#29aae1" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<!-- Accessibility meta tags -->
+		<meta name="description" content={cleanDescription} />
 
-    <SEO
-      title={generatedTitle}
-      description={cleanDescription}
-      openGraph={{
-        basic: {
-          title: generatedTitle,
-          type: "website",
-          image: metaImage,
-        },
-        image: {
-          url: metaImage,
-          alt: generatedTitle,
-        },
-      }}
-      twitter={{
-        creator: `@${import.meta.env.PUBLIC_X_SHARE_USER}`,
-        card: "summary_large_image"
-      }}
-      extend={{
-        // extending the default link tags
-        link: [
-          { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
-          { rel: "apple-touch-icon", href: "/logo.svg", type: "image/svg+xml" },
-          { rel: "sitemap", href: "/sitemap-index.xml" }
-        ],
-        // extending the default meta tags
-        meta: [
-          {
-            name: "twitter:image",
-            content: metaImage,
-          },
-          { name: "twitter:title", content: generatedTitle },
-          { name: "twitter:description", content: cleanDescription },
-        ],
-      }}
-    />
+		<!-- Preload critical assets -->
+		<link rel="preconnect" href={import.meta.env.WORDPRESS_API_URL} />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <!-- Astro Client Router for transitions -->
-    <ClientRouter />
-    
-    <!-- Add support for Astro:assets image optimization -->
-    <slot name="head" />
-    <title></title>
-  </head>
+		<!-- PWA support with manifest -->
+		<link rel="manifest" href="/manifest.json" />
+		<meta
+			name="theme-color"
+			content="#29aae1"
+			media="(prefers-color-scheme: light)"
+		/>
+		<meta
+			name="theme-color"
+			content="#121212"
+			media="(prefers-color-scheme: dark)"
+		/>
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta
+			name="apple-mobile-web-app-status-bar-style"
+			content="black-translucent"
+		/>
 
-  <body>
-    <!-- Accessibility: Skip to content link -->
-    <a href="#content" class="skip-to-content">Skip to content</a>
-    
-    <!-- Include the accessibility manager -->
-    <A11yManager />
-    
-    <!-- Loading spinner -->
-    <div class="loading-spinner" id="page-loader">
-      <div class="spinner"></div>
-    </div>
-    
-    <Header />
-    <main id="content" class="site-content" transition:animate="fade">
-      <slot />
-    </main>
-    {showFooter && <Footer />}
-    
-    <!-- Dark mode component properly bundled with npm package -->
-    <DarkMode client:idle />
-    
-    <!-- Web Vitals monitoring component (conditionally rendered) -->
-    {showWebVitals && <WebVitalsMonitor client:idle showByDefault={false} />}
-    
-    <!-- Register service worker, initialize Web Vitals, and handle page transitions -->
-    <script client:load define:vars={{ isDev: import.meta.env.DEV, isDebugEnabled: import.meta.env.PUBLIC_DEBUG === 'true' }}>
-      // Define client-side logging utility
-      const clientLog = {
-        info: (message) => {
-          // Only log in development or when debugging is enabled
-          if (isDev || isDebugEnabled) {
-            console.info('[INFO]', message);
-          }
-        },
-        error: (message) => {
-          // Always log errors
-          console.error('[ERROR]', message);
-        }
-      };
-      
-      // Show loading spinner on page navigation
-      document.addEventListener('astro:before-preparation', () => {
-        document.getElementById('page-loader').classList.add('active');
-      });
-      
-      // Hide loading spinner when page is ready
-      document.addEventListener('astro:page-load', () => {
-        document.getElementById('page-loader').classList.remove('active');
-        
-        // Fix for dark mode layer issue on page load
-        setTimeout(() => {
-          if (window.resetDarkMode) {
-            window.resetDarkMode();
-          }
-        }, 200);
-      });
+		<SEO
+			title={generatedTitle}
+			description={cleanDescription}
+			openGraph={{
+				basic: {
+					title: generatedTitle,
+					type: "website",
+					image: metaImage,
+				},
+				image: {
+					url: metaImage,
+					alt: generatedTitle,
+				},
+			}}
+			twitter={{
+				creator: `@${import.meta.env.PUBLIC_X_SHARE_USER}`,
+				card: "summary_large_image",
+			}}
+			extend={{
+				// extending the default link tags
+				link: [
+					{ rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+					{ rel: "apple-touch-icon", href: "/logo.svg", type: "image/svg+xml" },
+					{ rel: "sitemap", href: "/sitemap-index.xml" },
+				],
+				// extending the default meta tags
+				meta: [
+					{
+						name: "twitter:image",
+						content: metaImage,
+					},
+					{ name: "twitter:title", content: generatedTitle },
+					{ name: "twitter:description", content: cleanDescription },
+				],
+			}}
+		/>
 
-      // Also hide spinner if navigation is canceled or fails
-      document.addEventListener('astro:after-swap', () => {
-        document.getElementById('page-loader').classList.remove('active');
-        
-        // Also fix dark mode after page transitions
-        setTimeout(() => {
-          if (window.resetDarkMode) {
-            window.resetDarkMode();
-          }
-        }, 200);
-      });
-      
-      // Register service worker for PWA functionality
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/service-worker.js').then(registration => {
-            // Only log in DEV or DEBUG mode
-            clientLog.info('SW registered successfully');
-            
-            // Listen for updates
-            registration.addEventListener('updatefound', () => {
-              const newWorker = registration.installing;
-              
-              // Notify user when new content is available
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
-                  // New service worker activated - new content is available
-                  if (window.a11yManager) {
-                    window.a11yManager.announce('New content is available. Refresh the page to update.', true);
-                  }
-                }
-              });
-            });
-          }).catch(error => {
-            // Always log errors
-            clientLog.error('SW registration failed: ' + error);
-          });
-        });
-      }
-      
-      // Fix dark mode layer on initial page load
-      window.addEventListener('load', () => {
-        // Force fix any dark mode layer issues on initial page load
-        setTimeout(() => {
-          if (window.resetDarkMode) {
-            window.resetDarkMode();
-          } else {
-            // Fallback if resetDarkMode is not available yet
-            const isDarkModeActive = document.body.classList.contains('darkmode--activated');
-            // Use conditional logging based on environment
-            clientLog.info('Fallback darkmode fix, isDarkModeActive: ' + isDarkModeActive);
-            
-            // Handle both possible class names
-            const darkmodeLayer = document.querySelector('.darkmode-layer');
-            const darkmodeBackground = document.querySelector('.darkmode-background');
-            
-            if (!isDarkModeActive) {
-              // If dark mode is OFF
-              const hideStyle = 'opacity: 0 !important; pointer-events: none !important; mix-blend-mode: normal !important;';
-              
-              if (darkmodeLayer) {
-                darkmodeLayer.setAttribute('style', hideStyle);
-              }
-              
-              if (darkmodeBackground) {
-                darkmodeBackground.setAttribute('style', hideStyle);
-              }
-            } else {
-              // If dark mode is ON, reset styles to allow the library's toggle to work
-              if (darkmodeLayer) {
-                darkmodeLayer.removeAttribute('style');
-              }
-              
-              if (darkmodeBackground) {
-                darkmodeBackground.removeAttribute('style');
-              }
-            }
-            
-            // Log the elements found for debugging (only in dev/debug mode)
-            if (isDev || isDebugEnabled) {
-              console.group('Darkmode elements (fallback)');
-              console.dir({
-                layer: darkmodeLayer,
-                background: darkmodeBackground,
-                isDarkModeActive
-              });
-              console.groupEnd();
-            }
-          }
-        }, 300);
-      });
-    </script>
-  </body>
+		<!-- Astro Client Router for transitions -->
+		<ClientRouter />
+
+		<!-- Add support for Astro:assets image optimization -->
+		<slot name="head" />
+		<title></title>
+	</head>
+
+	<body>
+		<!-- Accessibility: Skip to content link -->
+		<a href="#content" class="skip-to-content">Skip to content</a>
+
+		<!-- Include the accessibility manager -->
+		<A11yManager />
+
+		<!-- Loading spinner -->
+		<div class="loading-spinner" id="page-loader">
+			<div class="spinner"></div>
+		</div>
+
+		<Header />
+		<main id="content" class="site-content" transition:animate="fade">
+			<slot />
+		</main>
+		{showFooter && <Footer />}
+
+		<!-- Dark mode component properly bundled with npm package -->
+		<DarkMode client:idle />
+
+		<!-- Web Vitals monitoring component (conditionally rendered) -->
+		{showWebVitals && <WebVitalsMonitor client:idle showByDefault={false} />}
+
+		<!-- Register service worker, initialize Web Vitals, and handle page transitions -->
+		<script
+			client:load
+			define:vars={{
+				isDev: import.meta.env.DEV,
+				isDebugEnabled: import.meta.env.PUBLIC_DEBUG === "true",
+			}}
+		>
+			// Define client-side logging utility
+			const clientLog = {
+				info: (message) => {
+					// Only log in development or when debugging is enabled
+					if (isDev || isDebugEnabled) {
+						console.info("[INFO]", message);
+					}
+				},
+				error: (message) => {
+					// Always log errors
+					console.error("[ERROR]", message);
+				},
+			};
+
+			// Show loading spinner on page navigation
+			document.addEventListener("astro:before-preparation", () => {
+				document.getElementById("page-loader").classList.add("active");
+			});
+
+			// Hide loading spinner when page is ready
+			document.addEventListener("astro:page-load", () => {
+				document.getElementById("page-loader").classList.remove("active");
+
+				// Fix for dark mode layer issue on page load
+				setTimeout(() => {
+					if (window.resetDarkMode) {
+						window.resetDarkMode();
+					}
+				}, 200);
+			});
+
+			// Also hide spinner if navigation is canceled or fails
+			document.addEventListener("astro:after-swap", () => {
+				document.getElementById("page-loader").classList.remove("active");
+
+				// Also fix dark mode after page transitions
+				setTimeout(() => {
+					if (window.resetDarkMode) {
+						window.resetDarkMode();
+					}
+				}, 200);
+			});
+
+			// Register service worker for PWA functionality
+			if ("serviceWorker" in navigator) {
+				window.addEventListener("load", () => {
+					navigator.serviceWorker
+						.register("/service-worker.js")
+						.then((registration) => {
+							// Only log in DEV or DEBUG mode
+							clientLog.info("SW registered successfully");
+
+							// Listen for updates
+							registration.addEventListener("updatefound", () => {
+								const newWorker = registration.installing;
+
+								// Notify user when new content is available
+								newWorker.addEventListener("statechange", () => {
+									if (
+										newWorker.state === "activated" &&
+										navigator.serviceWorker.controller
+									) {
+										// New service worker activated - new content is available
+										if (window.a11yManager) {
+											window.a11yManager.announce(
+												"New content is available. Refresh the page to update.",
+												true,
+											);
+										}
+									}
+								});
+							});
+						})
+						.catch((error) => {
+							// Always log errors
+							clientLog.error("SW registration failed: " + error);
+						});
+				});
+			}
+
+			// Fix dark mode layer on initial page load
+			window.addEventListener("load", () => {
+				// Force fix any dark mode layer issues on initial page load
+				setTimeout(() => {
+					if (window.resetDarkMode) {
+						window.resetDarkMode();
+					} else {
+						// Fallback if resetDarkMode is not available yet
+						const isDarkModeActive = document.body.classList.contains(
+							"darkmode--activated",
+						);
+						// Use conditional logging based on environment
+						clientLog.info(
+							"Fallback darkmode fix, isDarkModeActive: " + isDarkModeActive,
+						);
+
+						// Handle both possible class names
+						const darkmodeLayer = document.querySelector(".darkmode-layer");
+						const darkmodeBackground = document.querySelector(
+							".darkmode-background",
+						);
+
+						if (!isDarkModeActive) {
+							// If dark mode is OFF
+							const hideStyle =
+								"opacity: 0 !important; pointer-events: none !important; mix-blend-mode: normal !important;";
+
+							if (darkmodeLayer) {
+								darkmodeLayer.setAttribute("style", hideStyle);
+							}
+
+							if (darkmodeBackground) {
+								darkmodeBackground.setAttribute("style", hideStyle);
+							}
+						} else {
+							// If dark mode is ON, reset styles to allow the library's toggle to work
+							if (darkmodeLayer) {
+								darkmodeLayer.removeAttribute("style");
+							}
+
+							if (darkmodeBackground) {
+								darkmodeBackground.removeAttribute("style");
+							}
+						}
+
+						// Log the elements found for debugging (only in dev/debug mode)
+						if (isDev || isDebugEnabled) {
+							console.group("Darkmode elements (fallback)");
+							console.dir({
+								layer: darkmodeLayer,
+								background: darkmodeBackground,
+								isDarkModeActive,
+							});
+							console.groupEnd();
+						}
+					}
+				}, 300);
+			});
+		</script>
+	</body>
 </html>

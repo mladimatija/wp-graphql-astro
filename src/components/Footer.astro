@@ -6,50 +6,55 @@ const node = data.nodeByUri;
 
 //simple breadcrumbs, only one level deep
 const getBreadCrumbs = (node) => {
-  const type = node.__typename;
-  let out = 'You are here: <a href="/">Home</a> > ';
+	const type = node.__typename;
+	let out = 'You are here: <a href="/">Home</a> > ';
 
-  if (type === 'Tag' || type === 'Category' || type === 'Archive') {
-    if (type === 'Tag') {
-      out += `Posts tagged "${node.name}"`;
-    } else {
-      out += `Archive by category "${node.name}"`;
-    }
-  } else if (type === 'Post') {
-    if (node.categories.nodes.length) {
-      // get the first category
-      out += `<a href="${node.categories.nodes[0].uri}">${node.categories.nodes[0].name}</a> > `;
-    }
-  }
+	if (type === "Tag" || type === "Category" || type === "Archive") {
+		if (type === "Tag") {
+			out += `Posts tagged "${node.name}"`;
+		} else {
+			out += `Archive by category "${node.name}"`;
+		}
+	} else if (type === "Post") {
+		if (node.categories.nodes.length) {
+			// get the first category
+			out += `<a href="${node.categories.nodes[0].uri}">${node.categories.nodes[0].name}</a> > `;
+		}
+	}
 
-  out += node.title || '';
+	out += node.title || "";
 
-  return out;
+	return out;
 };
 ---
 
 <footer transition:animate="fade">
-  {Astro.params.uri !== undefined && (
-    <div transition:animate="fade">
-      <small set:html={getBreadCrumbs(node)} />
-    </div>
-  )}
-  <hr />
-  <small>
-    built with <a href="https://astro.build/" target="_blank">Astro</a>, headless WordPress and <a href="https://www.wpgraphql.com/" target="_blank">GraphQL</a>, hosted on <a href="https://www.netlify.com/" target="_blank">Netlify</a>
-  </small>
+	{
+		Astro.params.uri !== undefined && (
+			<div transition:animate="fade">
+				<small set:html={getBreadCrumbs(node)} />
+			</div>
+		)
+	}
+	<hr />
+	<small>
+		built with <a href="https://astro.build/" target="_blank">Astro</a>,
+		headless WordPress and <a href="https://www.wpgraphql.com/" target="_blank"
+			>GraphQL</a
+		>, hosted on <a href="https://www.netlify.com/" target="_blank">Netlify</a>
+	</small>
 </footer>
 
 <style>
-  footer {
-    max-width: 47.5rem;
-    width: 100%;
-    margin: 0 auto;
-    padding-top: var(--size-12px);
-    text-align: center;
-  }
+	footer {
+		max-width: 47.5rem;
+		width: 100%;
+		margin: 0 auto;
+		padding-top: var(--size-12px);
+		text-align: center;
+	}
 
-  footer hr {
-    margin: var(--size-15px) 0;
-  }
+	footer hr {
+		margin: var(--size-15px) 0;
+	}
 </style>
