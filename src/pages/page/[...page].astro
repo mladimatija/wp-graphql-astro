@@ -9,8 +9,15 @@ import Pagination from "../../components/Pagination.astro";
 export const prerender = true;
 
 export async function getStaticPaths({ paginate }) {
-  const data = await getPosts();
   const { allSettings } = await settingsQuery();
+  // Fetch ALL posts for static generation
+  // Use the total count to determine how many posts to fetch
+  const initialData = await getPosts();
+  const totalPosts = initialData.posts.pageInfo.total;
+
+  // Fetch all posts in one query
+  const data = await getPosts(totalPosts, 1);
+
   return paginate(data.posts.edges, {
     pageSize: allSettings.readingSettingsPostsPerPage,
   });
