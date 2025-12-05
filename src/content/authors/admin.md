@@ -4,7 +4,7 @@ role: Site Administrator
 bio: Main administrator for the headless WordPress site.
 avatar: /images/avatars/admin.webp
 social:
-  twitter: wp_admin
+  x: wp_admin
   github: wp_admin
   linkedin: wp_admin
 ---

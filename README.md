@@ -1,37 +1,37 @@
 # Headless WordPress with Astro and GraphQL
 
-A modern headless WordPress implementation using [Astro](https://astro.build/) and GraphQL.
+A headless WordPress site built with [Astro](https://astro.build/) and GraphQL. Fast, modern, and fully static.
 
-## Features
+## What's Inside
 
 - Static site generation with Astro
-- WordPress content management through GraphQL
-- Responsive design with SCSS
-- Dark mode support with automatic system preference detection
-- SEO optimization with detailed metadata control
+- WordPress as a headless CMS via GraphQL
+- Responsive SCSS styling
+- Dark mode (respects system preferences)
+- SEO metadata control
 - Dynamic routing for WordPress content
 - Image optimization and lazy loading
-- View Transitions API for smooth navigation
-- PWA support with offline capabilities and service worker
-- TypeScript integration for type safety
-- Content Collections for local/hybrid content management
-- Accessibility enhancements with A11y utilities
-- React integration for interactive components
-- Web Vitals monitoring for performance tracking
-- Comprehensive test suite with Vitest
+- View Transitions for smooth page changes
+- PWA support with offline mode
+- TypeScript for type safety
+- Content Collections for local/hybrid content
+- Accessibility utilities
+- React components where needed
+- Web Vitals performance monitoring
+- Test suite powered by Vitest
 
 ## Requirements
 
 ### WordPress Setup
 
-Your WordPress installation needs these plugins:
+You'll need these WordPress plugins:
 
 - [WPGraphQL](https://www.wpgraphql.com/docs/introduction) - GraphQL API for WordPress
-- [Total Counts for WPGraphQL](https://github.com/builtbycactus/total-counts-for-wp-graphql) - Adds total post counts
-- [WPGraphQL Next-Previous Post](https://github.com/valu-digital/wp-graphql-next-previous-post) - Adds navigation between posts
-- [JAMstack Deployments](https://github.com/crgeary/wp-jamstack-deployments) (optional) - For automatic builds
+- [Total Counts for WPGraphQL](https://github.com/builtbycactus/total-counts-for-wp-graphql) - Post count support
+- [WPGraphQL Next-Previous Post](https://github.com/valu-digital/wp-graphql-next-previous-post) - Post navigation
+- [JAMstack Deployments](https://github.com/crgeary/wp-jamstack-deployments) (optional) - Trigger rebuilds from WordPress
 
-For pagination support, the standard WPGraphQL cursor-based pagination is used, with no additional plugins required.
+Pagination uses WPGraphQL's built-in cursor-based system.
 
 ### Environment Variables
 
@@ -40,7 +40,7 @@ Create a `.env` file with:
 ```env
 WORDPRESS_API_URL=https://yoursitename.com/graphql
 PUBLIC_DISQUS_EMBED_URL=https://siteid.disqus.com/embed.js
-PUBLIC_X_SHARE_USER=your_twitter_handle
+PUBLIC_X_SHARE_USER=your_x_handle
 PUBLIC_SITE_URL=https://yoursitename.com
 PUBLIC_ANALYTICS_ENDPOINT=https://your-analytics-endpoint.com/collect # Optional - for Web Vitals data
 PUBLIC_DEBUG=true # Optional - enable verbose logging in development
@@ -120,8 +120,8 @@ titleTemplate: "%s | WP GraphQL Astro"
 description: "A modern headless WordPress implementation using Astro and GraphQL"
 siteUrl: "https://wp-graphql-astro.netlify.app"
 ogImage: "/images/og-image.jpg"
-twitterHandle: "@wpgraphql"
-twitterCardType: "summary_large_image"
+xHandle: "@wpgraphql"
+xCardType: "summary_large_image"
 showFeaturedImages: true
 showFeaturedImagesOnPostCard: true
 ---
@@ -136,20 +136,20 @@ showFeaturedImagesOnPostCard: true
 | `description`                  | string  | Default meta description                   |
 | `siteUrl`                      | string  | Base URL of the website                    |
 | `ogImage`                      | string  | Default Open Graph image                   |
-| `twitterHandle`                | string  | Twitter handle for cards                   |
-| `twitterCardType`              | string  | Twitter card format                        |
+| `xHandle`                      | string  | X handle for cards                         |
+| `xCardType`                    | string  | X card format                              |
 | `showFeaturedImages`           | boolean | Show featured images on single posts/pages |
 | `showFeaturedImagesOnPostCard` | boolean | Show featured images on post listings      |
 
 ## Pagination
 
-The app uses standard WPGraphQL cursor-based pagination for handling pagination in the WordPress GraphQL API. The implementation in `src/lib/api.ts` uses the standard `first` and `after` parameters:
+Uses WPGraphQL's cursor-based pagination with `first` and `after` parameters:
 
 ```graphql
 posts(first: $first, after: $after)
 ```
 
-For more complex pagination scenarios like category archives, the implementation fetches cursor positions as needed to navigate to specific pages.
+Category archives and complex scenarios fetch cursors on-demand to jump to specific pages.
 
 ## Data Fetching
 
@@ -164,36 +164,36 @@ Data fetching is centralized in `src/lib/api.ts` with key functions:
 
 ### Astro Content Collections
 
-Local content uses Astro's Content Collections for hybrid content strategy:
+Local content lives in Content Collections:
 
-- `pages`: Local markdown pages
-- `authors`: Author information
-- `components`: Reusable content components
+- `pages` - Local markdown pages
+- `authors` - Author info
+- `components` - Reusable content bits
 
 ## Styling
 
-The project uses SCSS with a structured approach:
+SCSS organized into:
 
-- **Abstracts**: Reusable functions and mixins
-- **Common**: Global styles
-- **Config**: Variables and configuration
+- **Abstracts** - Functions and mixins
+- **Common** - Global styles
+- **Config** - Variables and settings
 
 ## Deployment
 
-The project is configured for Netlify with static site generation:
+Configured for Netlify out of the box:
 
-1. Connect your repository
-2. Set build command to `npm run build`
-3. Set publish directory to `dist`
-4. Add your environment variables (WORDPRESS_API_URL, PUBLIC_SITE_URL, etc)
-5. Ensure the Netlify adapter is configured in `astro.config.mjs` (already included)
+1. Connect your repo
+2. Build command: `npm run build`
+3. Publish directory: `dist`
+4. Add environment variables
+5. Deploy
 
-The project can also be deployed on other platforms:
+Works on other platforms too:
 
-- **Vercel**: Replace the Netlify adapter with Vercel adapter
-- **Cloudflare**: Use the Cloudflare adapter
-- **Node.js**: Use the Node adapter for traditional hosting
-- **Static hosting**: The default build produces static files that can be hosted anywhere
+- **Vercel** - Swap in the Vercel adapter
+- **Cloudflare** - Use the Cloudflare adapter
+- **Node.js** - Use the Node adapter
+- **Static hosting** - The build outputs plain HTML you can host anywhere
 
 ## Development Workflow
 
@@ -204,9 +204,7 @@ The project can also be deployed on other platforms:
 
 ## Testing
 
-### Component Testing with Vitest
-
-Unit and component tests are written with Vitest for fast, reliable testing:
+Tests run with Vitest:
 
 ```bash
 # Run all Vitest tests
@@ -225,16 +223,15 @@ Key test files:
 
 ## Web Vitals Monitoring
 
-The application includes built-in Web Vitals monitoring to track Core Web Vitals metrics:
+Track Core Web Vitals in real-time:
 
-- **Largest Contentful Paint (LCP)**: Measures loading performance
-- **First Input Delay (FID)**: Measures interactivity
-- **Cumulative Layout Shift (CLS)**: Measures visual stability
-- **First Contentful Paint (FCP)**: Measures when content first appears
-- **Time to First Byte (TTFB)**: Measures server response time
-- **Interaction to Next Paint (INP)**: Measures input responsiveness
+- **Largest Contentful Paint (LCP)** - Loading performance
+- **Cumulative Layout Shift (CLS)** - Visual stability
+- **First Contentful Paint (FCP)** - When content first appears
+- **Time to First Byte (TTFB)** - Server response time
+- **Interaction to Next Paint (INP)** - Input responsiveness (replaces FID in web-vitals v5)
 
-Web Vitals monitoring can be enabled with the `showWebVitals` prop on the MainLayout component:
+Enable monitoring with the `showWebVitals` prop:
 
 ```astro
 ---
@@ -246,35 +243,19 @@ import MainLayout from "../layouts/MainLayout.astro";
 </MainLayout>
 ```
 
-Metrics are automatically collected and displayed in a floating panel that can be toggled. In development mode, this is enabled by default.
+Metrics show up in a toggleable floating panel. It's on by default in dev mode.
 
-### Component Features
+The monitor shows color-coded ratings (good, needs improvement, poor) and adapts to your current theme.
 
-The Web Vitals monitor component:
+## Logging
 
-- Displays all core web vitals metrics with visual indicators
-- Uses color-coded ratings (good, needs improvement, poor)
-- Adapts to light and dark mode automatically
-- Is fully encapsulated with scoped CSS to prevent style leakage
-- Only loads when explicitly enabled or in development mode
+Centralized logging across the app:
 
-## Standardized Logging
+- **Server/API** - `log` utility from `src/lib/constants.ts`
+- **Client-Side** - `clientLog` in Astro components
+- **Service Worker** - `swLog` for service worker context
 
-The project implements a centralized logging system that ensures consistent logging across all environments:
-
-### Log Utilities
-
-- **Server/API Logging**: Uses `log` utility from `src/lib/constants.ts`
-- **Client-Side Logging**: Uses `clientLog` utilities in Astro components
-- **Service Worker Logging**: Uses `swLog` utility for service worker context
-
-### Environment-Based Filtering
-
-Logs are automatically filtered based on the environment:
-
-- In development mode, all logs are displayed by default
-- In production, logs are suppressed unless explicitly enabled with `PUBLIC_DEBUG=true`
-- Error logs are always displayed to ensure critical issues are reported
+Logs show in dev by default, hidden in production unless you set `PUBLIC_DEBUG=true`. Errors always show regardless of environment.
 
 ### Usage Examples
 
@@ -298,25 +279,17 @@ swLog.info('Service worker information');
 swLog.error('Service worker error', errorObject);
 ```
 
-### Configuring Analytics Endpoint
+### Sending Data to Analytics
 
-To send Web Vitals data to your analytics service:
-
-1. Create or update your `.env` file to include your analytics endpoint:
+Add your analytics endpoint to `.env`:
 
 ```env
-# Add this to your existing .env file
 PUBLIC_ANALYTICS_ENDPOINT=https://your-analytics-service.com/collect
 ```
 
-2. For production environments, add this to your deployment configuration:
-   - **Netlify**: Add as an environment variable in the Netlify dashboard
-   - **Vercel**: Add in the Environment Variables section of your project settings
-   - **GitHub Pages**: Use GitHub Actions secrets
+For production, set this in your deployment platform (Netlify dashboard, Vercel settings, etc.).
 
-3. Optionally, you can customize the analytics payload in `src/lib/webVitals.ts` to match your analytics provider's requirements.
-
-The Web Vitals data will be automatically sent to the configured endpoint using the `navigator.sendBeacon()` API when available, with a fallback to `fetch()` for older browsers.
+Customize the payload in `src/lib/webVitals.ts` if needed. Data gets sent via `navigator.sendBeacon()` with a `fetch()` fallback.
 
 ## PWA Configuration
 

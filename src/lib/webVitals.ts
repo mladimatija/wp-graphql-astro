@@ -7,15 +7,15 @@
  * @see https://web.dev/vitals/ for more information on Core Web Vitals
  */
 
-// Import individual functions from web-vitals v4
-import { onCLS, onFID, onLCP, onFCP, onTTFB, onINP } from 'web-vitals';
+// Import individual functions from web-vitals v5
+import { onCLS, onLCP, onFCP, onTTFB, onINP } from 'web-vitals';
 import { log } from './constants';
 
-import type {WebVitalsMetrics} from '../components/react/WebVitalsMonitor';
+import type { WebVitalsMetrics } from '../components/react/WebVitalsMonitor';
 
 /**
- * Analytics endpoint for reporting Web Vitals
- * Change this to your own analytics endpoint
+ * Analytics endpoint for reporting Web Vitals.
+ * Change this to your own analytics endpoint.
  */
 const analyticsEndpoint = import.meta.env.PUBLIC_ANALYTICS_ENDPOINT || '';
 
@@ -75,11 +75,10 @@ export function initWebVitals() {
   try {
     // Measure and report each Core Web Vital
     onCLS(sendToAnalytics);  // Cumulative Layout Shift
-    onFID(sendToAnalytics);  // First Input Delay
     onLCP(sendToAnalytics);  // Largest Contentful Paint
     onFCP(sendToAnalytics);  // First Contentful Paint
     onTTFB(sendToAnalytics); // Time to First Byte
-    onINP(sendToAnalytics);  // Interaction to Next Paint (new in v4)
+    onINP(sendToAnalytics);  // Interaction to Next Paint (replaces FID in v5)
   } catch (error) {
     log.error('Failed to initialize Web Vitals: ' + error);
   }
@@ -100,26 +99,25 @@ export async function getWebVitalsMetrics() {
 
     try {
       const metrics = {};
-      let remaining = 6; // Number of metrics we're waiting for (added INP)
-      
+      let remaining = 5; // Number of metrics we're waiting for (FID removed in v5)
+
       function saveMetric(metric) {
         metrics[metric.name] = {
           value: metric.value,
           rating: metric.rating,
         };
         remaining--;
-        
+
         if (remaining <= 0) {
           resolve(metrics);
         }
       }
-      
+
       onCLS(saveMetric);
-      onFID(saveMetric);
       onLCP(saveMetric);
       onFCP(saveMetric);
       onTTFB(saveMetric);
-      onINP(saveMetric); // New in v4
+      onINP(saveMetric);
     } catch (error) {
       log.error('Failed to get Web Vitals metrics: ' + error);
       resolve({});
@@ -128,4 +126,4 @@ export async function getWebVitalsMetrics() {
 }
 
 // Export the individual metrics functions for custom use
-export { onCLS, onFID, onLCP, onFCP, onTTFB, onINP };
+export { onCLS, onLCP, onFCP, onTTFB, onINP };

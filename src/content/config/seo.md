@@ -4,8 +4,8 @@ titleTemplate: "%s | WP GraphQL Astro"
 description: "A modern headless WordPress implementation using Astro and GraphQL"
 siteUrl: "https://example.org"
 ogImage: "/images/og-image.jpg"
-twitterHandle: "@example"
-twitterCardType: "summary_large_image"
+xHandle: "@example"
+xCardType: "summary_large_image"
 showFeaturedImages: true
 showFeaturedImagesOnPostCard: false
 ---
