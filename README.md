@@ -378,6 +378,24 @@ The application includes API routes:
 - `/api/revalidate` - Webhook endpoint for triggering rebuilds (accepts POST requests with security token)
 - `/api/manifest.json` - Route that redirects to the static manifest.json file
 
+## Contact Form
+
+The contact form uses Netlify Forms with spam protection:
+
+- **Honeypot field** - Hidden `bot-field` to catch basic bots
+- **reCAPTCHA v2** - Google's "I'm not a robot" checkbox
+
+### Setup
+
+The form works out of the box on Netlify. To enable reCAPTCHA:
+
+1. Deploy to Netlify
+2. Go to Site Settings → Forms
+3. Enable reCAPTCHA spam filtering
+4. Netlify handles the rest automatically
+
+The form is in `src/components/ContactForm.astro` and gets embedded in posts/pages as needed.
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
