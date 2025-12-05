@@ -1,17 +1,17 @@
 // Test script to check WordPress API connectivity
-import https from 'https';
-import http from 'http';
-import * as dotenv from 'dotenv';
+import https from "https";
+import http from "http";
+import * as dotenv from "dotenv";
 dotenv.config();
 
 // Simple logging utility for node scripts
 const log = {
   info: (message) => {
-    console.log('[INFO]', message);
+    console.log("[INFO]", message);
   },
   error: (message) => {
-    console.error('[ERROR]', message);
-  }
+    console.error("[ERROR]", message);
+  },
 };
 
 // WordPress API URL from environment
@@ -22,7 +22,7 @@ const username = process.env.WP_APP_USERNAME;
 const password = process.env.WP_APP_PASSWORD;
 
 // Create the auth header
-const auth = Buffer.from(`${username}:${password}`).toString('base64');
+const auth = Buffer.from(`${username}:${password}`).toString("base64");
 
 // Simple GraphQL query
 const query = `{
@@ -36,56 +36,56 @@ const query = `{
 
 // Request options
 const options = {
-  method: 'POST',
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'Authorization': `Basic ${auth}`
-  }
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    Authorization: `Basic ${auth}`,
+  },
 };
 
 // Parse URL to get hostname, path, etc.
 const urlObj = new URL(wpApiUrl);
 options.hostname = urlObj.hostname;
 options.path = urlObj.pathname + urlObj.search;
-options.port = urlObj.port || (urlObj.protocol === 'https:' ? 443 : 80);
+options.port = urlObj.port || (urlObj.protocol === "https:" ? 443 : 80);
 
 // Create the request body
 const requestBody = JSON.stringify({
-  query
+  query,
 });
 
-log.info('Testing WordPress GraphQL API connectivity...');
+log.info("Testing WordPress GraphQL API connectivity...");
 log.info(`URL: ${wpApiUrl}`);
-log.info(`Username: ${username ? username : '(not set)'}`);
-log.info(`Password: ${password ? '(set)' : '(not set)'}`);
+log.info(`Username: ${username ? username : "(not set)"}`);
+log.info(`Password: ${password ? "(set)" : "(not set)"}`);
 
 // Choose http or https based on the URL
-const requestModule = urlObj.protocol === 'https:' ? https : http;
+const requestModule = urlObj.protocol === "https:" ? https : http;
 
 const req = requestModule.request(options, (res) => {
   log.info(`Status: ${res.statusCode} ${res.statusMessage}`);
-  log.info('Headers: ' + JSON.stringify(res.headers));
+  log.info("Headers: " + JSON.stringify(res.headers));
 
-  let data = '';
-  res.on('data', (chunk) => {
+  let data = "";
+  res.on("data", (chunk) => {
     data += chunk;
   });
 
-  res.on('end', () => {
-    log.info('Response data:');
+  res.on("end", () => {
+    log.info("Response data:");
     try {
       const parsedData = JSON.parse(data);
       log.info(JSON.stringify(parsedData, null, 2));
     } catch (error) {
-      log.info('Could not parse response as JSON:');
+      log.info("Could not parse response as JSON:");
       log.info(data);
     }
   });
 });
 
-req.on('error', (error) => {
-  log.error('Error making request: ' + error.message);
+req.on("error", (error) => {
+  log.error("Error making request: " + error.message);
 });
 
 // Send request

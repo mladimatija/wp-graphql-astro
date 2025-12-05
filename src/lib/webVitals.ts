@@ -1,27 +1,27 @@
 /**
  * Web Vitals monitoring utilities
- * 
+ *
  * This file contains functions for measuring and reporting Core Web Vitals metrics
  * using the official web-vitals library.
- * 
+ *
  * @see https://web.dev/vitals/ for more information on Core Web Vitals
  */
 
 // Import individual functions from web-vitals v5
-import { onCLS, onLCP, onFCP, onTTFB, onINP } from 'web-vitals';
-import { log } from './constants';
+import { onCLS, onLCP, onFCP, onTTFB, onINP } from "web-vitals";
+import { log } from "./constants";
 
-import type { WebVitalsMetrics } from '../components/react/WebVitalsMonitor';
+import type { WebVitalsMetrics } from "../components/react/WebVitalsMonitor";
 
 /**
  * Analytics endpoint for reporting Web Vitals.
  * Change this to your own analytics endpoint.
  */
-const analyticsEndpoint = import.meta.env.PUBLIC_ANALYTICS_ENDPOINT || '';
+const analyticsEndpoint = import.meta.env.PUBLIC_ANALYTICS_ENDPOINT || "";
 
 /**
  * Reports Web Vitals metrics to your analytics endpoint
- * 
+ *
  * @param {Object} metric - Web Vitals metric object
  */
 function sendToAnalytics(metric) {
@@ -48,17 +48,17 @@ function sendToAnalytics(metric) {
   };
 
   // Use `navigator.sendBeacon()` if available
-  if (navigator.sendBeacon && typeof Blob !== 'undefined') {
-    const blob = new Blob([JSON.stringify(body)], { type: 'application/json' });
+  if (navigator.sendBeacon && typeof Blob !== "undefined") {
+    const blob = new Blob([JSON.stringify(body)], { type: "application/json" });
     navigator.sendBeacon(analyticsEndpoint, blob);
   } else {
     // Fall back to fetch() for older browsers
     fetch(analyticsEndpoint, {
       body: JSON.stringify(body),
-      method: 'POST',
+      method: "POST",
       keepalive: true,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
   }
@@ -70,29 +70,29 @@ function sendToAnalytics(metric) {
  */
 export function initWebVitals() {
   // Only run in the browser
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
 
   try {
     // Measure and report each Core Web Vital
-    onCLS(sendToAnalytics);  // Cumulative Layout Shift
-    onLCP(sendToAnalytics);  // Largest Contentful Paint
-    onFCP(sendToAnalytics);  // First Contentful Paint
+    onCLS(sendToAnalytics); // Cumulative Layout Shift
+    onLCP(sendToAnalytics); // Largest Contentful Paint
+    onFCP(sendToAnalytics); // First Contentful Paint
     onTTFB(sendToAnalytics); // Time to First Byte
-    onINP(sendToAnalytics);  // Interaction to Next Paint (replaces FID in v5)
+    onINP(sendToAnalytics); // Interaction to Next Paint (replaces FID in v5)
   } catch (error) {
-    log.error('Failed to initialize Web Vitals: ' + error);
+    log.error("Failed to initialize Web Vitals: " + error);
   }
 }
 
 /**
  * Retrieve Web Vitals metrics for client-side reporting
  * This can be used to display metrics in a UI component
- * 
+ *
  * @returns {Promise<Object>} Object containing all core metrics
  */
 export async function getWebVitalsMetrics() {
   return new Promise<WebVitalsMetrics>((resolve) => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       resolve({});
       return;
     }
@@ -119,7 +119,7 @@ export async function getWebVitalsMetrics() {
       onTTFB(saveMetric);
       onINP(saveMetric);
     } catch (error) {
-      log.error('Failed to get Web Vitals metrics: ' + error);
+      log.error("Failed to get Web Vitals metrics: " + error);
       resolve({});
     }
   });

@@ -8,10 +8,10 @@ export default defineConfig({
   site: process.env.PUBLIC_SITE_URL,
   output: "static", // Changed from server to static for build-time rendering
   integrations: [
-    react(), 
+    react(),
     sitemap({
-      filter: (page) => !page.includes('/success') && !page.includes('/404')
-    })
+      filter: (page) => !page.includes("/success") && !page.includes("/404"),
+    }),
   ],
   vite: {
     build: {
@@ -21,37 +21,37 @@ export default defineConfig({
       rollupOptions: {
         output: {
           manualChunks: {
-            'react-vendor': ['react', 'react-dom'],
-            'darkmode': ['darkmode-js'],
-          }
-        }
-      }
+            "react-vendor": ["react", "react-dom"],
+            darkmode: ["darkmode-js"],
+          },
+        },
+      },
     },
     ssr: {
       // Avoid ssr externalization to ensure compatibility
-      noExternal: ['react-icons']
+      noExternal: ["react-icons"],
     },
     // Optimize CSS
     css: {
       devSourcemap: true,
-    }
+    },
   },
   // View Transitions is now a standard feature in Astro v5
   viewTransitions: {
     // Enable support for the View Transitions API
     // This adds support for :view-transition-* pseudo-classes
     handleViewTransitions: true,
-    persist: ['dark-mode'],
+    persist: ["dark-mode"],
   },
   // Image optimization configuration aligned with Astro v5
   image: {
     domains: [],
     remotePatterns: [{ protocol: "https" }],
     service: {
-      entrypoint: 'astro/assets/services/sharp'
-    }
+      entrypoint: "astro/assets/services/sharp",
+    },
   },
-  
+
   // Add Netlify adapter for all environments
-  adapter: netlify()
+  adapter: netlify(),
 });

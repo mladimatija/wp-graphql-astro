@@ -1,12 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock API functions
-vi.mock('../../lib/api', () => ({
+vi.mock("../../lib/api", () => ({
   settingsQuery: vi.fn().mockResolvedValue({
     allSettings: {
-      readingSettingsPostsPerPage: 10
-    }
-  })
+      readingSettingsPostsPerPage: 10,
+    },
+  }),
 }));
 
 // Create a simplified version of the Pagination component logic for testing
@@ -44,7 +44,10 @@ class PaginationLogic {
   }
 
   hasNextLink() {
-    return this.isHomepage || (this.page && this.page.currentPage !== this.page.lastPage);
+    return (
+      this.isHomepage ||
+      (this.page && this.page.currentPage !== this.page.lastPage)
+    );
   }
 
   getNextLink() {
@@ -58,82 +61,82 @@ class PaginationLogic {
     return {
       paginationText: this.getPaginationText(),
       prevLink: this.getPrevLink(),
-      nextLink: this.getNextLink()
+      nextLink: this.getNextLink(),
     };
   }
 }
 
-describe('Pagination Logic', () => {
+describe("Pagination Logic", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('renders homepage pagination correctly', () => {
-    const pagination = new PaginationLogic({ 
-      isHomepage: true, 
-      totalPosts: 30
+  it("renders homepage pagination correctly", () => {
+    const pagination = new PaginationLogic({
+      isHomepage: true,
+      totalPosts: 30,
     });
-    
+
     const output = pagination.render();
-    expect(output.paginationText).toBe('Page 1 of 3');
+    expect(output.paginationText).toBe("Page 1 of 3");
     expect(output.prevLink).toBeNull();
-    expect(output.nextLink).toBe('/page/2');
+    expect(output.nextLink).toBe("/page/2");
   });
 
-  it('renders non-homepage pagination correctly', () => {
-    const pagination = new PaginationLogic({ 
+  it("renders non-homepage pagination correctly", () => {
+    const pagination = new PaginationLogic({
       isHomepage: false,
       page: {
         currentPage: 2,
         lastPage: 5,
         url: {
-          prev: '/page/1',
-          next: '/page/3'
-        }
-      }
+          prev: "/page/1",
+          next: "/page/3",
+        },
+      },
     });
-    
+
     const output = pagination.render();
-    expect(output.paginationText).toBe('Page 2 of 5');
-    expect(output.prevLink).toBe('/page/1');
-    expect(output.nextLink).toBe('/page/3');
+    expect(output.paginationText).toBe("Page 2 of 5");
+    expect(output.prevLink).toBe("/page/1");
+    expect(output.nextLink).toBe("/page/3");
   });
 
-  it('handles first page correctly when not homepage', () => {
-    const pagination = new PaginationLogic({ 
+  it("handles first page correctly when not homepage", () => {
+    const pagination = new PaginationLogic({
       isHomepage: false,
       page: {
         currentPage: 1,
         lastPage: 3,
         url: {
           prev: undefined,
-          next: '/page/2'
-        }
-      }
+          next: "/page/2",
+        },
+      },
     });
-    
+
     const output = pagination.render();
-    expect(output.paginationText).toBe('Page 1 of 3');
+    expect(output.paginationText).toBe("Page 1 of 3");
     expect(output.prevLink).toBeNull();
-    expect(output.nextLink).toBe('/page/2');
+    expect(output.nextLink).toBe("/page/2");
   });
 
-  it('handles last page correctly', () => {
-    const pagination = new PaginationLogic({ 
+  it("handles last page correctly", () => {
+    const pagination = new PaginationLogic({
       isHomepage: false,
       page: {
         currentPage: 4,
         lastPage: 4,
         url: {
-          prev: '/page/3',
-          next: undefined
-        }
-      }
+          prev: "/page/3",
+          next: undefined,
+        },
+      },
     });
-    
+
     const output = pagination.render();
-    expect(output.paginationText).toBe('Page 4 of 4');
-    expect(output.prevLink).toBe('/page/3');
+    expect(output.paginationText).toBe("Page 4 of 4");
+    expect(output.prevLink).toBe("/page/3");
     expect(output.nextLink).toBeNull();
   });
 });

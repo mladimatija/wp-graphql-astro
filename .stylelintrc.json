@@ -1,8 +1,5 @@
 {
-  "extends": [
-    "stylelint-config-standard",
-    "stylelint-config-recommended-scss"
-  ],
+  "extends": ["stylelint-config-standard"],
   "rules": {
     "color-named": "never",
     "font-family-name-quotes": null,
@@ -20,14 +17,16 @@
     "property-no-vendor-prefix": null,
     "selector-pseudo-class-no-unknown": [
       true,
-      { "ignorePseudoClasses": [
-        "global", 
-        "view-transition", 
-        "view-transition-group", 
-        "view-transition-image-pair", 
-        "view-transition-new", 
-        "view-transition-old"
-      ] }
+      {
+        "ignorePseudoClasses": [
+          "global",
+          "view-transition",
+          "view-transition-group",
+          "view-transition-image-pair",
+          "view-transition-new",
+          "view-transition-old"
+        ]
+      }
     ],
     "function-no-unknown": null,
     "declaration-property-value-no-unknown": null,
@@ -40,10 +39,7 @@
     "at-rule-empty-line-before": null,
     "media-feature-range-notation": null,
     "import-notation": null,
-    "selector-class-pattern": [".*", {}],
-    "scss/function-no-unknown": true,
-    "scss/at-extend-no-missing-placeholder": null,
-    "scss/load-partial-extension": null
+    "selector-class-pattern": [".*", {}]
   },
   "ignoreFiles": ["node_modules/*", "dist/*"],
   "defaultSeverity": "error",
@@ -51,10 +47,6 @@
     {
       "files": ["**/*.astro"],
       "customSyntax": "postcss-html"
-    },
-    {
-      "files": ["**/*.scss"],
-      "customSyntax": "postcss-scss"
     }
   ]
 }

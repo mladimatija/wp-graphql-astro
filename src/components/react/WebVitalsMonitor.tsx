@@ -1,25 +1,30 @@
-import React, {useState, useEffect, type JSX, type CSSProperties} from 'react';
-import { log } from '../../lib/constants';
+import React, {
+  useState,
+  useEffect,
+  type JSX,
+  type CSSProperties,
+} from "react";
+import { log } from "../../lib/constants";
 
 // Define types for web vitals metrics
-type MetricRating = 'good' | 'needs-improvement' | 'poor' | string;
+type MetricRating = "good" | "needs-improvement" | "poor" | string;
 
 interface WebVitalMetric {
-    value: number;
-    rating: MetricRating;
+  value: number;
+  rating: MetricRating;
 }
 
 export interface WebVitalsMetrics {
-    [key: string]: WebVitalMetric;
+  [key: string]: WebVitalMetric;
 }
 
 interface FormatMetricNameResult {
-    full: string;
-    desc: string;
+  full: string;
+  desc: string;
 }
 
 export interface WebVitalsMonitorProps {
-    showByDefault?: boolean;
+  showByDefault?: boolean;
 }
 
 // Dynamically import web vitals to avoid SSR issues
@@ -27,205 +32,222 @@ let getWebVitalsMetrics: () => Promise<WebVitalsMetrics>;
 
 // We'll import this lazily to avoid issues during SSR
 const importWebVitals = async (): Promise<boolean> => {
+  try {
+    const webVitalsModule = await import("../../lib/webVitals");
+    getWebVitalsMetrics = webVitalsModule.getWebVitalsMetrics;
+
+    // Also initialize Web Vitals monitoring
     try {
-        const webVitalsModule = await import('../../lib/webVitals');
-        getWebVitalsMetrics = webVitalsModule.getWebVitalsMetrics;
-
-        // Also initialize Web Vitals monitoring
-        try {
-            if (webVitalsModule && typeof webVitalsModule.initWebVitals === 'function') {
-                webVitalsModule.initWebVitals();
-            }
-        } catch (error) {
-            log.error('Failed to initialize Web Vitals: ' + error);
-        }
-
-        return true;
+      if (
+        webVitalsModule &&
+        typeof webVitalsModule.initWebVitals === "function"
+      ) {
+        webVitalsModule.initWebVitals();
+      }
     } catch (error) {
-        log.error('Failed to import Web Vitals: ' + error);
-        return false;
+      log.error("Failed to initialize Web Vitals: " + error);
     }
+
+    return true;
+  } catch (error) {
+    log.error("Failed to import Web Vitals: " + error);
+    return false;
+  }
 };
 
 /**
  * Get rating color based on Web Vitals rating
  */
 function getRatingColor(rating: MetricRating): string {
-    switch (rating) {
-        case 'good':
-            return 'var(--color-success, #0cce6b)';
-        case 'needs-improvement':
-            return 'var(--color-warning, #ffa400)';
-        case 'poor':
-            return 'var(--color-error, #ff4e42)';
-        default:
-            return 'var(--color-neutral, #999999)';
-    }
+  switch (rating) {
+    case "good":
+      return "var(--color-success, #0cce6b)";
+    case "needs-improvement":
+      return "var(--color-warning, #ffa400)";
+    case "poor":
+      return "var(--color-error, #ff4e42)";
+    default:
+      return "var(--color-neutral, #999999)";
+  }
 }
 
 /**
  * Format metric name for display
  */
 function formatMetricName(name: string): FormatMetricNameResult {
-    switch (name) {
-        case 'CLS':
-            return {full: 'Cumulative Layout Shift', desc: 'Visual stability'};
-        case 'FID':
-            return {full: 'First Input Delay', desc: 'Interactivity'};
-        case 'LCP':
-            return {full: 'Largest Contentful Paint', desc: 'Loading performance'};
-        case 'FCP':
-            return {full: 'First Contentful Paint', desc: 'Initial rendering'};
-        case 'TTFB':
-            return {full: 'Time to First Byte', desc: 'Server response time'};
-        case 'INP':
-            return {full: 'Interaction to Next Paint', desc: 'Input responsiveness'};
-        default:
-            return {full: name, desc: 'Performance metric'};
-    }
+  switch (name) {
+    case "CLS":
+      return { full: "Cumulative Layout Shift", desc: "Visual stability" };
+    case "FID":
+      return { full: "First Input Delay", desc: "Interactivity" };
+    case "LCP":
+      return { full: "Largest Contentful Paint", desc: "Loading performance" };
+    case "FCP":
+      return { full: "First Contentful Paint", desc: "Initial rendering" };
+    case "TTFB":
+      return { full: "Time to First Byte", desc: "Server response time" };
+    case "INP":
+      return {
+        full: "Interaction to Next Paint",
+        desc: "Input responsiveness",
+      };
+    default:
+      return { full: name, desc: "Performance metric" };
+  }
 }
 
 /**
  * Format metric value for display
  */
 function formatMetricValue(name: string, value: number): string {
-    if (name === 'CLS') {
-        return value.toFixed(3); // CLS has no units
-    } else {
-        return `${value.toFixed(0)}ms`; // All other metrics are in milliseconds
-    }
+  if (name === "CLS") {
+    return value.toFixed(3); // CLS has no units
+  } else {
+    return `${value.toFixed(0)}ms`; // All other metrics are in milliseconds
+  }
 }
 
 /**
  * WebVitalsMonitor component
  * Displays Core Web Vitals metrics in a UI panel
  */
-export default function WebVitalsMonitor({showByDefault = false}: WebVitalsMonitorProps): JSX.Element {
-    const [metrics, setMetrics] = useState<WebVitalsMetrics>({});
-    const [isVisible, setIsVisible] = useState<boolean>(showByDefault);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+export default function WebVitalsMonitor({
+  showByDefault = false,
+}: WebVitalsMonitorProps): JSX.Element {
+  const [metrics, setMetrics] = useState<WebVitalsMetrics>({});
+  const [isVisible, setIsVisible] = useState<boolean>(showByDefault);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    useEffect(() => {
-        let isMounted = true;
+  useEffect(() => {
+    let isMounted = true;
 
-        const loadMetrics = async (): Promise<void> => {
-            try {
-                // First, ensure the web vitals module is loaded
-                const isImported = await importWebVitals();
-                if (!isImported || !isMounted) {
-                    setIsLoading(false);
-                    return;
-                }
-
-                // Wait for metrics to be collected
-                // We need to wait a bit because some metrics take time to gather
-                setTimeout(async () => {
-                    if (!isMounted) return;
-
-                    try {
-                        const webVitals = await getWebVitalsMetrics();
-                        if (isMounted) {
-                            setMetrics(webVitals);
-                            setIsLoading(false);
-                        }
-                    } catch (error) {
-                        log.error('Error fetching metrics: ' + error);
-                        if (isMounted) {
-                            setIsLoading(false);
-                        }
-                    }
-                }, 3000);
-            } catch (error) {
-                log.error('Failed to load Web Vitals metrics: ' + error);
-                if (isMounted) {
-                    setIsLoading(false);
-                }
-            }
-        };
-
-        if (isVisible) {
-            loadMetrics();
+    const loadMetrics = async (): Promise<void> => {
+      try {
+        // First, ensure the web vitals module is loaded
+        const isImported = await importWebVitals();
+        if (!isImported || !isMounted) {
+          setIsLoading(false);
+          return;
         }
 
-        return () => {
-            isMounted = false;
-        };
-    }, [isVisible]);
+        // Wait for metrics to be collected
+        // We need to wait a bit because some metrics take time to gather
+        setTimeout(async () => {
+          if (!isMounted) return;
 
-    // Use a unique wrapper class for style encapsulation
-    const WebVitalsWrapper = ({children}: { children: React.ReactNode }) => (
-        <div className="web-vitals-wrapper">{children}</div>
-    );
+          try {
+            const webVitals = await getWebVitalsMetrics();
+            if (isMounted) {
+              setMetrics(webVitals);
+              setIsLoading(false);
+            }
+          } catch (error) {
+            log.error("Error fetching metrics: " + error);
+            if (isMounted) {
+              setIsLoading(false);
+            }
+          }
+        }, 3000);
+      } catch (error) {
+        log.error("Failed to load Web Vitals metrics: " + error);
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
 
-    if (!isVisible) {
-        return (
-            <WebVitalsWrapper>
-                <button
-                    onClick={() => setIsVisible(true)}
-                    className="web-vitals-toggle"
-                    aria-label="Show Web Vitals metrics"
-                >
-                    📊 Web Vitals
-                </button>
-            </WebVitalsWrapper>
-        );
+    if (isVisible) {
+      loadMetrics();
     }
 
+    return () => {
+      isMounted = false;
+    };
+  }, [isVisible]);
+
+  // Use a unique wrapper class for style encapsulation
+  const WebVitalsWrapper = ({ children }: { children: React.ReactNode }) => (
+    <div className="web-vitals-wrapper">{children}</div>
+  );
+
+  if (!isVisible) {
     return (
-        <>
-            <WebVitalsWrapper>
-                <div className="web-vitals-monitor">
-                    <div className="web-vitals-header">
-                        <h2>Core Web Vitals</h2>
-                        <button
-                            onClick={() => setIsVisible(false)}
-                            aria-label="Close Web Vitals panel"
+      <WebVitalsWrapper>
+        <button
+          onClick={() => setIsVisible(true)}
+          className="web-vitals-toggle"
+          aria-label="Show Web Vitals metrics"
+        >
+          📊 Web Vitals
+        </button>
+      </WebVitalsWrapper>
+    );
+  }
+
+  return (
+    <>
+      <WebVitalsWrapper>
+        <div className="web-vitals-monitor">
+          <div className="web-vitals-header">
+            <h2>Core Web Vitals</h2>
+            <button
+              onClick={() => setIsVisible(false)}
+              aria-label="Close Web Vitals panel"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div className="web-vitals-content">
+            {isLoading ? (
+              <div className="web-vitals-loading">Loading metrics...</div>
+            ) : (
+              <div className="web-vitals-metrics">
+                {Object.entries(metrics).length === 0 ? (
+                  <p>
+                    No metrics available yet. Try navigating the site first.
+                  </p>
+                ) : (
+                  Object.entries(metrics).map(([name, { value, rating }]) => (
+                    <div key={name} className="web-vitals-metric">
+                      <div className="metric-header">
+                        <span className="metric-name">{name}</span>
+                        <span
+                          className="metric-value"
+                          style={
+                            { color: getRatingColor(rating) } as CSSProperties
+                          }
                         >
-                            ✕
-                        </button>
+                          {formatMetricValue(name, value)}
+                        </span>
+                      </div>
+                      <div className="metric-info">
+                        <span className="metric-full-name">
+                          {formatMetricName(name).full}
+                        </span>
+                        <span className="metric-description">
+                          {formatMetricName(name).desc}
+                        </span>
+                      </div>
+                      <div
+                        className="metric-bar"
+                        style={
+                          {
+                            backgroundColor: getRatingColor(rating),
+                            width: `${Math.min(100, name === "CLS" ? value * 100 : value / 10)}%`,
+                          } as CSSProperties
+                        }
+                      />
                     </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </WebVitalsWrapper>
 
-                    <div className="web-vitals-content">
-                        {isLoading ? (
-                            <div className="web-vitals-loading">Loading metrics...</div>
-                        ) : (
-                            <div className="web-vitals-metrics">
-                                {Object.entries(metrics).length === 0 ? (
-                                    <p>No metrics available yet. Try navigating the site first.</p>
-                                ) : (
-                                    Object.entries(metrics).map(([name, {value, rating}]) => (
-                                        <div key={name} className="web-vitals-metric">
-                                            <div className="metric-header">
-                                                <span className="metric-name">{name}</span>
-                                                <span
-                                                    className="metric-value"
-                                                    style={{color: getRatingColor(rating)} as CSSProperties}
-                                                >
-                                                    {formatMetricValue(name, value)}
-                                                </span>
-                                            </div>
-                                            <div className="metric-info">
-                                                <span className="metric-full-name">{formatMetricName(name).full}</span>
-                                                <span
-                                                    className="metric-description">{formatMetricName(name).desc}</span>
-                                            </div>
-                                            <div
-                                                className="metric-bar"
-                                                style={{
-                                                    backgroundColor: getRatingColor(rating),
-                                                    width: `${Math.min(100, name === 'CLS' ? value * 100 : value / 10)}%`
-                                                } as CSSProperties}
-                                            />
-                                        </div>
-                                    ))
-                                )}
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </WebVitalsWrapper>
-
-            <style>{`
+      <style>{`
         /* Component-scoped CSS variables and styles */
         .web-vitals-wrapper {
           --wv-space-xs: 4px;
@@ -402,5 +424,6 @@ export default function WebVitalsMonitor({showByDefault = false}: WebVitalsMonit
           color: var(--wv-text);
         }
       `}</style>
-        </>)
-};
+    </>
+  );
+}

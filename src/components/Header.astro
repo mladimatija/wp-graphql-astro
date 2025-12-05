@@ -42,9 +42,7 @@ const { generalSettings } = await settingsQuery();
   }
 </header>
 
-<style lang="scss" is:global>
-  @use '../styles/abstracts/functions/rem.scss' as *;
-
+<style is:global>
   .header {
     text-align: center;
   }
@@ -53,24 +51,20 @@ const { generalSettings } = await settingsQuery();
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-
-    img {
-      display: block;
-    }
   }
 
-  .header-description {
-    h1 {
-      @media all and (max-width: 767px) {
-        line-height: 1.2;
-        font-size: rem(21);
-      }
+  .header-title img {
+    display: block;
+  }
+
+  @media (max-width: 767px) {
+    .header-description h1 {
+      line-height: 1.2;
+      font-size: 1.3125rem;
     }
 
-    h4 {
-      @media all and (max-width: 767px) {
-        display: none;
-      }
+    .header-description h4 {
+      display: none;
     }
   }
 </style>

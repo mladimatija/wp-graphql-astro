@@ -1,7 +1,7 @@
 /**
  * Application constants
  * Centralized place for default values and configuration
- * 
+ *
  * IMPORTANT: If you modify any constants here, also update constants.js
  * to maintain consistency for scripts that use the JS version.
  */
@@ -20,18 +20,18 @@ interface LogOptions {
    * @default false
    */
   force?: boolean;
-  
+
   /**
    * Mark this as an error log (always displayed)
    * @default false
    */
   isError?: boolean;
-  
+
   /**
    * Log level (info, warn, error, debug)
    * @default 'info'
    */
-  level?: 'info' | 'warn' | 'error' | 'debug';
+  level?: "info" | "warn" | "error" | "debug";
 }
 
 /**
@@ -43,36 +43,36 @@ export const log = {
    */
   info: (message: string | object, options: LogOptions = {}) => {
     if (shouldLog(options)) {
-      console.info('[INFO]', message);
+      console.info("[INFO]", message);
     }
   },
-  
+
   /**
    * Log a warning message (only in DEV or if DEBUG=true)
    */
   warn: (message: string | object, options: LogOptions = {}) => {
-    if (shouldLog({ ...options, level: 'warn' })) {
-      console.warn('[WARN]', message);
+    if (shouldLog({ ...options, level: "warn" })) {
+      console.warn("[WARN]", message);
     }
   },
-  
+
   /**
    * Log an error message (always displayed)
    */
   error: (message: string | object) => {
     // Error logs are always displayed
-    console.error('[ERROR]', message);
+    console.error("[ERROR]", message);
   },
-  
+
   /**
    * Log a debug message (only in DEV or if DEBUG=true)
    */
   debug: (message: string | object, options: LogOptions = {}) => {
-    if (shouldLog({ ...options, level: 'debug' })) {
-      console.debug('[DEBUG]', message);
+    if (shouldLog({ ...options, level: "debug" })) {
+      console.debug("[DEBUG]", message);
     }
   },
-  
+
   /**
    * Log an object with label (only in DEV or if DEBUG=true)
    */
@@ -82,33 +82,35 @@ export const log = {
       console.dir(obj);
       console.groupEnd();
     }
-  }
+  },
 };
 
 /**
  * Determine if a log should be displayed based on environment and options
  */
 function shouldLog(options: LogOptions = {}): boolean {
-  const { force = false, isError = false, level = 'info' } = options;
-  
+  const { force = false, isError = false, level = "info" } = options;
+
   // Always show error logs
-  if (isError || level === 'error') {
+  if (isError || level === "error") {
     return true;
   }
-  
+
   // Always show forced logs
   if (force) {
     return true;
   }
-  
+
   // Check if we're in development mode
-  const isDev = typeof import.meta.env !== 'undefined' ? import.meta.env.DEV : false;
-  
+  const isDev =
+    typeof import.meta.env !== "undefined" ? import.meta.env.DEV : false;
+
   // Check if debug is enabled via environment variable
-  const isDebugEnabled = typeof import.meta.env !== 'undefined' 
-    ? import.meta.env.PUBLIC_DEBUG === 'true'
-    : false;
-  
+  const isDebugEnabled =
+    typeof import.meta.env !== "undefined"
+      ? import.meta.env.PUBLIC_DEBUG === "true"
+      : false;
+
   // Show logs in development or when debugging is enabled
   return isDev || isDebugEnabled;
 }
@@ -129,7 +131,8 @@ export const DEFAULT_APP_SHORT_NAME = "WP Astro";
  * Default application description
  * Used as fallback when WordPress description is not available
  */
-export const DEFAULT_APP_DESCRIPTION = "A modern headless WordPress implementation using Astro and GraphQL";
+export const DEFAULT_APP_DESCRIPTION =
+  "A modern headless WordPress implementation using Astro and GraphQL";
 
 /**
  * Default theme color
@@ -152,12 +155,12 @@ export const DEFAULT_ICONS = [
     src: "/favicon.svg",
     sizes: "48x48 72x72 96x96 128x128 256x256",
     type: "image/svg+xml",
-    purpose: "any"
+    purpose: "any",
   },
   {
     src: "/logo.svg",
     sizes: "192x192",
     type: "image/svg+xml",
-    purpose: "any"
-  }
+    purpose: "any",
+  },
 ];

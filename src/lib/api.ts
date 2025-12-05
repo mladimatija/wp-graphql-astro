@@ -2,7 +2,7 @@
  * WordPress GraphQL API client
  * Provides functions for fetching data from WordPress via GraphQL
  */
-import { DEFAULT_APP_NAME, DEFAULT_APP_DESCRIPTION, log } from './constants';
+import { DEFAULT_APP_NAME, DEFAULT_APP_DESCRIPTION, log } from "./constants";
 
 // Type definitions for GraphQL responses
 interface CacheEntry<T> {
@@ -22,7 +22,7 @@ interface GraphQLResponse<T> {
 }
 
 interface FetchOptions extends RequestInit {
-  cache?: 'force-cache' | 'no-store' | 'reload' | 'no-cache' | 'default';
+  cache?: "force-cache" | "no-store" | "reload" | "no-cache" | "default";
 }
 
 // WordPress types
@@ -125,11 +125,11 @@ interface PageInfo {
 }
 
 interface NodeByUriResponse {
-  nodeByUri: 
-    | ({ __typename: 'Post' } & PostNode)
-    | ({ __typename: 'Page' } & PageNode)
-    | ({ __typename: 'Category' } & CategoryPageNode)
-    | ({ __typename: 'Tag' } & TagNode)
+  nodeByUri:
+    | ({ __typename: "Post" } & PostNode)
+    | ({ __typename: "Page" } & PageNode)
+    | ({ __typename: "Category" } & CategoryPageNode)
+    | ({ __typename: "Tag" } & TagNode)
     | null;
 }
 
@@ -156,7 +156,6 @@ interface SettingsResponse {
     readingSettingsPostsPerPage: number;
   };
 }
-
 
 interface MenusResponse {
   menus: {
@@ -201,73 +200,87 @@ const RUNTIME_CACHE_DURATION = 5 * 60 * 1000;
 const BUILD_CACHE_DURATION = 30 * 60 * 1000;
 
 // Determine if we're in a build context
-const IS_BUILD_CONTEXT = typeof process !== 'undefined' && process.env.NODE_ENV === 'production';
-const CACHE_DURATION = IS_BUILD_CONTEXT ? BUILD_CACHE_DURATION : RUNTIME_CACHE_DURATION;
+const IS_BUILD_CONTEXT =
+  typeof process !== "undefined" && process.env.NODE_ENV === "production";
+const CACHE_DURATION = IS_BUILD_CONTEXT
+  ? BUILD_CACHE_DURATION
+  : RUNTIME_CACHE_DURATION;
 
 /**
  * Execute a GraphQL query with caching
  * Leverages Astro's built-in fetch with caching when available
  */
 async function executeQuery<T>(
-  query: string, 
+  query: string,
   variables: Record<string, unknown> = {},
-  cacheKey: string = '', 
-  bypassCache: boolean = false
+  cacheKey: string = "",
+  bypassCache: boolean = false,
 ): Promise<T> {
   // Generate a cache key if not provided
   const finalCacheKey = cacheKey || `${query}${JSON.stringify(variables)}`;
-  
-  log.debug(`executeQuery called for ${cacheKey} (bypass cache: ${bypassCache})`);
-  
+
+  log.debug(
+    `executeQuery called for ${cacheKey} (bypass cache: ${bypassCache})`,
+  );
+
   // Check cache if not bypassing
   if (!bypassCache && queryCache.has(finalCacheKey)) {
     const { data, timestamp } = queryCache.get(finalCacheKey) as CacheEntry<T>;
     // Use cache if it's not expired
     if (Date.now() - timestamp < CACHE_DURATION) {
-      log.debug(`Using cached data for ${cacheKey}, age: ${(Date.now() - timestamp) / 1000}s`);
+      log.debug(
+        `Using cached data for ${cacheKey}, age: ${(Date.now() - timestamp) / 1000}s`,
+      );
       return data;
     }
     // Remove expired cache entry
     log.debug(`Cache expired for ${cacheKey}, fetching fresh data`);
     queryCache.delete(finalCacheKey);
   }
-  
+
   try {
     // Prepare headers with authentication
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      "Accept": "application/json"
+      Accept: "application/json",
     };
 
     log.debug("Preparing authentication headers...");
-    
+
     // Add authentication if environment variables are set
     // Method 1: Application Password (WordPress 5.6+)
     if (import.meta.env.WP_APP_USERNAME && import.meta.env.WP_APP_PASSWORD) {
       try {
-        log.debug(`Using Basic Auth with username: ${import.meta.env.WP_APP_USERNAME}`);
+        log.debug(
+          `Using Basic Auth with username: ${import.meta.env.WP_APP_USERNAME}`,
+        );
         // Use browser's btoa for compatibility
-        const auth = typeof btoa === 'function'
-            ? btoa(`${import.meta.env.WP_APP_USERNAME}:${import.meta.env.WP_APP_PASSWORD}`)
-            : Buffer.from(`${import.meta.env.WP_APP_USERNAME}:${import.meta.env.WP_APP_PASSWORD}`).toString('base64');
+        const auth =
+          typeof btoa === "function"
+            ? btoa(
+                `${import.meta.env.WP_APP_USERNAME}:${import.meta.env.WP_APP_PASSWORD}`,
+              )
+            : Buffer.from(
+                `${import.meta.env.WP_APP_USERNAME}:${import.meta.env.WP_APP_PASSWORD}`,
+              ).toString("base64");
 
-        headers['Authorization'] = `Basic ${auth}`;
+        headers["Authorization"] = `Basic ${auth}`;
         log.debug("Added Basic Auth header for API request");
       } catch (e) {
         log.error("Error creating Basic Auth header: " + e);
       }
     } else if (import.meta.env.WP_JWT_TOKEN) {
       // Method 2: JWT Authentication if using a JWT plugin
-      headers['Authorization'] = `Bearer ${import.meta.env.WP_JWT_TOKEN}`;
+      headers["Authorization"] = `Bearer ${import.meta.env.WP_JWT_TOKEN}`;
       log.debug("Added JWT Auth header for API request");
     } else if (import.meta.env.WP_AUTH_NONCE) {
       // Method 3: WPGraphQL Authentication plugin (nonce-based)
-      headers['X-WP-Nonce'] = import.meta.env.WP_AUTH_NONCE;
+      headers["X-WP-Nonce"] = import.meta.env.WP_AUTH_NONCE;
       log.debug("Added WP Nonce header for API request");
     } else {
       log.debug("No auth credentials found in environment variables");
     }
-    
+
     const fetchOptions: FetchOptions = {
       method: "post",
       headers,
@@ -276,59 +289,80 @@ async function executeQuery<T>(
         variables,
       }),
     };
-    
+
     // Add cache options if in Astro SSG/SSR context (not in browser)
     // Since we can't directly check for Astro, check if we're in a browser context
-    if (typeof window === 'undefined') {
-      fetchOptions.cache = bypassCache ? 'no-store' : 'force-cache';
+    if (typeof window === "undefined") {
+      fetchOptions.cache = bypassCache ? "no-store" : "force-cache";
       log.debug(`Using fetch cache policy: ${fetchOptions.cache}`);
     } else {
       log.debug("Running in browser context, not setting fetch cache policy");
     }
-    
-    log.debug(`Fetching from WordPress API URL: ${import.meta.env.WORDPRESS_API_URL}`);
-    log.debug("Headers: " + Object.fromEntries(Object.entries(headers).map(([k, v]) => 
-      k === 'Authorization' ? [k, 'Basic ***'] : [k, v]
-    )));
+
+    log.debug(
+      `Fetching from WordPress API URL: ${import.meta.env.WORDPRESS_API_URL}`,
+    );
+    log.debug(
+      "Headers: " +
+        Object.fromEntries(
+          Object.entries(headers).map(([k, v]) =>
+            k === "Authorization" ? [k, "Basic ***"] : [k, v],
+          ),
+        ),
+    );
     log.debug("Request body length: " + fetchOptions.body?.toString().length);
-    
+
     try {
       log.debug("Sending fetch request...");
-      const response = await fetch(import.meta.env.WORDPRESS_API_URL, fetchOptions);
-      
+      const response = await fetch(
+        import.meta.env.WORDPRESS_API_URL,
+        fetchOptions,
+      );
+
       log.debug(`Response status: ${response.status} ${response.statusText}`);
-      log.debug("Response headers:", Object.fromEntries([...response.headers.entries()]));
-      
+      log.debug(
+        "Response headers:",
+        Object.fromEntries([...response.headers.entries()]),
+      );
+
       if (!response.ok) {
         const errorText = await response.text();
         log.error("Error response body: " + errorText);
-        throw new Error(`GraphQL request failed: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `GraphQL request failed: ${response.status} ${response.statusText}`,
+        );
       }
-      
+
       log.debug("Response OK, parsing JSON...");
-      const result = await response.json() as GraphQLResponse<T>;
-      
+      const result = (await response.json()) as GraphQLResponse<T>;
+
       // Check for GraphQL errors
       if (result.errors && result.errors.length) {
-        log.error("GraphQL result contains errors: " + JSON.stringify(result.errors));
-        throw new Error(`GraphQL errors: ${result.errors.map(e => e.message).join(', ')}`);
+        log.error(
+          "GraphQL result contains errors: " + JSON.stringify(result.errors),
+        );
+        throw new Error(
+          `GraphQL errors: ${result.errors.map((e) => e.message).join(", ")}`,
+        );
       }
-      
+
       log.debug("GraphQL query successful");
-      
+
       // Cache the successful response
       queryCache.set(finalCacheKey, {
         data: result.data,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
-      
+
       // Log the total number of entries when running getAllUris query
-      if (finalCacheKey === 'all-uris') {
-        const totalEntries = Object.values(result.data)
-          .reduce((count, value: never) => count + (value.nodes?.length || 0), 0);
+      if (finalCacheKey === "all-uris") {
+        const totalEntries = Object.values(result.data).reduce(
+          (count, value: never) => count + (value.nodes?.length || 0),
+          0,
+        );
         log.debug(`Total URIs fetched for static paths: ${totalEntries}`);
       }
-      
+
       return result.data;
     } catch (fetchError) {
       log.error("Fetch operation failed: " + fetchError);
@@ -356,8 +390,8 @@ export async function settingsQuery(): Promise<SettingsResponse> {
         readingSettingsPostsPerPage
       }
     }`;
-    
-    return await executeQuery<SettingsResponse>(query, {}, 'settings');
+
+    return await executeQuery<SettingsResponse>(query, {}, "settings");
   } catch (error) {
     log.error("Error fetching settings: " + error);
     // Return fallback data for development
@@ -365,11 +399,11 @@ export async function settingsQuery(): Promise<SettingsResponse> {
       generalSettings: {
         title: DEFAULT_APP_NAME,
         url: import.meta.env.PUBLIC_SITE_URL || "https://example.com",
-        description: DEFAULT_APP_DESCRIPTION
+        description: DEFAULT_APP_DESCRIPTION,
       },
       allSettings: {
-        readingSettingsPostsPerPage: 10
-      }
+        readingSettingsPostsPerPage: 10,
+      },
     };
   }
 }
@@ -394,8 +428,8 @@ export async function navQuery(): Promise<MenusResponse> {
         }
       }
     }`;
-    
-    return await executeQuery<MenusResponse>(query, {}, 'navigation');
+
+    return await executeQuery<MenusResponse>(query, {}, "navigation");
   } catch (error) {
     log.error("Error fetching nav: " + error);
     // Return fallback data for development
@@ -408,27 +442,35 @@ export async function navQuery(): Promise<MenusResponse> {
               nodes: [
                 { uri: "/", url: "/", order: 1, label: "Home" },
                 { uri: "/about/", url: "/about/", order: 2, label: "About" },
-                { uri: "/contact/", url: "/contact/", order: 3, label: "Contact" }
-              ]
-            }
-          }
-        ]
-      }
+                {
+                  uri: "/contact/",
+                  url: "/contact/",
+                  order: 3,
+                  label: "Contact",
+                },
+              ],
+            },
+          },
+        ],
+      },
     };
   }
 }
 
 /**
  * Get posts from WordPress with pagination support
- * 
+ *
  * @requires WPGraphQL Offset Pagination plugin (https://github.com/valu-digital/wp-graphql-offset-pagination)
  * This function uses the offsetPagination argument which requires the plugin to be installed on WordPress.
  */
-export async function getPosts($first: number = 20, $page: number = 1): Promise<PostsResponse> {
+export async function getPosts(
+  $first: number = 20,
+  $page: number = 1,
+): Promise<PostsResponse> {
   try {
     // Calculate offset for pagination
     const $offset = ($page - 1) * $first;
-    
+
     const query = `query GET_POSTS($first: Int, $offset: Int) {
       posts(where: { offsetPagination: { offset: $offset, size: $first } }) {
         edges {
@@ -463,12 +505,16 @@ export async function getPosts($first: number = 20, $page: number = 1): Promise<
         }                  
       }
     }`;
-    
+
     // Use a cache key that includes pagination parameters
     const cacheKey = `posts-${$first}-${$page}`;
-    
+
     // Pass both first and offset for proper pagination
-    return await executeQuery<PostsResponse>(query, { first: $first, offset: $offset }, cacheKey);
+    return await executeQuery<PostsResponse>(
+      query,
+      { first: $first, offset: $offset },
+      cacheKey,
+    );
   } catch (error) {
     log.error("Error fetching posts: " + error);
     // Return fallback data for development
@@ -487,47 +533,47 @@ export async function getPosts($first: number = 20, $page: number = 1): Promise<
               excerpt: "<p>This is a sample post excerpt.</p>",
               content: "<p>This is sample post content.</p>",
               categories: {
-                nodes: [{ name: "Sample Category", uri: "/category/sample/" }]
+                nodes: [{ name: "Sample Category", uri: "/category/sample/" }],
               },
               featuredImage: {
                 node: {
                   mediaItemUrl: "/logo.svg",
-                  altText: "Example image"
-                }
-              }
-            }
-          }
+                  altText: "Example image",
+                },
+              },
+            },
+          },
         ],
-        pageInfo: { 
+        pageInfo: {
           total: 1,
           hasNextPage: false,
-          endCursor: ""
-        }
-      }
+          endCursor: "",
+        },
+      },
     };
   }
 }
 
 /**
  * Get posts by category from WordPress with pagination support
- * 
+ *
  * Uses standard WPGraphQL cursor-based pagination
  */
 export async function getPostsByCategory(
-  $category: string, 
-  $first: number = 20, 
-  $page: number = 1
+  $category: string,
+  $first: number = 20,
+  $page: number = 1,
 ): Promise<CategoryPostsResponse> {
   try {
     // Calculate cursor for pagination if not on first page
     // We'll fetch the cursor in a separate query if needed
     let afterCursor = null;
-    
+
     // If we're requesting beyond the first page, we need to get the cursor
     if ($page > 1) {
       // First get the cursor at the position we need
       const cursorIndex = ($page - 1) * $first - 1; // Position of the last item on the previous page
-      
+
       // Get the cursor for pagination
       const cursorQuery = `query GET_CURSOR($category: ID!) {
         category(id: $category, idType: SLUG) {
@@ -538,14 +584,14 @@ export async function getPostsByCategory(
           }
         }
       }`;
-      
+
       try {
         const cursorData = await executeQuery(
-          cursorQuery, 
+          cursorQuery,
           { category: $category },
-          `cursor-${$category}-${cursorIndex}`
+          `cursor-${$category}-${cursorIndex}`,
         );
-        
+
         // Get the last cursor
         if (cursorData?.category?.posts?.edges?.[cursorIndex]) {
           afterCursor = cursorData.category.posts.edges[cursorIndex].cursor;
@@ -556,7 +602,7 @@ export async function getPostsByCategory(
         // If we fail to get the cursor, we'll just try to get the first page
       }
     }
-    
+
     // Build our main query, using the cursor if we have one
     const query = `query GET_POSTS_BY_CATEGORY($category: ID!, $first: Int, $after: String) {
       category(id: $category, idType: SLUG) {
@@ -593,18 +639,18 @@ export async function getPostsByCategory(
         }
       }
     }`;
-    
+
     // Use a cache key that includes category and pagination parameters
     const cacheKey = `category-${$category}-${$first}-${$page}`;
-    
+
     return await executeQuery<CategoryPostsResponse>(
-      query, 
-      { 
-        category: $category, 
+      query,
+      {
+        category: $category,
         first: $first,
-        after: afterCursor
-      }, 
-      cacheKey
+        after: afterCursor,
+      },
+      cacheKey,
     );
   } catch (error) {
     log.error(`Error fetching posts for category ${$category}: ` + error);
@@ -632,19 +678,19 @@ export async function getPostsByCategory(
                 featuredImage: {
                   node: {
                     mediaItemUrl: "/logo.svg",
-                    altText: "Example image"
-                  }
-                }
-              }
-            }
+                    altText: "Example image",
+                  },
+                },
+              },
+            },
           ],
           pageInfo: {
             hasNextPage: false,
             hasPreviousPage: false,
-            total: 1
-          }
-        }
-      }
+            total: 1,
+          },
+        },
+      },
     };
   }
 }
@@ -757,12 +803,17 @@ export async function getNodeByURI(uri: string): Promise<NodeByUriResponse> {
         }                  
       }
     }`;
-    
+
     // Special case for nodes: don't cache the current page/post being viewed
     // This ensures we always get fresh content for the current page
     // In client context, never bypass cache; in SSR context, always bypass cache for direct page views
     const bypassCache = true; // Always get fresh content when directly viewing a page
-    return await executeQuery<NodeByUriResponse>(query, { uri }, `uri-${uri}`, bypassCache);
+    return await executeQuery<NodeByUriResponse>(
+      query,
+      { uri },
+      `uri-${uri}`,
+      bypassCache,
+    );
   } catch (error) {
     log.error(`Error fetching node by URI ${uri}: ` + error);
     // Return fallback data for development
@@ -782,17 +833,17 @@ export async function getNodeByURI(uri: string): Promise<NodeByUriResponse> {
         excerpt: "<p>This is a fallback post excerpt.</p>",
         content: "<p>This is fallback post content.</p>",
         categories: {
-          nodes: [{ name: "Fallback Category", uri: "/category/fallback/" }]
+          nodes: [{ name: "Fallback Category", uri: "/category/fallback/" }],
         },
         featuredImage: {
           node: {
             mediaItemUrl: "/logo.svg",
-            altText: "Fallback image"
-          }
+            altText: "Fallback image",
+          },
         },
         next: null,
-        previous: null
-      }
+        previous: null,
+      },
     };
   }
 }
@@ -826,26 +877,34 @@ export async function getAllUris(): Promise<UriParams[]> {
         }
       }
     }`;
-    
+
     // Use a long cache duration for this query as it's only used during build
     // Setting bypassCache to false to ensure we don't overwhelm the API during builds
-    const data = await executeQuery<AllUrisResponse>(query, {}, 'all-uris', false);
-    
+    const data = await executeQuery<AllUrisResponse>(
+      query,
+      {},
+      "all-uris",
+      false,
+    );
+
     // Process the URIs
     return Object.values(data)
-        .reduce(function (acc: { uri: string }[], currentValue: { nodes: { uri: string }[] }) {
-          return acc.concat(currentValue.nodes);
-        }, [])
-        .map((node: { uri: string }) => {
-          // Clean up the URI format for Astro routes
-          let trimmedURI = node.uri.substring(1);
-          trimmedURI = trimmedURI.substring(0, trimmedURI.length - 1);
-          return {
-            params: {
-              uri: trimmedURI,
-            },
-          };
-        });
+      .reduce(function (
+        acc: { uri: string }[],
+        currentValue: { nodes: { uri: string }[] },
+      ) {
+        return acc.concat(currentValue.nodes);
+      }, [])
+      .map((node: { uri: string }) => {
+        // Clean up the URI format for Astro routes
+        let trimmedURI = node.uri.substring(1);
+        trimmedURI = trimmedURI.substring(0, trimmedURI.length - 1);
+        return {
+          params: {
+            uri: trimmedURI,
+          },
+        };
+      });
   } catch (error) {
     log.error("Error fetching all URIs: " + error);
     // Return fallback data for development
@@ -854,7 +913,7 @@ export async function getAllUris(): Promise<UriParams[]> {
       { params: { uri: "example-post-2" } },
       { params: { uri: "about" } },
       { params: { uri: "contact" } },
-      { params: { uri: "category/sample" } }
+      { params: { uri: "category/sample" } },
     ];
   }
 }

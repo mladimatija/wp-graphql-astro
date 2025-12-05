@@ -33,10 +33,7 @@
   </form>
 </div>
 
-<style lang="scss">
-  @use '../styles/config/variables.scss' as *;
-  @use '../styles/abstracts/functions/rem.scss' as *;
-
+<style>
   .contact-form {
     margin: 2rem 0;
   }
@@ -45,90 +42,65 @@
     display: flex;
     flex-wrap: wrap;
     gap: 1.5rem;
+  }
 
-    .hidden {
-      clip-path: inset(50%);
-      height: 1px;
-      overflow: hidden;
-      position: absolute;
-      white-space: nowrap;
-      width: 1px;
-    }
+  .contact-form form .hidden {
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
 
-    input {
-      flex-basis: calc(50% - 0.75rem);
-    }
+  .contact-form form input {
+    flex-basis: calc(50% - 0.75rem);
+  }
 
-    textarea {
-      flex-basis: 100%;
-      resize: none;
-    }
+  .contact-form form textarea {
+    flex-basis: 100%;
+    resize: none;
+  }
 
-    input,
-    textarea {
-      padding: 1rem 1.5rem;
-      font-size: 1rem;
-      border: rem(1) solid $color-black;
-      border-radius: 0.5rem;
-      outline: 0;
-      -webkit-transition: border-color 0.4s ease;
-      transition: border-color 0.4s ease;
+  .contact-form form input,
+  .contact-form form textarea {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    border: 0.0625rem solid var(--color-black);
+    border-radius: 0.5rem;
+    outline: 0;
+    transition: border-color 0.4s ease;
+  }
 
-      &::-webkit-input-placeholder {
-        /* WebKit, Blink, Edge */
-        color: rgba($color-black, 0.5);
-      }
+  .contact-form form input::placeholder,
+  .contact-form form textarea::placeholder {
+    color: rgb(25 34 38 / 0.5);
+  }
 
-      &:-moz-placeholder {
-        /* Mozilla Firefox 4 to 18 */
-        color: rgba($color-black, 0.5);
-        opacity: 1;
-      }
+  .contact-form form input:hover,
+  .contact-form form input:focus,
+  .contact-form form input:active,
+  .contact-form form textarea:hover,
+  .contact-form form textarea:focus,
+  .contact-form form textarea:active {
+    border-color: var(--color-blue);
+  }
 
-      &::-moz-placeholder {
-        /* Mozilla Firefox 19+ */
-        color: rgba($color-black, 0.5);
-        opacity: 1;
-      }
+  .contact-form form button[type='submit'] {
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+    color: #fff;
+    font-size: 1rem;
+    background-color: var(--color-blue);
+    border: none;
+    border-radius: 0.5rem;
+    text-transform: uppercase;
+    font-weight: normal;
+    cursor: pointer;
+    transition: background-color 0.4s ease;
+  }
 
-      &:-ms-input-placeholder {
-        /* Internet Explorer 10-11 */
-        color: rgba($color-black, 0.5);
-      }
-
-      &::-ms-input-placeholder {
-        /* Microsoft Edge */
-        color: rgba($color-black, 0.5);
-      }
-
-      &::placeholder {
-        color: rgba($color-black, 0.5);
-      }
-
-      &:hover,
-      &:focus,
-      &:active {
-        border-color: $color-blue;
-      }
-    }
-
-    button[type='submit'] {
-      margin: 0 auto;
-      padding: 1rem 1.5rem;
-      color: #fff;
-      font-size: 1rem;
-      background-color: $color-blue;
-      border: none;
-      border-radius: 0.5rem;
-      text-transform: uppercase;
-      font-weight: normal;
-      cursor: pointer;
-      -webkit-transition: background-color 0.4s ease;
-      transition: background-color 0.4s ease;
-
-      &:hover {
-        background-color: rgba($color-blue, 0.8);
-      }
-    }
+  .contact-form form button[type='submit']:hover {
+    background-color: rgb(41 170 225 / 0.8);
   }
 </style>

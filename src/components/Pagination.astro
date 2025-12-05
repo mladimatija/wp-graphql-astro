@@ -46,30 +46,27 @@ function getPaginationText() {
   }
 </div>
 
-<style lang="scss">
-  @use '../styles/config/variables.scss' as *;
-  @use '../styles/abstracts/functions/rem.scss' as *;
-
+<style>
   .pagination {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: rem(20);
-    padding: rem(8) 0;
+    gap: 1.25rem;
+    padding: 0.5rem 0;
+  }
 
-    > * {
-      font-size: rem(13);
-      color: $color-black;
-    }
+  .pagination > * {
+    font-size: var(--size-13px);
+    color: var(--color-black);
+  }
 
-    a {
-      color: $color-blue;
+  .pagination a {
+    color: var(--color-blue);
+  }
 
-      &:hover {
-        text-decoration: underline;
-        color: $color-black;
-      }
-    }
+  .pagination a:hover {
+    text-decoration: underline;
+    color: var(--color-black);
   }
 </style>

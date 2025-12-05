@@ -6,7 +6,6 @@ A headless WordPress site built with [Astro](https://astro.build/) and GraphQL. 
 
 - Static site generation with Astro
 - WordPress as a headless CMS via GraphQL
-- Responsive SCSS styling
 - Dark mode (respects system preferences)
 - SEO metadata control
 - Dynamic routing for WordPress content
@@ -84,10 +83,10 @@ src/
 │   ├── api/           # API endpoints
 │   ├── local/         # Local content routes
 │   └── page/          # Pagination handling
-└── styles/            # SCSS styles
-    ├── abstracts/     # Functions and variables
-    ├── common/        # Global styles
-    └── config/        # Style configuration
+└── styles/            # CSS styles
+    ├── variables.css       # CSS custom properties
+    ├── view-transitions.css # View Transitions API
+    └── styles.css          # Main stylesheet
 ```
 
 ## Routing and Templates
@@ -130,7 +129,7 @@ showFeaturedImagesOnPostCard: true
 ### Available Configuration Options
 
 | Option                         | Type    | Description                                |
-|--------------------------------|---------|--------------------------------------------|
+| ------------------------------ | ------- | ------------------------------------------ |
 | `defaultTitle`                 | string  | Default page title                         |
 | `titleTemplate`                | string  | Format for page titles                     |
 | `description`                  | string  | Default meta description                   |
@@ -172,11 +171,9 @@ Local content lives in Content Collections:
 
 ## Styling
 
-SCSS organized into:
-
-- **Abstracts** - Functions and mixins
-- **Common** - Global styles
-- **Config** - Variables and settings
+- **variables.css** - CSS custom properties for theming
+- **styles.css** - Main stylesheet
+- **view-transitions.css** - View Transitions API support
 
 ## Deployment
 
@@ -218,6 +215,7 @@ npm run test:coverage
 ```
 
 Key test files:
+
 - `/src/components/__tests__/` - Component tests
 - `/src/lib/__tests__/` - API and utility tests
 
@@ -261,22 +259,22 @@ Logs show in dev by default, hidden in production unless you set `PUBLIC_DEBUG=t
 
 ```typescript
 // Server/API context
-import { log } from '../lib/constants';
-log.debug('Detailed information for debugging');
-log.info('General information about operation');
-log.warn('Warning that might need attention');
-log.error('Critical error that requires action');
+import { log } from "../lib/constants";
+log.debug("Detailed information for debugging");
+log.info("General information about operation");
+log.warn("Warning that might need attention");
+log.error("Critical error that requires action");
 
 // Client-side context (in .astro files)
 const clientLog = {
-  debug: (msg) => isDev && console.log('[CLIENT DEBUG]', msg),
-  info: (msg) => isDev && console.log('[CLIENT INFO]', msg),
-  error: (msg, err) => console.error('[CLIENT ERROR]', msg, err || '')
+  debug: (msg) => isDev && console.log("[CLIENT DEBUG]", msg),
+  info: (msg) => isDev && console.log("[CLIENT INFO]", msg),
+  error: (msg, err) => console.error("[CLIENT ERROR]", msg, err || ""),
 };
 
 // Service worker context
-swLog.info('Service worker information');
-swLog.error('Service worker error', errorObject);
+swLog.info("Service worker information");
+swLog.error("Service worker error", errorObject);
 ```
 
 ### Sending Data to Analytics
@@ -311,11 +309,12 @@ The manifest generator fetches data from WordPress during the build process:
 ```graphql
 {
   generalSettings {
-    title        # Used for manifest name
-    description  # Used for manifest description
-    language     # Used for manifest language
+    title # Used for manifest name
+    description # Used for manifest description
+    language # Used for manifest language
   }
-  mediaItems(where: {search: "logo"}) {   # Used for PWA icons
+  mediaItems(where: { search: "logo" }) {
+    # Used for PWA icons
     nodes {
       mediaItemUrl
       mimeType
@@ -335,7 +334,8 @@ If WordPress data is unavailable during build time, the system falls back to def
 ```javascript
 const DEFAULT_APP_NAME = "WP GraphQL Astro";
 const DEFAULT_APP_SHORT_NAME = "WP Astro";
-const DEFAULT_APP_DESCRIPTION = "A modern headless WordPress implementation using Astro and GraphQL";
+const DEFAULT_APP_DESCRIPTION =
+  "A modern headless WordPress implementation using Astro and GraphQL";
 const DEFAULT_THEME_COLOR = "#29aae1";
 const DEFAULT_BG_COLOR = "#ffffff";
 ```
@@ -367,6 +367,7 @@ Both scripts are automatically run during the build process.
 ### PWA Assets
 
 Required PWA assets are located in the `/public` directory:
+
 - `favicon.svg` - Vector icon used for app icons
 - `logo.png` - 192x192 PNG icon
 - `offline.html` - Offline fallback page

@@ -1,9 +1,9 @@
 // Content Collections configuration
-import { defineCollection, z } from 'astro:content';
+import { defineCollection, z } from "astro:content";
 
 // Schema for local pages
 const pagesCollection = defineCollection({
-  type: 'content',
+  type: "content",
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
@@ -16,23 +16,25 @@ const pagesCollection = defineCollection({
 
 // Schema for authors
 const authorsCollection = defineCollection({
-  type: 'content',
+  type: "content",
   schema: z.object({
     name: z.string(),
     role: z.string().optional(),
     bio: z.string().optional(),
     avatar: z.string().optional(),
-    social: z.object({
-      x: z.string().optional(),
-      github: z.string().optional(),
-      linkedin: z.string().optional(),
-    }).optional(),
+    social: z
+      .object({
+        x: z.string().optional(),
+        github: z.string().optional(),
+        linkedin: z.string().optional(),
+      })
+      .optional(),
   }),
 });
 
 // Schema for reusable components
 const componentsCollection = defineCollection({
-  type: 'content',
+  type: "content",
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
@@ -42,9 +44,9 @@ const componentsCollection = defineCollection({
   }),
 });
 
-// Schema for config collection 
+// Schema for config collection
 const configCollection = defineCollection({
-  type: 'content',
+  type: "content",
   schema: z.object({
     defaultTitle: z.string().optional(),
     titleTemplate: z.string().optional(),
@@ -60,8 +62,8 @@ const configCollection = defineCollection({
 
 // Define collections for Astro v5
 export const collections = {
-  'pages': pagesCollection,
-  'authors': authorsCollection,
-  'components': componentsCollection,
-  'config': configCollection,
+  pages: pagesCollection,
+  authors: authorsCollection,
+  components: componentsCollection,
+  config: configCollection,
 };

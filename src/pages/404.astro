@@ -14,13 +14,9 @@ import MainLayout from "../layouts/MainLayout.astro";
   </main>
 </MainLayout>
 
-<style lang="scss">
-    @use '../styles/abstracts/functions/rem.scss' as *;
-
-  .error-page {
-    p {
-        margin-top: rem(30);
-        text-align: center;
-    }
+<style>
+  .error-page p {
+    margin-top: var(--size-30px);
+    text-align: center;
   }
 </style>

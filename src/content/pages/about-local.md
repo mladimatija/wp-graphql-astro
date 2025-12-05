@@ -20,6 +20,7 @@ This is a hybrid content page managed locally through Astro Content Collections 
 Not all content needs to be managed through a CMS. Static content like about pages, legal pages, and documentation can often be more efficiently managed through local content files in your repository.
 
 Benefits include:
+
 - Version control
 - Pull request reviews
 - Easier collaboration

@@ -36,21 +36,19 @@ const estimatedReadingTime = (postContent: string) => {
   )
 }
 
-<style lang="scss">
-  @use '../styles/abstracts/functions/rem.scss' as *;
-
+<style>
   .post-meta {
-    font-size: rem(13);
+    font-size: var(--size-13px);
     line-height: 1;
-    margin-bottom: rem(8);
+    margin-bottom: 0.5rem;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 5px;
+  }
 
-    .post-meta-icon {
-      width: rem(15);
-      height: rem(15);
-    }
+  .post-meta .post-meta-icon {
+    width: var(--size-15px);
+    height: var(--size-15px);
   }
 </style>

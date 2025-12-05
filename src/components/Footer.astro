@@ -40,18 +40,16 @@ const getBreadCrumbs = (node) => {
   </small>
 </footer>
 
-<style lang="scss">
-  @use '../styles/abstracts/functions/rem.scss' as *;
-
+<style>
   footer {
-    max-width: rem(760);
+    max-width: 47.5rem;
     width: 100%;
     margin: 0 auto;
-    padding-top: rem(12);
+    padding-top: var(--size-12px);
     text-align: center;
+  }
 
-    hr {
-      margin: rem(15) 0;
-    }
+  footer hr {
+    margin: var(--size-15px) 0;
   }
 </style>

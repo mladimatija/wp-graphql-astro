@@ -133,23 +133,20 @@ const showFeaturedImages = siteConfig?.data.showFeaturedImages ?? true;
     customElements.define("disqus-widget", DisqusWidget);
 </script>
 
-<style lang="scss" is:inline>
-@use '../../styles/config/variables.scss' as *;
-@use '../../styles/abstracts/functions/rem.scss' as *;
-
+<style is:inline>
 .post-content .post-meta {
-    padding-top: 0.5em;
-    justify-content: center;
-    }
+  padding-top: 0.5em;
+  justify-content: center;
+}
 
 .post-content .featured-image {
-    display: block;
-    margin: 1.5em auto;
-    }
+  display: block;
+  margin: 1.5em auto;
+}
 
 .post-content ul li:not(:last-child) {
-    margin-bottom: rem(10);
-    }
+  margin-bottom: 0.625rem;
+}
 
 .post-content img {
     margin: 0.5em auto;

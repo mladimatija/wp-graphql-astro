@@ -39,25 +39,25 @@ const { post } = Astro.props;
   </div>
 </div>
 
-<style lang="scss">
-  @use '../styles/abstracts/functions/rem.scss' as *;
+<style>
   .post-pagination {
-    margin: rem(30) 0;
+    margin: var(--size-30px) 0;
   }
 
   .post-pagination p {
-    margin: rem(30) 0;
+    margin: var(--size-30px) 0;
     font-weight: bold;
     text-align: center;
   }
+
   .post-pagination-container {
     display: flex;
     flex-wrap: wrap;
     gap: 10%;
+  }
 
-    > * {
-      flex-basis: 45%;
-    }
+  .post-pagination-container > * {
+    flex-basis: 45%;
   }
 
   .post-pagination-prev {
