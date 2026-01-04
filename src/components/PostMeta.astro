@@ -27,9 +27,9 @@ const estimatedReadingTime = (postContent: string) => {
 			<time datetime={post.dateGmt} class="post-date published">
 				{new Date(post.date).toLocaleDateString()}
 			</time>
-			<time datetime={post.modifiedGmt} class="post-date updated modified">
+			{/*<time datetime={post.modifiedGmt} class="post-date updated modified">
 				{new Date(post.modified).toLocaleDateString()}
-			</time>
+			</time>*/}
 			<span>-</span>
 			<span>{estimatedReadingTime(post.content)}</span>
 		</div>
