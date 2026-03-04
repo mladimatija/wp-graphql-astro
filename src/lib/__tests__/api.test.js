@@ -120,6 +120,21 @@ describe("API Functions", () => {
 		expect(result[0].params.uri).toBe("post1");
 	});
 
+	it("getAllUris returns UriParams shape (params.uri)", async () => {
+		getAllUris.mockResolvedValue([
+			{ params: { uri: "category/tech" } },
+			{ params: { uri: "about" } },
+		]);
+		const result = await getAllUris();
+
+		expect(Array.isArray(result)).toBe(true);
+		result.forEach((item) => {
+			expect(item).toHaveProperty("params");
+			expect(item.params).toHaveProperty("uri");
+			expect(typeof item.params.uri).toBe("string");
+		});
+	});
+
 	it("getPosts fetches posts with pagination", async () => {
 		const result = await getPosts(20, 1);
 
