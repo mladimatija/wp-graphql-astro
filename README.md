@@ -46,6 +46,7 @@ WORDPRESS_API_URL=https://yoursitename.com/graphql
 PUBLIC_DISQUS_EMBED_URL=https://siteid.disqus.com/embed.js
 PUBLIC_X_SHARE_USER=your_x_handle
 PUBLIC_SITE_URL=https://yoursitename.com
+REVALIDATE_TOKEN=your-secret-token # Optional - for webhook-triggered revalidation (/api/revalidate)
 PUBLIC_ANALYTICS_ENDPOINT=https://your-analytics-endpoint.com/collect # Optional - for Web Vitals data
 PUBLIC_DEBUG=true # Optional - enable verbose logging in development
 ```
@@ -390,7 +391,7 @@ Required PWA assets are located in the `/public` directory:
 
 The application includes API routes:
 
-- `/api/revalidate` - Webhook endpoint for triggering rebuilds (accepts POST requests with security token)
+- `/api/revalidate` - Webhook endpoint for triggering rebuilds. Set `REVALIDATE_TOKEN` in your environment and send it in the `x-revalidate-token` header with a POST request; the endpoint is rate-limited per IP to reduce abuse.
 - `/api/manifest.json` - Route that redirects to the static manifest.json file
 
 ## Contact Form

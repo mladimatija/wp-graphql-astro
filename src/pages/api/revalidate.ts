@@ -1,6 +1,44 @@
 import type { APIRoute } from "astro";
 import { log } from "../../lib/constants";
 
+/** In-memory rate limit: max requests per window per key (IP). Reset after window ms. */
+const REVALIDATE_RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const REVALIDATE_RATE_LIMIT_MAX = 10;
+
+const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
+
+function getClientKey(request: Request): string {
+	const forwarded = request.headers.get("x-forwarded-for");
+	if (forwarded) return forwarded.split(",")[0].trim();
+	const realIp = request.headers.get("x-real-ip");
+	if (realIp) return realIp;
+	return "unknown";
+}
+
+function isRateLimited(key: string): boolean {
+	const now = Date.now();
+	const entry = rateLimitStore.get(key);
+	if (!entry) return false;
+	if (now >= entry.resetAt) {
+		rateLimitStore.delete(key);
+		return false;
+	}
+	return entry.count >= REVALIDATE_RATE_LIMIT_MAX;
+}
+
+function consumeRateLimit(key: string): void {
+	const now = Date.now();
+	const entry = rateLimitStore.get(key);
+	if (!entry || now >= entry.resetAt) {
+		rateLimitStore.set(key, {
+			count: 1,
+			resetAt: now + REVALIDATE_RATE_LIMIT_WINDOW_MS,
+		});
+		return;
+	}
+	entry.count += 1;
+}
+
 /**
  * API endpoint to revalidate pages on-demand
  * Used by WordPress webhooks to trigger rebuilds when content changes
@@ -10,10 +48,24 @@ import { log } from "../../lib/constants";
  */
 export const POST: APIRoute = async ({ request /*, locals*/ }) => {
 	try {
+		const clientKey = getClientKey(request);
+		if (isRateLimited(clientKey)) {
+			return new Response(
+				JSON.stringify({
+					success: false,
+					message: "Too many requests; try again later",
+				}),
+				{
+					status: 429,
+					headers: { "Content-Type": "application/json" },
+				},
+			);
+		}
+
 		// Extract and validate the request body
 		const body = await request.json();
 
-		// Validate that request includes proper security token
+		// Validate that request includes proper security token (never log the token)
 		const receivedToken = request.headers.get("x-revalidate-token");
 		const expectedToken = import.meta.env.REVALIDATE_TOKEN;
 
@@ -29,6 +81,8 @@ export const POST: APIRoute = async ({ request /*, locals*/ }) => {
 				},
 			);
 		}
+
+		consumeRateLimit(clientKey);
 
 		// Get the post/page path that needs revalidation
 		const paths = Array.isArray(body.paths)

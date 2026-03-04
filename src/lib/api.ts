@@ -261,13 +261,12 @@ async function executeQuery<T>(
 
 		log.debug("Preparing authentication headers...");
 
-		// Add authentication if environment variables are set
+		// Add authentication if environment variables are set.
+		// Never log WP_APP_PASSWORD, REVALIDATE_TOKEN, WP_JWT_TOKEN, WP_AUTH_NONCE or other secrets.
 		// Method 1: Application Password (WordPress 5.6+)
 		if (import.meta.env.WP_APP_USERNAME && import.meta.env.WP_APP_PASSWORD) {
 			try {
-				log.debug(
-					`Using Basic Auth with username: ${import.meta.env.WP_APP_USERNAME}`,
-				);
+				log.debug("Using Basic Auth for API request");
 				// Use browser's btoa for compatibility
 				const auth =
 					typeof btoa === "function"
