@@ -51,6 +51,8 @@ PUBLIC_ANALYTICS_ENDPOINT=https://your-analytics-endpoint.com/collect # Optional
 PUBLIC_DEBUG=true # Optional - enable verbose logging in development
 ```
 
+**Production:** Set `PUBLIC_SITE_URL` in your production environment (e.g. Netlify env vars). The Astro config uses it for `site`, so the sitemap integration can generate correct absolute URLs; if it is unset, the sitemap may be skipped or have wrong links.
+
 ## Getting Started
 
 ```bash

@@ -70,13 +70,15 @@ const paginationData = {
 	<div class="posts">
 		{
 			node.__typename === "Category" &&
-				data?.category?.posts?.edges.map((post) => (
-					<PostCard post={post.node} />
+				data?.category?.posts?.edges.map((post, i) => (
+					<PostCard post={post.node} priority={i === 0} />
 				))
 		}
 		{
 			node.__typename === "Tag" &&
-				node?.posts?.nodes.map((post) => <PostCard post={post} />)
+				node?.posts?.nodes.map((post, i) => (
+					<PostCard post={post} priority={i === 0} />
+				))
 		}
 	</div>
 

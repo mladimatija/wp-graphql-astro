@@ -28,7 +28,11 @@ let { page } = Astro.props;
 <MainLayout>
 	<main role="main">
 		<div class="posts">
-			{page.data.map((post) => <PostCard post={post.node} />)}
+			{
+				page.data.map((post, i) => (
+					<PostCard post={post.node} priority={i === 0} />
+				))
+			}
 		</div>
 		<Pagination page={page as Page} />
 	</main>

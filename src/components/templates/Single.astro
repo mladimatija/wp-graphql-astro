@@ -1,5 +1,6 @@
 ---
 import { getSiteConfig } from "../../lib/content";
+import { settingsQuery } from "../../lib/api";
 import ContactForm from "../ContactForm.astro";
 import PostMeta from "../PostMeta.astro";
 import PostPagination from "../PostPagination.astro";
@@ -49,7 +50,46 @@ const { node } = Astro.props;
 // Get site configuration
 const siteConfig = await getSiteConfig();
 const showFeaturedImages = siteConfig?.data.showFeaturedImages ?? true;
+
+// JSON-LD for posts (BlogPosting)
+const siteSettings = (await settingsQuery()).data;
+const articleUrl =
+	node.link ||
+	`${siteSettings.generalSettings.url.replace(/\/$/, "")}${node.uri}`;
+const stripHtmlForDesc = (html) =>
+	(html || "")
+		.replace(/<[^>]*>/g, "")
+		.trim()
+		.slice(0, 160);
 ---
+
+{
+	node.__typename === "Post" && (
+		<script
+			type="application/ld+json"
+			set:html={JSON.stringify({
+				"@context": "https://schema.org",
+				"@type": "BlogPosting",
+				headline: node.title,
+				datePublished: node.dateGmt || node.date,
+				dateModified: node.modifiedGmt || node.modified,
+				url: articleUrl,
+				description: stripHtmlForDesc(node.excerpt || node.content),
+				...(node.featuredImage?.node?.mediaItemUrl && {
+					image: {
+						"@type": "ImageObject",
+						url: node.featuredImage.node.mediaItemUrl,
+					},
+				}),
+				publisher: {
+					"@type": "Organization",
+					name: siteSettings.generalSettings.title,
+					url: siteSettings.generalSettings.url,
+				},
+			})}
+		/>
+	)
+}
 
 <article transition:name={`post-${node.id}`} transition:animate="fade">
 	<header class="header">
@@ -70,6 +110,7 @@ const showFeaturedImages = siteConfig?.data.showFeaturedImages ?? true;
 					class="featured-image"
 					src={node.featuredImage.node.mediaItemUrl}
 					alt={node.featuredImage.node.altText || node.title}
+					fetchpriority="high"
 					transition:name={`image-${node.id}`}
 				/>
 			)

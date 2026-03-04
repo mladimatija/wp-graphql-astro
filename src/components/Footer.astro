@@ -1,10 +1,44 @@
 ---
 import { getNodeByURI } from "../lib/api";
+
+const baseUrl = (
+	import.meta.env.PUBLIC_SITE_URL || "https://example.com"
+).replace(/\/$/, "");
 const uri = `/${Astro.params.uri}/`;
 const data = await getNodeByURI(uri);
 const node = data.nodeByUri;
 
-// Simple breadcrumbs, only one level deep (skip when no node)
+// Breadcrumb items for JSON-LD (and for building HTML)
+function getBreadcrumbItems(n) {
+	if (!n) return [];
+	const items = [{ name: "Home", url: baseUrl + "/" }];
+	const type = n.__typename;
+	if (type === "Tag" || type === "Category" || type === "Archive") {
+		items.push({
+			name:
+				type === "Tag"
+					? `Posts tagged "${n.name}"`
+					: `Archive by category "${n.name}"`,
+			url: baseUrl + (n.uri || "/"),
+		});
+	} else if (type === "Post" || type === "Page") {
+		if (type === "Post" && n.categories?.nodes?.length) {
+			items.push({
+				name: n.categories.nodes[0].name,
+				url: baseUrl + n.categories.nodes[0].uri,
+			});
+		}
+		items.push({
+			name: n.title || n.name || "",
+			url: n.link || baseUrl + (n.uri || "/"),
+		});
+	}
+	return items;
+}
+
+const breadcrumbItems = getBreadcrumbItems(node);
+
+// Simple breadcrumbs HTML, only one level deep (skip when no node)
 const getBreadCrumbs = (n) => {
 	if (!n) return "";
 	const type = n.__typename;
@@ -29,6 +63,23 @@ const getBreadCrumbs = (n) => {
 ---
 
 <footer transition:animate="fade">
+	{
+		breadcrumbItems.length > 1 && (
+			<script
+				type="application/ld+json"
+				set:html={JSON.stringify({
+					"@context": "https://schema.org",
+					"@type": "BreadcrumbList",
+					itemListElement: breadcrumbItems.map((item, i) => ({
+						"@type": "ListItem",
+						position: i + 1,
+						name: item.name,
+						item: item.url,
+					})),
+				})}
+			/>
+		)
+	}
 	{
 		Astro.params.uri !== undefined && node && getBreadCrumbs(node) && (
 			<div transition:animate="fade">

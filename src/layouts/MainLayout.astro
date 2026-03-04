@@ -119,6 +119,18 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
 			}}
 		/>
 
+		<!-- JSON-LD: WebSite (site-wide) -->
+		<script
+			type="application/ld+json"
+			set:html={JSON.stringify({
+				"@context": "https://schema.org",
+				"@type": "WebSite",
+				name: generalSettings.title,
+				url: generalSettings.url,
+				description: generalSettings.description,
+			})}
+		/>
+
 		<!-- Astro Client Router for transitions -->
 		<ClientRouter />
 

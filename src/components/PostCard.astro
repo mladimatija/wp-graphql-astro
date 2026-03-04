@@ -19,9 +19,11 @@ interface Props {
 		// Other post properties used by PostMeta component
 		[key: string]: any;
 	};
+	/** Set for the first card in a list (above-the-fold) so the image gets fetchpriority="high" */
+	priority?: boolean;
 }
 
-const { post } = Astro.props;
+const { post, priority = false } = Astro.props;
 
 // Get site configuration
 const siteConfig = await getSiteConfig();
@@ -45,8 +47,9 @@ const hasFeaturedImage =
 							alt={post.featuredImage.node.altText || post.title}
 							width="300"
 							height="200"
-							loading="lazy"
+							loading={priority ? "eager" : "lazy"}
 							decoding="async"
+							fetchpriority={priority ? "high" : undefined}
 							transition:name={`image-${post.id}`}
 						/>
 					</a>
