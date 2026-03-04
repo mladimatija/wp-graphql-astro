@@ -250,11 +250,20 @@ Metrics show up in a toggleable floating panel. It's on by default in dev mode.
 
 The monitor shows color-coded ratings (good, needs improvement, poor) and adapts to your current theme.
 
+## Constants
+
+Default app name, theme colors, PWA icons, and similar values are defined once in **`src/lib/constants.json`** (single source of truth). They are re-exported by:
+
+- **`src/lib/constants.ts`** – for Astro, API routes, and Vite (uses `import.meta.env` for the `log` utility)
+- **`src/lib/constants.js`** – for Node scripts like `process-templates.js` and `generate-service-worker.js` (uses `process.env` for `log`)
+
+To change a default value, edit `constants.json` only.
+
 ## Logging
 
 Centralized logging across the app:
 
-- **Server/API** - `log` utility from `src/lib/constants.ts`
+- **Server/API** – `log` utility from `src/lib/constants.ts`
 - **Client-Side** - `clientLog` in Astro components
 - **Service Worker** - `swLog` for service worker context
 
