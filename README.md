@@ -31,11 +31,12 @@ A headless WordPress site built with [Astro](https://astro.build/) and GraphQL. 
 You'll need these WordPress plugins:
 
 - [WPGraphQL](https://www.wpgraphql.com/docs/introduction) - GraphQL API for WordPress
+- [WPGraphQL Offset Pagination](https://github.com/valu-digital/wp-graphql-offset-pagination) - Required for `getPosts()` (post listing pagination)
 - [Total Counts for WPGraphQL](https://github.com/builtbycactus/total-counts-for-wp-graphql) - Post count support
 - [WPGraphQL Next-Previous Post](https://github.com/valu-digital/wp-graphql-next-previous-post) - Post navigation
 - [JAMstack Deployments](https://github.com/crgeary/wp-jamstack-deployments) (optional) - Trigger rebuilds from WordPress
 
-Pagination uses WPGraphQL's built-in cursor-based system.
+Post listing uses offset pagination (via the plugin above); other queries use WPGraphQL's cursor-based pagination.
 
 ### Environment Variables
 
@@ -43,10 +44,13 @@ Create a `.env` file with:
 
 ```env
 WORDPRESS_API_URL=https://yoursitename.com/graphql
+PUBLIC_SITE_URL=https://yoursitename.com
 PUBLIC_DISQUS_EMBED_URL=https://siteid.disqus.com/embed.js
 PUBLIC_X_SHARE_USER=your_x_handle
-PUBLIC_SITE_URL=https://yoursitename.com
 REVALIDATE_TOKEN=your-secret-token # Optional - for webhook-triggered revalidation (/api/revalidate)
+# Optional - for private/protected GraphQL (Basic Auth):
+# WP_APP_USERNAME=your_wp_username
+# WP_APP_PASSWORD=your_application_password
 PUBLIC_ANALYTICS_ENDPOINT=https://your-analytics-endpoint.com/collect # Optional - for Web Vitals data
 PUBLIC_DEBUG=true # Optional - enable verbose logging in development
 ```
@@ -55,8 +59,12 @@ PUBLIC_DEBUG=true # Optional - enable verbose logging in development
 
 ## Getting Started
 
+Copy the example env file and edit with your values, then install and run:
+
 ```bash
-# Install dependencies
+cp .env.example .env
+# Edit .env with your WordPress URL, site URL, and any optional keys.
+
 npm install
 
 # Start development server
