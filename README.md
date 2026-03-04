@@ -394,23 +394,30 @@ The application includes API routes:
 - `/api/revalidate` - Webhook endpoint for triggering rebuilds. Set `REVALIDATE_TOKEN` in your environment and send it in the `x-revalidate-token` header with a POST request; the endpoint is rate-limited per IP to reduce abuse.
 - `/api/manifest.json` - Route that redirects to the static manifest.json file
 
-## Contact Form
+## Forms (Contact & Newsletter)
 
-The contact form uses Netlify Forms with spam protection:
+Both the **contact form** and the **newsletter signup** use [Netlify Forms](https://docs.netlify.com/forms/setup/). Submissions are handled by Netlify; there are no custom API routes (`/api/contact` or `/api/newsletter`) in this project.
 
-- **Honeypot field** - Hidden `bot-field` to catch basic bots
-- **reCAPTCHA v2** - Google's "I'm not a robot" checkbox
+| Form       | Component                                                   | Action     | Netlify form name |
+| ---------- | ----------------------------------------------------------- | ---------- | ----------------- |
+| Contact    | `src/components/ContactForm.astro`                          | `/success` | `contact-form`    |
+| Newsletter | `src/components/content-collections/NewsletterSignup.astro` | `/success` | `newsletter-form` |
+
+The contact form includes optional spam protection:
+
+- **Honeypot field** – Hidden `bot-field` to catch basic bots
+- **reCAPTCHA v2** – Google's "I'm not a robot" checkbox (when enabled in Netlify)
 
 ### Setup
 
-The form works out of the box on Netlify. To enable reCAPTCHA:
+Forms work out of the box on Netlify. To enable reCAPTCHA on the contact form:
 
 1. Deploy to Netlify
 2. Go to Site Settings → Forms
 3. Enable reCAPTCHA spam filtering
 4. Netlify handles the rest automatically
 
-The form is in `src/components/ContactForm.astro` and gets embedded in posts/pages as needed.
+Submissions can be viewed in the Netlify dashboard under Forms. To use a different backend (e.g. your own API or another provider), change the form `action` and add the corresponding API route or Netlify Function.
 
 ## License
 

@@ -17,9 +17,11 @@ const { data } = component.data;
 		<form
 			class="newsletter-form"
 			method="post"
-			action="/api/newsletter"
+			name="newsletter-form"
+			action="/success"
 			netlify
 		>
+			<input type="hidden" name="form-name" value="newsletter-form" />
 			<div class="form-group">
 				<label for="email" class="sr-only">Email address</label>
 				<input
