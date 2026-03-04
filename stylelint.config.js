@@ -1,6 +1,7 @@
-{
-	"extends": ["stylelint-config-standard"],
-	"rules": {
+/** @type {import('stylelint').Config} */
+export default {
+	extends: ["stylelint-config-standard"],
+	rules: {
 		"color-named": "never",
 		"font-family-name-quotes": null,
 		"font-weight-notation": "named-where-possible",
@@ -12,21 +13,21 @@
 		"font-family-no-missing-generic-family-keyword": null,
 		"property-no-unknown": [
 			true,
-			{ "ignoreProperties": ["view-transition-name"] }
+			{ ignoreProperties: ["view-transition-name"] },
 		],
 		"property-no-vendor-prefix": null,
 		"selector-pseudo-class-no-unknown": [
 			true,
 			{
-				"ignorePseudoClasses": [
+				ignorePseudoClasses: [
 					"global",
 					"view-transition",
 					"view-transition-group",
 					"view-transition-image-pair",
 					"view-transition-new",
-					"view-transition-old"
-				]
-			}
+					"view-transition-old",
+				],
+			},
 		],
 		"function-no-unknown": null,
 		"declaration-property-value-no-unknown": null,
@@ -39,14 +40,14 @@
 		"at-rule-empty-line-before": null,
 		"media-feature-range-notation": null,
 		"import-notation": null,
-		"selector-class-pattern": [".*", {}]
+		"selector-class-pattern": [".*", {}],
 	},
-	"ignoreFiles": ["node_modules/*", "dist/*"],
-	"defaultSeverity": "error",
-	"overrides": [
+	ignoreFiles: ["node_modules/*", "dist/*"],
+	defaultSeverity: "error",
+	overrides: [
 		{
-			"files": ["**/*.astro"],
-			"customSyntax": "postcss-html"
-		}
-	]
-}
+			files: ["**/*.astro"],
+			customSyntax: "postcss-html",
+		},
+	],
+};

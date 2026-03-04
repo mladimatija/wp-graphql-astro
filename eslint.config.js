@@ -6,6 +6,7 @@ import globals from "globals";
 
 export default [
 	{
+		name: "ignore",
 		ignores: [
 			"node_modules/**",
 			"dist/**",
@@ -18,6 +19,7 @@ export default [
 	js.configs.recommended,
 	...tseslint.configs.recommended,
 	{
+		name: "js-ts",
 		files: ["**/*.js", "**/*.mjs", "**/*.jsx", "**/*.ts", "**/*.tsx"],
 		languageOptions: {
 			ecmaVersion: 2023,
@@ -80,7 +82,6 @@ export default [
 				node: {
 					extensions: [".js", ".jsx", ".ts", ".tsx", ".astro"],
 					paths: ["src"],
-					// Configure alias
 					alias: {
 						"@": "./src",
 					},
@@ -88,10 +89,10 @@ export default [
 			},
 		},
 	},
-	// Due to compatibility issues with the current version of the Astro ESLint parser and ESLint 9,
-	// Astro linting is disabled.
+	// Astro files: use eslint-plugin-astro parser and rules
 	{
-		files: ["**!/!*.astro"],
+		name: "astro",
+		files: ["**/*.astro"],
 		plugins: {
 			astro: astroPlugin,
 		},
@@ -117,13 +118,11 @@ export default [
 					if (trimmedKey === key) acc[key] = value;
 					return acc;
 				}, {}),
-
 				...Object.entries(globals.node).reduce((acc, [key, value]) => {
 					const trimmedKey = key.trim();
 					if (trimmedKey === key) acc[key] = value;
 					return acc;
 				}, {}),
-
 				...Object.entries(globals.es2021).reduce((acc, [key, value]) => {
 					const trimmedKey = key.trim();
 					if (trimmedKey === key) acc[key] = value;
