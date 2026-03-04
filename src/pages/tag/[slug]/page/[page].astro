@@ -19,7 +19,7 @@ const node = data.nodeByUri;
 export async function getStaticPaths() {
 	// Get all tags
 	const uris = await getAllUris();
-	const { allSettings } = await settingsQuery();
+	const { allSettings } = (await settingsQuery()).data;
 	const postsPerPage = allSettings.readingSettingsPostsPerPage || 10;
 
 	// Filter for tag URIs

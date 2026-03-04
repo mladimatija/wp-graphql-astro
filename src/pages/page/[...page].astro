@@ -9,7 +9,7 @@ import Pagination from "../../components/Pagination.astro";
 export const prerender = true;
 
 export async function getStaticPaths({ paginate }) {
-	const { allSettings } = await settingsQuery();
+	const { allSettings } = (await settingsQuery()).data;
 	// Fetch ALL posts for static generation
 	// Use the total count to determine how many posts to fetch
 	const initialData = await getPosts();

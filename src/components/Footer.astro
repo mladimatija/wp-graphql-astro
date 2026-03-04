@@ -4,25 +4,25 @@ const uri = `/${Astro.params.uri}/`;
 const data = await getNodeByURI(uri);
 const node = data.nodeByUri;
 
-//simple breadcrumbs, only one level deep
-const getBreadCrumbs = (node) => {
-	const type = node.__typename;
+// Simple breadcrumbs, only one level deep (skip when no node)
+const getBreadCrumbs = (n) => {
+	if (!n) return "";
+	const type = n.__typename;
 	let out = 'You are here: <a href="/">Home</a> > ';
 
 	if (type === "Tag" || type === "Category" || type === "Archive") {
 		if (type === "Tag") {
-			out += `Posts tagged "${node.name}"`;
+			out += `Posts tagged "${n.name}"`;
 		} else {
-			out += `Archive by category "${node.name}"`;
+			out += `Archive by category "${n.name}"`;
 		}
 	} else if (type === "Post") {
-		if (node.categories.nodes.length) {
-			// get the first category
-			out += `<a href="${node.categories.nodes[0].uri}">${node.categories.nodes[0].name}</a> > `;
+		if (n.categories?.nodes?.length) {
+			out += `<a href="${n.categories.nodes[0].uri}">${n.categories.nodes[0].name}</a> > `;
 		}
 	}
 
-	out += node.title || "";
+	out += n.title || "";
 
 	return out;
 };
@@ -30,7 +30,7 @@ const getBreadCrumbs = (node) => {
 
 <footer transition:animate="fade">
 	{
-		Astro.params.uri !== undefined && (
+		Astro.params.uri !== undefined && node && getBreadCrumbs(node) && (
 			<div transition:animate="fade">
 				<small set:html={getBreadCrumbs(node)} />
 			</div>

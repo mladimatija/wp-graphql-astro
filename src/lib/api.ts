@@ -151,7 +151,7 @@ interface UriParams {
 	};
 }
 
-interface SettingsResponse {
+export interface SettingsResponse {
 	generalSettings: {
 		title: string;
 		url: string;
@@ -162,7 +162,19 @@ interface SettingsResponse {
 	};
 }
 
-interface MenusResponse {
+/** Result of settingsQuery (data + whether fallback or stale cache was used) */
+export interface SettingsQueryResult {
+	data: SettingsResponse;
+	fromFallback: boolean;
+}
+
+/** Result of navQuery (data + whether fallback or stale cache was used) */
+export interface NavQueryResult {
+	data: MenusResponse;
+	fromFallback: boolean;
+}
+
+export interface MenusResponse {
 	menus: {
 		nodes: MenuNode[];
 	};
@@ -425,86 +437,97 @@ async function executeQuery<T>(
 	}
 }
 
+const SETTINGS_CACHE_KEY = "settings";
+const NAV_CACHE_KEY = "navigation";
+
+const SETTINGS_FALLBACK: SettingsResponse = {
+	generalSettings: {
+		title: DEFAULT_APP_NAME,
+		url: import.meta.env.PUBLIC_SITE_URL || "https://example.com",
+		description: DEFAULT_APP_DESCRIPTION,
+	},
+	allSettings: {
+		readingSettingsPostsPerPage: 10,
+	},
+};
+
+const NAV_FALLBACK: MenusResponse = {
+	menus: {
+		nodes: [
+			{
+				name: "Primary",
+				menuItems: {
+					nodes: [
+						{ uri: "/", url: "/", order: 1, label: "Home" },
+						{ uri: "/about/", url: "/about/", order: 2, label: "About" },
+						{
+							uri: "/contact/",
+							url: "/contact/",
+							order: 3,
+							label: "Contact",
+						},
+					],
+				},
+			},
+		],
+	},
+};
+
 /**
- * Get site settings from WordPress
+ * Get site settings from WordPress.
+ * On failure, returns stale data from cache if available (stale-while-revalidate), else static fallback.
  */
-
-export async function settingsQuery(): Promise<SettingsResponse> {
+export async function settingsQuery(): Promise<SettingsQueryResult> {
 	try {
-		const query = `{
-      generalSettings {
-        title
-        url
-        description
-      }
-      allSettings {
-        readingSettingsPostsPerPage
-      }
-    }`;
-
-		return await executeQuery<SettingsResponse>(query, {}, "settings");
+		const data = await executeQuery<SettingsResponse>(
+			`{
+      generalSettings { title url description }
+      allSettings { readingSettingsPostsPerPage }
+    }`,
+			{},
+			SETTINGS_CACHE_KEY,
+		);
+		return { data, fromFallback: false };
 	} catch (error) {
 		log.error("Error fetching settings: " + error);
-		// Return fallback data for development
-		return {
-			generalSettings: {
-				title: DEFAULT_APP_NAME,
-				url: import.meta.env.PUBLIC_SITE_URL || "https://example.com",
-				description: DEFAULT_APP_DESCRIPTION,
-			},
-			allSettings: {
-				readingSettingsPostsPerPage: 10,
-			},
-		};
+		const cached = queryCache.get(SETTINGS_CACHE_KEY) as
+			| CacheEntry<SettingsResponse>
+			| undefined;
+		if (cached?.data) {
+			return { data: cached.data, fromFallback: false };
+		}
+		return { data: SETTINGS_FALLBACK, fromFallback: true };
 	}
 }
 
 /**
- * Get navigation menu from WordPress
+ * Get navigation menu from WordPress.
+ * On failure, returns stale data from cache if available, else static fallback.
  */
-export async function navQuery(): Promise<MenusResponse> {
+export async function navQuery(): Promise<NavQueryResult> {
 	try {
-		const query = `{
+		const data = await executeQuery<MenusResponse>(
+			`{
       menus(where: {location: PRIMARY}) {
         nodes {
           name
-          menuItems {
-            nodes {
-              uri
-              url
-              order
-              label
-            }
-          }
+          menuItems { nodes { uri url order label } }
         }
       }
-    }`;
-
-		return await executeQuery<MenusResponse>(query, {}, "navigation");
+    }`,
+			{},
+			NAV_CACHE_KEY,
+		);
+		return { data, fromFallback: false };
 	} catch (error) {
 		log.error("Error fetching nav: " + error);
-		// Return fallback data for development
-		return {
-			menus: {
-				nodes: [
-					{
-						name: "Primary",
-						menuItems: {
-							nodes: [
-								{ uri: "/", url: "/", order: 1, label: "Home" },
-								{ uri: "/about/", url: "/about/", order: 2, label: "About" },
-								{
-									uri: "/contact/",
-									url: "/contact/",
-									order: 3,
-									label: "Contact",
-								},
-							],
-						},
-					},
-				],
-			},
-		};
+		const cached = queryCache.get(NAV_CACHE_KEY) as
+			| CacheEntry<MenusResponse>
+			| undefined;
+		if (cached?.data) {
+			return { data: cached.data, fromFallback: false };
+		}
+		return { data: NAV_FALLBACK, fromFallback: true };
 	}
 }
 

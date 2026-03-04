@@ -1,12 +1,22 @@
 ---
+import type { SettingsResponse, MenusResponse } from "../lib/api";
 import Navigation from "../components/Navigation.astro";
 import { settingsQuery } from "../lib/api";
 
-const { generalSettings } = await settingsQuery();
+interface Props {
+	settings?: SettingsResponse;
+	nav?: MenusResponse;
+}
+
+const { settings: settingsProp, nav: navProp } = Astro.props;
+const settingsResult = settingsProp
+	? { data: settingsProp, fromFallback: false }
+	: await settingsQuery();
+const { generalSettings } = settingsResult.data;
 ---
 
 <header class="header" role="banner">
-	<Navigation />
+	<Navigation settings={settingsResult.data} nav={navProp} />
 	<h1 class="header-title">
 		<a href="/" rel="home">
 			<img

@@ -3,9 +3,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 // Mock API functions
 vi.mock("../../lib/api", () => ({
 	settingsQuery: vi.fn().mockResolvedValue({
-		allSettings: {
-			readingSettingsPostsPerPage: 10,
+		data: {
+			allSettings: {
+				readingSettingsPostsPerPage: 10,
+			},
 		},
+		fromFallback: false,
 	}),
 }));
 

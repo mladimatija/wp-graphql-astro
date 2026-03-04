@@ -25,7 +25,7 @@ import { getPostsByCategory, settingsQuery } from "../../lib/api";
 import type { Props as PostProps } from "./Single.astro";
 
 const { node, page } = Astro.props;
-const { allSettings } = await settingsQuery();
+const { allSettings } = (await settingsQuery()).data;
 const postsPerPage = allSettings.readingSettingsPostsPerPage || 10;
 
 // Get the current page from URL or use default

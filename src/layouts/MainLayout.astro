@@ -17,11 +17,14 @@ import Footer from "../components/Footer.astro";
 import A11yManager from "../components/A11yManager.astro";
 import DarkMode from "../components/react/DarkMode";
 import WebVitalsMonitor from "../components/react/WebVitalsMonitor";
-import { settingsQuery } from "../lib/api";
-import { log } from "../lib/constants";
+import { settingsQuery, navQuery } from "../lib/api";
 
-// Prefetch site settings for optimal performance
-const { generalSettings } = await settingsQuery();
+// Prefetch site settings and nav so we can show offline/fallback banner when needed
+const settingsResult = await settingsQuery();
+const navResult = await navQuery();
+const { generalSettings } = settingsResult.data;
+const showFallbackBanner =
+	settingsResult.fromFallback || navResult.fromFallback;
 const {
 	title,
 	description,
@@ -33,6 +36,11 @@ const {
 const uri = Astro.params.uri ? `/${Astro.params.uri}/` : undefined;
 const data = uri ? await getNodeByURI(uri) : { nodeByUri: null };
 const node = data.nodeByUri;
+
+// If we have a URI but WordPress returned no node, show 404
+if (uri && !node) {
+	return Astro.redirect("/404");
+}
 
 // Generate clean description and title with fallbacks
 const cleanDescription =
@@ -126,12 +134,20 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
 		<!-- Include the accessibility manager -->
 		<A11yManager />
 
+		{
+			showFallbackBanner && (
+				<div class="fallback-banner" role="status" aria-live="polite">
+					Showing cached content; some data may be outdated.
+				</div>
+			)
+		}
+
 		<!-- Loading spinner -->
 		<div class="loading-spinner" id="page-loader">
 			<div class="spinner"></div>
 		</div>
 
-		<Header />
+		<Header settings={settingsResult.data} nav={navResult.data} />
 		<main id="content" class="site-content" transition:animate="fade">
 			<slot />
 		</main>
@@ -292,3 +308,16 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
 		</script>
 	</body>
 </html>
+
+<style>
+	.fallback-banner {
+		background: var(--color-blue, #29aae1);
+		color: #fff;
+		font-size: 0.875rem;
+		padding: 0.5rem 1rem;
+		text-align: center;
+		position: sticky;
+		top: 0;
+		z-index: 99;
+	}
+</style>

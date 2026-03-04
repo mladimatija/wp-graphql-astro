@@ -8,7 +8,7 @@ interface Props {
 import { Page } from "astro";
 import { settingsQuery } from "../lib/api";
 
-const { allSettings } = await settingsQuery();
+const { allSettings } = (await settingsQuery()).data;
 const { isHomepage, totalPosts, page } = Astro.props;
 
 function getPaginationText() {

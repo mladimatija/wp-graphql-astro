@@ -72,28 +72,34 @@ describe("API Functions", () => {
 		});
 
 		settingsQuery.mockResolvedValue({
-			generalSettings: {
-				title: "Test Site",
-				description: "Test Description",
+			data: {
+				generalSettings: {
+					title: "Test Site",
+					description: "Test Description",
+				},
+				allSettings: {
+					readingSettingsPostsPerPage: 10,
+				},
 			},
-			allSettings: {
-				readingSettingsPostsPerPage: 10,
-			},
+			fromFallback: false,
 		});
 
 		navQuery.mockResolvedValue({
-			menus: {
-				nodes: [
-					{
-						menuItems: {
-							nodes: [
-								{ label: "Home", uri: "/" },
-								{ label: "About", uri: "/about/" },
-							],
+			data: {
+				menus: {
+					nodes: [
+						{
+							menuItems: {
+								nodes: [
+									{ label: "Home", uri: "/" },
+									{ label: "About", uri: "/about/" },
+								],
+							},
 						},
-					},
-				],
+					],
+				},
 			},
+			fromFallback: false,
 		});
 	});
 
@@ -134,15 +140,17 @@ describe("API Functions", () => {
 		const result = await settingsQuery();
 
 		expect(settingsQuery).toHaveBeenCalled();
-		expect(result.generalSettings.title).toBe("Test Site");
-		expect(result.allSettings.readingSettingsPostsPerPage).toBe(10);
+		expect(result.data.generalSettings.title).toBe("Test Site");
+		expect(result.data.allSettings.readingSettingsPostsPerPage).toBe(10);
+		expect(result.fromFallback).toBe(false);
 	});
 
 	it("navQuery fetches navigation menus", async () => {
 		const result = await navQuery();
 
 		expect(navQuery).toHaveBeenCalled();
-		expect(result.menus.nodes.length).toBe(1);
-		expect(result.menus.nodes[0].menuItems.nodes.length).toBe(2);
+		expect(result.data.menus.nodes.length).toBe(1);
+		expect(result.data.menus.nodes[0].menuItems.nodes.length).toBe(2);
+		expect(result.fromFallback).toBe(false);
 	});
 });

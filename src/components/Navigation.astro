@@ -1,7 +1,23 @@
 ---
+import type { SettingsResponse, MenusResponse } from "../lib/api";
 import { navQuery, settingsQuery } from "../lib/api";
-const { generalSettings } = await settingsQuery();
-const { menus } = await navQuery();
+
+interface Props {
+	settings?: SettingsResponse;
+	nav?: MenusResponse;
+}
+
+const { settings: settingsProp, nav: navProp } = Astro.props;
+
+const settingsResult = settingsProp
+	? { data: settingsProp, fromFallback: false }
+	: await settingsQuery();
+const navResult = navProp
+	? { data: navProp, fromFallback: false }
+	: await navQuery();
+
+const { generalSettings } = settingsResult.data;
+const { menus } = navResult.data;
 const primaryMenu = menus.nodes[0];
 ---
 
