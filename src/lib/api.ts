@@ -133,11 +133,16 @@ interface NodeByUriResponse {
 		| null;
 }
 
-interface AllUrisResponse {
+/** Terms + categories only (used for first part of getAllUris) */
+interface TermsCategoriesUrisResponse {
 	terms: { nodes: { uri: string }[] };
 	categories: { nodes: { uri: string }[] };
-	posts: { nodes: { uri: string }[] };
-	pages: { nodes: { uri: string }[] };
+}
+
+/** One page of posts/pages with cursor info */
+interface UriPageResponse {
+	nodes: { uri: string }[];
+	pageInfo: { hasNextPage: boolean; endCursor: string | null };
 }
 
 interface UriParams {
@@ -198,6 +203,15 @@ const queryCache = new Map<string, CacheEntry<unknown>>();
  */
 const RUNTIME_CACHE_DURATION = 5 * 60 * 1000;
 const BUILD_CACHE_DURATION = 30 * 60 * 1000;
+
+/** Default request timeout in ms (prevents builds hanging on slow/unresponsive WordPress) */
+const API_FETCH_TIMEOUT_MS = 30_000;
+
+/** Number of retries for transient failures (5xx or network errors) */
+const API_FETCH_RETRIES = 3;
+
+/** Initial backoff in ms; doubles each retry */
+const API_FETCH_RETRY_INITIAL_MS = 1_000;
 
 // Determine if we're in a build context
 const IS_BUILD_CONTEXT =
@@ -312,62 +326,100 @@ async function executeQuery<T>(
 		);
 		log.debug("Request body length: " + fetchOptions.body?.toString().length);
 
-		try {
-			log.debug("Sending fetch request...");
-			const response = await fetch(
-				import.meta.env.WORDPRESS_API_URL,
-				fetchOptions,
+		const sleep = (ms: number) =>
+			new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+		let lastError: unknown;
+		for (let attempt = 0; attempt <= API_FETCH_RETRIES; attempt++) {
+			const controller = new AbortController();
+			const timeoutId = setTimeout(
+				() => controller.abort(),
+				API_FETCH_TIMEOUT_MS,
 			);
+			const requestOptions: RequestInit = {
+				...fetchOptions,
+				signal: controller.signal,
+			};
 
-			log.debug(`Response status: ${response.status} ${response.statusText}`);
-			log.debug(
-				"Response headers:",
-				Object.fromEntries([...response.headers.entries()]),
-			);
-
-			if (!response.ok) {
-				const errorText = await response.text();
-				log.error("Error response body: " + errorText);
-				throw new Error(
-					`GraphQL request failed: ${response.status} ${response.statusText}`,
+			try {
+				log.debug(
+					`Sending fetch request...${attempt > 0 ? ` (retry ${attempt}/${API_FETCH_RETRIES})` : ""}`,
 				);
+				const response = await fetch(
+					import.meta.env.WORDPRESS_API_URL,
+					requestOptions,
+				);
+				clearTimeout(timeoutId);
+
+				log.debug(`Response status: ${response.status} ${response.statusText}`);
+				log.debug(
+					"Response headers:",
+					Object.fromEntries([...response.headers.entries()]),
+				);
+
+				if (!response.ok) {
+					const errorText = await response.text();
+					log.error("Error response body: " + errorText);
+					const err = new Error(
+						`GraphQL request failed: ${response.status} ${response.statusText}`,
+					);
+					if (response.status >= 500 && attempt < API_FETCH_RETRIES) {
+						const backoff = API_FETCH_RETRY_INITIAL_MS * Math.pow(2, attempt);
+						log.debug(
+							`Server error ${response.status}, retrying in ${backoff}ms...`,
+						);
+						lastError = err;
+						await sleep(backoff);
+						continue;
+					}
+					throw err;
+				}
+
+				log.debug("Response OK, parsing JSON...");
+				const result = (await response.json()) as GraphQLResponse<T>;
+
+				if (result.errors && result.errors.length) {
+					log.error(
+						"GraphQL result contains errors: " + JSON.stringify(result.errors),
+					);
+					throw new Error(
+						`GraphQL errors: ${result.errors.map((e) => e.message).join(", ")}`,
+					);
+				}
+
+				log.debug("GraphQL query successful");
+
+				queryCache.set(finalCacheKey, {
+					data: result.data,
+					timestamp: Date.now(),
+				});
+
+				return result.data;
+			} catch (fetchError) {
+				clearTimeout(timeoutId);
+				const isAbort =
+					(fetchError as { name?: string })?.name === "AbortError";
+				const isNetwork =
+					fetchError instanceof TypeError &&
+					((fetchError as Error).message === "fetch failed" ||
+						(fetchError as { cause?: { code?: string } })?.cause?.code ===
+							"ECONNREFUSED");
+				const retryable = (isAbort || isNetwork) && attempt < API_FETCH_RETRIES;
+				if (retryable) {
+					const backoff = API_FETCH_RETRY_INITIAL_MS * Math.pow(2, attempt);
+					log.debug(
+						`Request failed (${isAbort ? "timeout" : "network"}), retrying in ${backoff}ms...`,
+					);
+					lastError = fetchError;
+					await sleep(backoff);
+					continue;
+				}
+				log.error("Fetch operation failed: " + fetchError);
+				throw fetchError;
 			}
-
-			log.debug("Response OK, parsing JSON...");
-			const result = (await response.json()) as GraphQLResponse<T>;
-
-			// Check for GraphQL errors
-			if (result.errors && result.errors.length) {
-				log.error(
-					"GraphQL result contains errors: " + JSON.stringify(result.errors),
-				);
-				throw new Error(
-					`GraphQL errors: ${result.errors.map((e) => e.message).join(", ")}`,
-				);
-			}
-
-			log.debug("GraphQL query successful");
-
-			// Cache the successful response
-			queryCache.set(finalCacheKey, {
-				data: result.data,
-				timestamp: Date.now(),
-			});
-
-			// Log the total number of entries when running getAllUris query
-			if (finalCacheKey === "all-uris") {
-				const totalEntries = Object.values(result.data).reduce(
-					(count, value: never) => count + (value.nodes?.length || 0),
-					0,
-				);
-				log.debug(`Total URIs fetched for static paths: ${totalEntries}`);
-			}
-
-			return result.data;
-		} catch (fetchError) {
-			log.error("Fetch operation failed: " + fetchError);
-			throw fetchError;
 		}
+		log.error("Fetch operation failed after retries: " + lastError);
+		throw lastError;
 	} catch (error) {
 		log.error(`GraphQL query error: ${(error as Error).message}`);
 		throw error;
@@ -848,66 +900,100 @@ export async function getNodeByURI(uri: string): Promise<NodeByUriResponse> {
 	}
 }
 
+const ALL_URIS_PAGE_SIZE = 100;
+const ALL_URIS_MERGED_CACHE_KEY = "all-uris-merged";
+
+function uriNodeToParams(node: { uri: string }): UriParams {
+	let trimmedURI = node.uri.substring(1);
+	trimmedURI = trimmedURI.substring(0, trimmedURI.length - 1);
+	return { params: { uri: trimmedURI } };
+}
+
 /**
- * Get all URIs from WordPress for static path generation
+ * Get all URIs from WordPress for static path generation.
+ * Uses cursor-based pagination for posts and pages so sites with >1000 items are fully covered.
  */
 export async function getAllUris(): Promise<UriParams[]> {
 	try {
-		// Using WPGraphQL's pagination to fetch all content without limits
-		// We're explicitly requesting a very high number to ensure we get everything
-		const query = `query GetAllUris {
-      terms {
-        nodes {
-          uri
-        }
-      }
-      categories {
-        nodes {
-          uri
-        }
-      }            
-      posts(first: 1000) {
-        nodes {
-          uri
-        }
-      }
-      pages(first: 1000) {
-        nodes {
-          uri
-        }
-      }
-    }`;
+		if (queryCache.has(ALL_URIS_MERGED_CACHE_KEY)) {
+			const entry = queryCache.get(ALL_URIS_MERGED_CACHE_KEY) as
+				| CacheEntry<UriParams[]>
+				| undefined;
+			if (entry && Date.now() - entry.timestamp < CACHE_DURATION) {
+				log.debug("Returning cached merged URIs");
+				return entry.data;
+			}
+		}
 
-		// Use a long cache duration for this query as it's only used during build
-		// Setting bypassCache to false to ensure we don't overwhelm the API during builds
-		const data = await executeQuery<AllUrisResponse>(
-			query,
+		const termsCategoriesQuery = `query GetTermsCategoriesUris {
+      terms { nodes { uri } }
+      categories { nodes { uri } }
+    }`;
+		const termsCategories = await executeQuery<TermsCategoriesUrisResponse>(
+			termsCategoriesQuery,
 			{},
-			"all-uris",
+			"all-uris-terms-categories",
 			false,
 		);
 
-		// Process the URIs
-		return Object.values(data)
-			.reduce(function (
-				acc: { uri: string }[],
-				currentValue: { nodes: { uri: string }[] },
-			) {
-				return acc.concat(currentValue.nodes);
-			}, [])
-			.map((node: { uri: string }) => {
-				// Clean up the URI format for Astro routes
-				let trimmedURI = node.uri.substring(1);
-				trimmedURI = trimmedURI.substring(0, trimmedURI.length - 1);
-				return {
-					params: {
-						uri: trimmedURI,
-					},
-				};
-			});
+		const postsPageQuery = `query GetPostsUrisPage($after: String) {
+      posts(first: ${ALL_URIS_PAGE_SIZE}, after: $after) {
+        nodes { uri }
+        pageInfo { hasNextPage endCursor }
+      }
+    }`;
+		const postNodes: { uri: string }[] = [];
+		let postsAfter: string | null = null;
+		do {
+			const postsData = await executeQuery<{ posts: UriPageResponse }>(
+				postsPageQuery,
+				{ after: postsAfter },
+				`all-uris-posts-${postsAfter ?? "initial"}`,
+				false,
+			);
+			postNodes.push(...postsData.posts.nodes);
+			postsAfter = postsData.posts.pageInfo.hasNextPage
+				? postsData.posts.pageInfo.endCursor
+				: null;
+		} while (postsAfter !== null);
+
+		const pagesPageQuery = `query GetPagesUrisPage($after: String) {
+      pages(first: ${ALL_URIS_PAGE_SIZE}, after: $after) {
+        nodes { uri }
+        pageInfo { hasNextPage endCursor }
+      }
+    }`;
+		const pageNodes: { uri: string }[] = [];
+		let pagesAfter: string | null = null;
+		do {
+			const pagesData = await executeQuery<{ pages: UriPageResponse }>(
+				pagesPageQuery,
+				{ after: pagesAfter },
+				`all-uris-pages-${pagesAfter ?? "initial"}`,
+				false,
+			);
+			pageNodes.push(...pagesData.pages.nodes);
+			pagesAfter = pagesData.pages.pageInfo.hasNextPage
+				? pagesData.pages.pageInfo.endCursor
+				: null;
+		} while (pagesAfter !== null);
+
+		const allNodes: { uri: string }[] = [
+			...termsCategories.terms.nodes,
+			...termsCategories.categories.nodes,
+			...postNodes,
+			...pageNodes,
+		];
+		const result = allNodes.map(uriNodeToParams);
+
+		queryCache.set(ALL_URIS_MERGED_CACHE_KEY, {
+			data: result,
+			timestamp: Date.now(),
+		});
+		log.debug(`Total URIs fetched for static paths: ${result.length}`);
+		return result;
 	} catch (error) {
 		log.error("Error fetching all URIs: " + error);
-		// Return fallback data for development
 		return [
 			{ params: { uri: "example-post-1" } },
 			{ params: { uri: "example-post-2" } },
