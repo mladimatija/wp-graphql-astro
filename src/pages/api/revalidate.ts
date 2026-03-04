@@ -104,31 +104,50 @@ export const POST: APIRoute = async ({ request /*, locals*/ }) => {
 			);
 		}
 
-		// Revalidate cache for all provided paths
-		const revalidationResults = await Promise.all(
-			paths.map(async (path: string) => {
-				try {
-					// Clean up path to ensure it starts with / and remove trailing slash
-					const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-
-					// Use Astro's cache API to revalidate the path
-					// For Astro v5, we need to use a different approach
-					// This would typically integrate with your hosting platform's cache invalidation
-					// For Netlify, this could use their cache invalidation API
-					log.info(`Would revalidate: ${normalizedPath}`);
-
-					return { path: normalizedPath, success: true };
-				} catch (error) {
-					log.error(`Error revalidating ${path}: ` + error);
-					return { path, success: false, error: (error as Error).message };
-				}
-			}),
+		const normalizedPaths = paths.map((path: string) =>
+			path.startsWith("/") ? path : `/${path}`,
 		);
+
+		// Optionally trigger a Netlify deploy (full rebuild) when build hook URL is set
+		const buildHookUrl = import.meta.env.NETLIFY_BUILD_HOOK_URL;
+		let buildTriggered = false;
+		if (buildHookUrl) {
+			try {
+				const title = `Revalidate: ${normalizedPaths.slice(0, 3).join(", ")}${normalizedPaths.length > 3 ? "…" : ""}`;
+				const url = new URL(buildHookUrl);
+				url.searchParams.set("trigger_title", title);
+				const hookRes = await fetch(url.toString(), {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: "{}",
+				});
+				buildTriggered = hookRes.ok;
+				if (!hookRes.ok) {
+					log.error(
+						`Netlify build hook failed: ${hookRes.status} ${hookRes.statusText}`,
+					);
+				}
+			} catch (err) {
+				log.error("Netlify build hook request failed: " + err);
+			}
+		} else {
+			log.info(
+				`Revalidate received ${normalizedPaths.length} path(s); set NETLIFY_BUILD_HOOK_URL to trigger a deploy.`,
+			);
+		}
+
+		const revalidationResults = normalizedPaths.map((path) => ({
+			path,
+			success: true,
+		}));
 
 		return new Response(
 			JSON.stringify({
 				success: true,
-				message: "Revalidation triggered",
+				message: buildTriggered
+					? "Revalidation triggered; deploy in progress"
+					: "Revalidation acknowledged",
+				buildTriggered,
 				results: revalidationResults,
 			}),
 			{

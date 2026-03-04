@@ -393,7 +393,7 @@ Required PWA assets are located in the `/public` directory:
 
 The application includes API routes:
 
-- `/api/revalidate` - Webhook endpoint for triggering rebuilds. Set `REVALIDATE_TOKEN` in your environment and send it in the `x-revalidate-token` header with a POST request; the endpoint is rate-limited per IP to reduce abuse.
+- `/api/revalidate` - Webhook endpoint for content updates. Set `REVALIDATE_TOKEN` and send it in the `x-revalidate-token` header with a POST body `{ "paths": ["/path"] }`; the endpoint is rate-limited per IP. If you set `NETLIFY_BUILD_HOOK_URL` (your Netlify build hook URL), a successful request will trigger a deploy; otherwise it only acknowledges the request and you rely on full rebuilds via git/CI.
 - `/api/manifest.json` - Route that redirects to the static manifest.json file
 
 ## Forms (Contact & Newsletter)

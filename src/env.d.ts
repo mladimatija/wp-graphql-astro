@@ -19,6 +19,9 @@ interface ImportMetaEnv {
 
 	// Revalidation token
 	readonly REVALIDATE_TOKEN?: string;
+
+	// Optional: Netlify build hook URL to trigger a deploy when revalidate is called
+	readonly NETLIFY_BUILD_HOOK_URL?: string;
 }
 
 interface ImportMeta {
