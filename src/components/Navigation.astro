@@ -21,7 +21,7 @@ const { menus } = navResult.data;
 const primaryMenu = menus.nodes[0];
 ---
 
-<nav role="navigation">
+<nav role="navigation" aria-label="Main navigation">
 	<ul class="header-nav">
 		{
 			primaryMenu.menuItems.nodes.map((menuItem) => (
@@ -34,8 +34,9 @@ const primaryMenu = menus.nodes[0];
 								? "active"
 								: ""
 						}
+						aria-label={menuItem.label || "Menu link"}
 					>
-						{menuItem.label}
+						{menuItem.label || "Menu link"}
 					</a>
 				</li>
 			))
@@ -43,11 +44,16 @@ const primaryMenu = menus.nodes[0];
 	</ul>
 
 	<div class="burger-menu-icon-container">
-		<div class="burger-menu-icon">
+		<button
+			type="button"
+			class="burger-menu-icon"
+			aria-label="Open menu"
+			aria-expanded="false"
+		>
 			<div class="burger-bun burger-bun--top"></div>
 			<div class="burger-bun burger-bun--mid"></div>
 			<div class="burger-bun burger-bun--bottom"></div>
-		</div>
+		</button>
 	</div>
 </nav>
 
@@ -98,6 +104,13 @@ const primaryMenu = menus.nodes[0];
 					el.classList.toggle("open");
 				}
 			});
+
+			const isOpen = burgerNav.classList.contains("open");
+			burgerMenu.setAttribute("aria-expanded", String(isOpen));
+			burgerMenu.setAttribute(
+				"aria-label",
+				isOpen ? "Close menu" : "Open menu",
+			);
 		};
 
 		// Add the click handler and mark the element
@@ -248,12 +261,19 @@ const primaryMenu = menus.nodes[0];
 	}
 
 	.burger-menu-icon {
+		appearance: none;
 		background: transparent;
 		border: transparent solid var(--size-2px);
 		border-radius: 50%;
 		cursor: pointer;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		font: inherit;
 		height: var(--size-60px);
-		padding: 1.0625rem 0.9375rem 0.9375rem;
+		padding: 0;
 		position: relative;
 		transition: all 0.4s ease;
 		user-select: none;
@@ -268,23 +288,21 @@ const primaryMenu = menus.nodes[0];
 		background: var(--color-black);
 		position: relative;
 		transition: all 0.4s ease;
+		flex-shrink: 0;
 	}
 
 	.burger-bun--top {
 		height: var(--size-2px);
-		top: 0;
 		width: 1.5625rem;
 	}
 
 	.burger-bun--mid {
 		height: var(--size-2px);
-		top: 0.5rem;
 		width: 1.5625rem;
 	}
 
 	.burger-bun--bottom {
 		height: var(--size-2px);
-		top: 1rem;
 		width: 1.5625rem;
 	}
 
@@ -305,9 +323,16 @@ const primaryMenu = menus.nodes[0];
 		border: var(--color-black) solid var(--size-2px);
 	}
 
+	.burger-menu-icon-container.open .burger-bun {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		margin-left: -0.78125rem; /* half of 1.5625rem */
+		margin-top: -1px;
+	}
+
 	.burger-menu-icon-container.open .burger-bun--top {
 		background: var(--color-black);
-		top: 0.5625rem;
 		transform: rotate(45deg);
 	}
 
@@ -317,7 +342,6 @@ const primaryMenu = menus.nodes[0];
 
 	.burger-menu-icon-container.open .burger-bun--bottom {
 		background: var(--color-black);
-		top: 0.3125rem;
 		transform: rotate(-45deg);
 	}
 
