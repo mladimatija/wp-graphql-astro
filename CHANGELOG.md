@@ -7,6 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-03-09
+
+### Added
+
+- JSON-LD structured data for posts and breadcrumbs
+- Fetch timeout and retry handling for WordPress API requests
+- Pagination support for `getAllUris`
+- Fallback banner when cached settings or navigation data is shown
+- Expanded test coverage for API error paths, `getAllUris`, and revalidation flows
+
+### Changed
+
+- Migrated more component styling to Tailwind utilities and shared design tokens
+- Consolidated shared constants into `constants.json` as a single source of truth
+- Refined single post, navigation, footer, pagination, and related UI styling
+- Updated project docs for environment setup, Node engine requirements, required WordPress plugins, and styling architecture
+- Updated the declared Node.js version requirement in `package.json`
+- Upgraded dependencies and migrated related tooling and config files
+- Updated header intro copy
+- Stopped rendering the post modified datetime
+- Bumped the package version to `1.2.0`
+- Marked the package as publishable by setting `private` to `false`
+- Regenerated the web app manifest
+- Refreshed generated service worker cache names and build timestamp
+
+### Fixed
+
+- Improved navigation accessibility and burger icon alignment
+- Return a 404 page when a WordPress node is missing
+- Improved stale-cache behavior for settings and navigation fallbacks
+- Fixed 404 image handling, revalidate build hook setup, and Astro site environment usage
+- Switched newsletter signup to Netlify Forms and removed service worker sync to unavailable APIs
+
+### Security
+
+- Documented `REVALIDATE_TOKEN`
+- Added rate limiting for the revalidation endpoint
+- Avoided logging secrets in revalidation flows
+
+### Documentation
+
+- Bumped LICENSE copyright to 2026
+
 ## [1.1.0] - 2025-12-05
 
 ### Added
@@ -73,6 +116,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated CSS color syntax to modern format
 - Switched logo from PNG to SVG
 
-[unreleased]: https://github.com/mladimatija/wp-graphql-astro/compare/v1.1.0...HEAD
+[unreleased]: https://github.com/mladimatija/wp-graphql-astro/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/mladimatija/wp-graphql-astro/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/mladimatija/wp-graphql-astro/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/mladimatija/wp-graphql-astro/releases/tag/v1.0.0
