@@ -11,10 +11,27 @@ export default {
 		"no-descending-specificity": null,
 		"no-duplicate-selectors": true,
 		"font-family-no-missing-generic-family-keyword": null,
+		"at-rule-no-unknown": [
+			true,
+			{
+				ignoreAtRules: [
+					"tailwind",
+					"apply",
+					"layer",
+					"theme",
+					"source",
+					"import",
+				],
+			},
+		],
+		"no-invalid-position-at-import-rule": null,
+		"comment-empty-line-before": null,
 		"property-no-unknown": [
 			true,
 			{ ignoreProperties: ["view-transition-name"] },
 		],
+		"declaration-block-no-redundant-longhand-properties": null,
+		"color-function-alias-notation": "without-alpha",
 		"property-no-vendor-prefix": null,
 		"selector-pseudo-class-no-unknown": [
 			true,
@@ -33,7 +50,7 @@ export default {
 		"declaration-property-value-no-unknown": null,
 		"selector-no-vendor-prefix": null,
 		"alpha-value-notation": null,
-		"color-function-notation": null,
+		"color-function-notation": "modern",
 		"shorthand-property-no-redundant-values": null,
 		"keyframes-name-pattern": null,
 		"rule-empty-line-before": null,

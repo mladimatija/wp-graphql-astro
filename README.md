@@ -99,10 +99,10 @@ src/
 │   ├── api/           # API endpoints
 │   ├── local/         # Local content routes
 │   └── page/          # Pagination handling
-└── styles/            # CSS styles
-    ├── variables.css       # CSS custom properties
+└── styles/            # Shared design tokens and global styles
+    ├── variables.css       # Source of truth for CSS custom properties
     ├── view-transitions.css # View Transitions API
-    └── styles.css          # Main stylesheet
+    └── styles.css          # Tailwind entrypoint + global/CMS styles
 ```
 
 ## Routing and Templates
@@ -187,9 +187,21 @@ Local content lives in Content Collections:
 
 ## Styling
 
-- **variables.css** - CSS custom properties for theming
-- **styles.css** - Main stylesheet
-- **view-transitions.css** - View Transitions API support
+Styling uses Tailwind CSS v4 together with shared CSS custom properties:
+
+- **`variables.css`** - Source of truth for design tokens such as colors, spacing, typography, shadows, and motion values
+- **`styles.css`** - Tailwind entrypoint, base styles, and global rules that still need plain CSS (for example CMS-rendered HTML, pseudo-elements, runtime state classes, and keyframes)
+- **`view-transitions.css`** - View Transitions API support
+
+Rule of thumb:
+
+- Prefer Tailwind utility classes in Astro/React templates for template-owned elements
+- Keep shared tokens in `variables.css`
+- Use plain CSS in `styles.css` only when utilities are not a good fit, such as:
+  - content rendered through `set:html`
+  - pseudo-elements
+  - keyframes and animations
+  - global runtime selectors (e.g, dark mode)
 
 ## Deployment
 

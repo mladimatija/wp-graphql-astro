@@ -6,21 +6,32 @@ import { settingsQuery } from "../lib/api";
 interface Props {
 	settings?: SettingsResponse;
 	nav?: MenusResponse;
+	showBlogTag?: boolean;
+	/** When true, hide site name and "blog" so post title appears directly under logo */
+	isSinglePost?: boolean;
 }
 
-const { settings: settingsProp, nav: navProp } = Astro.props;
+const {
+	settings: settingsProp,
+	nav: navProp,
+	showBlogTag = false,
+	isSinglePost = false,
+} = Astro.props;
 const settingsResult = settingsProp
 	? { data: settingsProp, fromFallback: false }
 	: await settingsQuery();
 const { generalSettings } = settingsResult.data;
+const isHome = Astro.url.pathname === "/" || "page" in Astro.params;
+/* On single post pages we don't show site name/blog so the post title sits directly under the logo */
+const showSiteName = !isHome && !isSinglePost;
 ---
 
-<header class="header" role="banner">
+<header class="text-center" role="banner">
 	<Navigation settings={settingsResult.data} nav={navProp} />
-	<h1 class="header-title">
+	<h1 class="flex flex-wrap justify-center">
 		<a href="/" rel="home">
 			<img
-				class="header-logo"
+				class="block"
 				src="/logo.svg"
 				alt={`${generalSettings.title} logo`}
 				width="192"
@@ -32,16 +43,35 @@ const { generalSettings } = settingsResult.data;
 	</h1>
 
 	{
-		(Astro.url.pathname === "/" || "page" in Astro.params) && ( // show only on the homepage
+		showSiteName && (
+			<p class="header-site-name mt-2 text-lg font-semibold text-[var(--color-text)]">
+				{generalSettings.title}
+			</p>
+		)
+	}
+	{
+		showSiteName && showBlogTag && (
+			<p class="header-tagline text-sm text-[var(--color-gray-600)]">blog</p>
+		)
+	}
+
+	{
+		isHome && ( // show only on the homepage
 			<>
-				<div class="header-description">
-					<h1>Hi, I'm Matija, a senior software engineer (frontend & web)</h1>
-					<h4>
-						<a href="/about/">get to know me</a>, check out the{" "}
+				<div class="header-description mt-4">
+					<h1 class="text-[2em] font-bold leading-tight text-[var(--color-text)] max-[767px]:text-[1.3125rem]">
+						Hi, I'm Matija, a senior software engineer (frontend & web)
+					</h1>
+					<h4 class="mt-3 text-base font-bold text-[var(--color-text)] max-[767px]:hidden">
+						<a href="/about/" class="hover:underline">
+							get to know me
+						</a>
+						, check out the{" "}
 						<a
 							href="https://www.linkedin.com/in/matijaculjak"
 							target="_blank"
 							title="Linkedin profile"
+							class="hover:underline"
 						>
 							projects I worked on
 						</a>{" "}
@@ -52,30 +82,3 @@ const { generalSettings } = settingsResult.data;
 		)
 	}
 </header>
-
-<style is:global>
-	.header {
-		text-align: center;
-	}
-
-	.header-title {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-	}
-
-	.header-title img {
-		display: block;
-	}
-
-	@media (max-width: 767px) {
-		.header-description h1 {
-			line-height: 1.2;
-			font-size: 1.3125rem;
-		}
-
-		.header-description h4 {
-			display: none;
-		}
-	}
-</style>

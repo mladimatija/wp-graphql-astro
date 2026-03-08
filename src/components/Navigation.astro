@@ -22,18 +22,18 @@ const primaryMenu = menus.nodes[0];
 ---
 
 <nav role="navigation" aria-label="Main navigation">
-	<ul class="header-nav">
+	<ul class="header-nav fixed left-0 top-0 z-[101] pt-[6.25rem]">
 		{
 			primaryMenu.menuItems.nodes.map((menuItem) => (
-				<li>
+				<li class="mb-[0.9375rem] list-none text-left text-[var(--color-black)] last:mb-0">
 					<a
 						href={menuItem.uri || generalSettings.url}
-						class={
+						class={`nav-link ml-[1.875rem] text-2xl font-light text-[var(--color-black)] no-underline transition-all duration-[0.4s] ease-in-out w-auto hover:pl-[1.875rem] hover:text-[var(--color-link)] focus:pl-[1.875rem] focus:text-[var(--color-link)] focus:outline-none active:pl-[1.875rem] active:text-[var(--color-link)] ${
 							menuItem.uri.includes(Astro.params.uri) ||
 							(menuItem.uri === "/" && Astro.params.uri === undefined)
-								? "active"
+								? "active pl-[1.875rem] text-[var(--color-link)]"
 								: ""
-						}
+						}`}
 						aria-label={menuItem.label || "Menu link"}
 					>
 						{menuItem.label || "Menu link"}
@@ -43,16 +43,27 @@ const primaryMenu = menus.nodes[0];
 		}
 	</ul>
 
-	<div class="burger-menu-icon-container">
+	<div
+		class="burger-menu-icon-container fixed left-[0.9375rem] top-[0.9375rem] z-[101] h-[3.75rem]"
+	>
 		<button
 			type="button"
-			class="burger-menu-icon"
+			class="burger-menu-icon relative inline-flex h-[3.75rem] w-[3.75rem] appearance-none cursor-pointer select-none items-center justify-center rounded-full border-2 border-transparent bg-transparent p-0 font-inherit transition-[border-color,background-color,box-shadow] duration-[0.4s] ease-in-out hover:border-[var(--color-black)]"
 			aria-label="Open menu"
 			aria-expanded="false"
 		>
-			<div class="burger-bun burger-bun--top"></div>
-			<div class="burger-bun burger-bun--mid"></div>
-			<div class="burger-bun burger-bun--bottom"></div>
+			<div
+				class="burger-bun burger-bun--top h-0.5 w-[1.5625rem] flex-shrink-0 bg-[var(--color-black)]"
+			>
+			</div>
+			<div
+				class="burger-bun burger-bun--mid h-0.5 w-[1.5625rem] flex-shrink-0 bg-[var(--color-black)]"
+			>
+			</div>
+			<div
+				class="burger-bun burger-bun--bottom h-0.5 w-[1.5625rem] flex-shrink-0 bg-[var(--color-black)]"
+			>
+			</div>
 		</button>
 	</div>
 </nav>
@@ -164,208 +175,3 @@ const primaryMenu = menus.nodes[0];
 		}
 	});
 </script>
-
-<style>
-	body.nav-open {
-		overflow: hidden;
-	}
-
-	body.nav-open::after {
-		opacity: 1;
-		visibility: visible;
-	}
-
-	body::after {
-		background: #fff;
-		content: "";
-		height: 100%;
-		left: 0;
-		opacity: 0;
-		overflow: auto;
-		position: fixed;
-		top: 0;
-		transition: all 0.4s ease;
-		width: 100%;
-		visibility: hidden;
-		z-index: 100;
-	}
-
-	.header-nav {
-		padding: 6.25rem 0 0 0;
-		position: fixed;
-		top: 0;
-		left: 0;
-		z-index: 101;
-	}
-
-	.header-nav li {
-		color: var(--color-black);
-		list-style-type: none;
-		margin-bottom: 0.9375rem;
-		text-align: left;
-		transform: translateX(0);
-	}
-
-	.header-nav li:last-child {
-		margin-bottom: 0;
-	}
-
-	.header-nav a {
-		border-left: rgb(255 255 255 / 0) solid var(--size-2px);
-		color: var(--color-black);
-		font-family: Helvetica-Neue, Helvetica, Arial, sans-serif;
-		font-size: var(--size-24px);
-		font-weight: 300;
-		margin-left: var(--size-30px);
-		text-decoration: none;
-		transition: all 0.4s ease;
-		width: auto;
-	}
-
-	.header-nav a:hover,
-	.header-nav a:active,
-	.header-nav a:focus,
-	.header-nav a.active {
-		border-left: var(--color-black) solid var(--size-2px);
-		color: var(--color-blue);
-		padding-left: var(--size-30px);
-	}
-
-	.header-nav:not(.open) {
-		opacity: 0;
-		transition:
-			opacity 0.4s,
-			visibility 0s linear 0.4s;
-	}
-
-	.header-nav:not(.open) li {
-		animation-duration: 0.4s;
-		animation-fill-mode: both;
-		animation-name: slideOutLeft;
-	}
-
-	.header-nav:not(.open, .animating) {
-		visibility: hidden;
-	}
-
-	.header-nav.open {
-		visibility: visible;
-		opacity: 1;
-		transition: visibility 0s linear 0s;
-	}
-
-	.header-nav.open li {
-		animation-duration: 0.4s;
-		animation-fill-mode: both;
-		animation-name: slideInLeft;
-	}
-
-	.burger-menu-icon {
-		appearance: none;
-		background: transparent;
-		border: transparent solid var(--size-2px);
-		border-radius: 50%;
-		cursor: pointer;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 0.5rem;
-		font: inherit;
-		height: var(--size-60px);
-		padding: 0;
-		position: relative;
-		transition: all 0.4s ease;
-		user-select: none;
-		width: var(--size-60px);
-	}
-
-	.burger-menu-icon:hover {
-		border: var(--color-black) solid var(--size-2px);
-	}
-
-	.burger-bun {
-		background: var(--color-black);
-		position: relative;
-		transition: all 0.4s ease;
-		flex-shrink: 0;
-	}
-
-	.burger-bun--top {
-		height: var(--size-2px);
-		width: 1.5625rem;
-	}
-
-	.burger-bun--mid {
-		height: var(--size-2px);
-		width: 1.5625rem;
-	}
-
-	.burger-bun--bottom {
-		height: var(--size-2px);
-		width: 1.5625rem;
-	}
-
-	.burger-menu-icon-container {
-		height: var(--size-60px);
-		left: 0.9375rem;
-		position: fixed;
-		top: 0.9375rem;
-		z-index: 101;
-	}
-
-	.burger-menu-icon-container.open .burger-menu-icon {
-		border: #fff solid var(--size-2px);
-		background: #fff;
-	}
-
-	.burger-menu-icon-container.open:hover .burger-menu-icon {
-		border: var(--color-black) solid var(--size-2px);
-	}
-
-	.burger-menu-icon-container.open .burger-bun {
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		margin-left: -0.78125rem; /* half of 1.5625rem */
-		margin-top: -1px;
-	}
-
-	.burger-menu-icon-container.open .burger-bun--top {
-		background: var(--color-black);
-		transform: rotate(45deg);
-	}
-
-	.burger-menu-icon-container.open .burger-bun--mid {
-		opacity: 0;
-	}
-
-	.burger-menu-icon-container.open .burger-bun--bottom {
-		background: var(--color-black);
-		transform: rotate(-45deg);
-	}
-
-	@keyframes slideInLeft {
-		0% {
-			transform: translate3d(calc(-1 * var(--size-250px)), 0, 0);
-			visibility: visible;
-			opacity: 0;
-		}
-		100% {
-			transform: translate3d(0, 0, 0);
-			opacity: 1;
-		}
-	}
-
-	@keyframes slideOutLeft {
-		0% {
-			transform: translate3d(0, 0, 0);
-			opacity: 1;
-		}
-		100% {
-			transform: translate3d(calc(-1 * var(--size-250px)), 0, 0);
-			opacity: 0;
-			visibility: hidden;
-		}
-	}
-</style>

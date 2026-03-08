@@ -35,6 +35,7 @@
 		"@fortawesome/free-regular-svg-icons": "^7.2.0",
 		"@fortawesome/free-solid-svg-icons": "^7.2.0",
 		"@fortawesome/react-fontawesome": "^3.2.0",
+		"@tailwindcss/vite": "^4.2.1",
 		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",
 		"astro": "^5.18.0",
@@ -42,9 +43,9 @@
 		"darkmode-js": "^1.5.7",
 		"dotenv": "^17.3.1",
 		"http-server": "^14.1.1",
-		"normalize.css": "^8.0.1",
 		"react": "^19.2.4",
 		"react-dom": "^19.2.4",
+		"tailwindcss": "^4.2.1",
 		"web-vitals": "^5.1.0"
 	},
 	"devDependencies": {

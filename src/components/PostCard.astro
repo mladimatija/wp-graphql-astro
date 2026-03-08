@@ -36,13 +36,17 @@ const hasFeaturedImage =
 	post.featuredImage?.node?.mediaItemUrl && showFeaturedImagesOnPostCard;
 ---
 
-<article class="post" transition:name={`post-${post.id}`}>
-	<header class="post-header">
+<article
+	class="border-t border-[var(--color-border)] first:border-t-0 transition-transform duration-200 ease-in-out hover:-translate-y-0.5"
+	transition:name={`post-${post.id}`}
+>
+	<header>
 		{
 			hasFeaturedImage && (
-				<div class="post-thumbnail">
+				<div class="mb-4 overflow-hidden rounded-lg">
 					<a href={post.uri} aria-label={`View ${post.title}`}>
 						<img
+							class="block h-auto w-full transition-transform duration-300 ease-in-out hover:scale-105"
 							src={post.featuredImage.node.mediaItemUrl}
 							alt={post.featuredImage.node.altText || post.title}
 							width="300"
@@ -57,80 +61,30 @@ const hasFeaturedImage =
 			)
 		}
 
-		<h2 class="post-title" transition:name={`title-${post.id}`}>
+		<h2
+			class="post-title mt-4 mb-2 text-lg font-bold leading-tight"
+			transition:name={`title-${post.id}`}
+		>
 			<a
-				class="post-link"
+				class="post-link text-[var(--color-link)] no-underline hover:underline hover:text-[var(--color-black)]"
 				href={post.uri}
 				aria-label={post.title}
-				rel="bookmark">{post.title}</a
+				rel="bookmark"
 			>
+				{post.title}
+			</a>
 		</h2>
 
 		<PostMeta post={post} />
 	</header>
 
-	<!-- Post excerpt with clean content -->
-	<div class="post-content">
+	<div class="post-content mt-4 text-base text-[var(--color-text)]">
 		<p>
-			{excerpt}... <a href={post.uri} class="read-more">continue reading</a>
+			{excerpt}... <a
+				href={post.uri}
+				class="read-more font-semibold text-[var(--color-link)] no-underline hover:underline hover:text-[var(--color-black)]"
+				>continue reading</a
+			>
 		</p>
 	</div>
 </article>
-
-<style>
-	.post {
-		margin-bottom: 2rem;
-		transition: transform 0.2s ease;
-	}
-
-	.post:hover {
-		transform: translateY(-3px);
-	}
-
-	.post-thumbnail {
-		margin-bottom: 1rem;
-		overflow: hidden;
-		border-radius: 8px;
-	}
-
-	.post-thumbnail img {
-		display: block;
-		width: 100%;
-		height: auto;
-		transition: transform 0.3s ease;
-	}
-
-	.post-thumbnail img:hover {
-		transform: scale(1.05);
-	}
-
-	.post-title {
-		margin-top: 0;
-		margin-bottom: 0.5rem;
-	}
-
-	.post-link {
-		text-decoration: none;
-		color: #29aae1;
-	}
-
-	.post-link:hover {
-		text-decoration: underline;
-		color: #333;
-	}
-
-	.post-content {
-		margin-top: 1rem;
-	}
-
-	.read-more {
-		font-weight: 600;
-		text-decoration: none;
-		color: #29aae1;
-	}
-
-	.read-more:hover {
-		text-decoration: underline;
-		color: #333;
-	}
-</style>

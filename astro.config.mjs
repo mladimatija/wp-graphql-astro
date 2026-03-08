@@ -3,6 +3,7 @@ import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import react from "@astrojs/react";
 import netlify from "@astrojs/netlify";
+import tailwindcss from "@tailwindcss/vite";
 
 // https://astro.build/config
 export default defineConfig({
@@ -15,6 +16,7 @@ export default defineConfig({
 		}),
 	],
 	vite: {
+		plugins: [tailwindcss()],
 		build: {
 			// Improve chunk size warnings threshold
 			chunkSizeWarningLimit: 1000,

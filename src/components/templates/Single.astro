@@ -92,22 +92,24 @@ const stripHtmlForDesc = (html) =>
 }
 
 <article transition:name={`post-${node.id}`} transition:animate="fade">
-	<header class="header">
-		<div class="header-description">
-			<h1 class="header-title" transition:name={`title-${node.id}`}>
-				{node.title}
-			</h1>
-		</div>
+	<header class="single-post-header text-center">
+		<h1 class="header-title" transition:name={`title-${node.id}`}>
+			{node.title}
+		</h1>
+		{
+			node.__typename === "Post" ? (
+				<div class="single-post-meta-wrapper mt-2">
+					<PostMeta post={node} />
+				</div>
+			) : null
+		}
 	</header>
 
-	<main class="post-content">
-		<!-- Only show date if node is a Post -->
-		{node.__typename === "Post" ? <PostMeta post={node} /> : null}
-
+	<main class="post-content font-serif leading-relaxed mt-6">
 		{
 			node.featuredImage?.node?.mediaItemUrl && showFeaturedImages && (
 				<img
-					class="featured-image"
+					class="featured-image w-full max-w-full"
 					src={node.featuredImage.node.mediaItemUrl}
 					alt={node.featuredImage.node.altText || node.title}
 					fetchpriority="high"
@@ -116,14 +118,18 @@ const stripHtmlForDesc = (html) =>
 			)
 		}
 
-		<div transition:animate="fade" set:html={node.content} />
+		<div
+			transition:animate="fade"
+			set:html={node.content}
+			class="post-content-body"
+		/>
 	</main>
 
 	{
 		(node.previous || node.next) && (
 			<>
-				<hr />
-				<footer>
+				<hr class="post-separator my-8 border-[var(--color-border)]" />
+				<footer class="post-footer">
 					<PostPagination post={node} />
 				</footer>
 			</>
@@ -175,96 +181,3 @@ const stripHtmlForDesc = (html) =>
 
 	customElements.define("disqus-widget", DisqusWidget);
 </script>
-
-<style is:inline>
-	.post-content .post-meta {
-		padding-top: 0.5em;
-		justify-content: center;
-	}
-
-	.post-content .featured-image {
-		display: block;
-		margin: 1.5em auto;
-	}
-
-	.post-content ul li:not(:last-child) {
-		margin-bottom: 0.625rem;
-	}
-
-	.post-content img {
-		margin: 0.5em auto;
-		display: block;
-		max-width: 100%;
-		height: auto;
-	}
-	.post-content p img {
-		margin: 0 auto !important;
-	}
-
-	.wp-caption {
-		margin-bottom: 1.5rem;
-		margin-left: 0;
-		max-width: 100%;
-	}
-
-	.wp-caption img[class*="wp-image-"],
-	.aligncenter {
-		display: block;
-		margin-left: auto;
-		margin-right: auto;
-	}
-
-	.wp-caption-text {
-		text-align: center;
-	}
-
-	.wp-caption .wp-caption-text {
-		margin: 0.8rem 0;
-	}
-	.gallery {
-		margin-bottom: 1.5rem;
-	}
-
-	.gallery-item {
-		display: inline-block;
-		text-align: center;
-		vertical-align: top;
-		width: 100%;
-	}
-
-	.gallery-columns-2 .gallery-item {
-		max-width: 50%;
-	}
-
-	.gallery-columns-3 .gallery-item {
-		max-width: 33.33%;
-	}
-
-	.gallery-columns-4 .gallery-item {
-		max-width: 25%;
-	}
-
-	.gallery-columns-5 .gallery-item {
-		max-width: 20%;
-	}
-
-	.gallery-columns-6 .gallery-item {
-		max-width: 16.66%;
-	}
-
-	.gallery-columns-7 .gallery-item {
-		max-width: 14.28%;
-	}
-
-	.gallery-columns-8 .gallery-item {
-		max-width: 12.5%;
-	}
-
-	.gallery-columns-9 .gallery-item {
-		max-width: 11.11%;
-	}
-
-	.gallery-caption {
-		display: block;
-	}
-</style>

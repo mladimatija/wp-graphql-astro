@@ -139,16 +139,27 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
 		<title></title>
 	</head>
 
-	<body>
+	<body
+		class="min-h-screen p-[var(--size-30px,1.875rem)] text-[var(--color-text)]"
+	>
 		<!-- Accessibility: Skip to content link -->
-		<a href="#content" class="skip-to-content">Skip to content</a>
+		<a
+			href="#content"
+			class="absolute -top-14 left-0 z-[1030] bg-[#29aae1] px-3 py-2 text-white transition-[top] duration-150 focus:top-0"
+		>
+			Skip to content
+		</a>
 
 		<!-- Include the accessibility manager -->
 		<A11yManager />
 
 		{
 			showFallbackBanner && (
-				<div class="fallback-banner" role="status" aria-live="polite">
+				<div
+					class="sticky top-0 z-[99] bg-[#29aae1] px-4 py-2 text-center text-sm text-white"
+					role="status"
+					aria-live="polite"
+				>
 					Showing cached content; some data may be outdated.
 				</div>
 			)
@@ -159,8 +170,17 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
 			<div class="spinner"></div>
 		</div>
 
-		<Header settings={settingsResult.data} nav={navResult.data} />
-		<main id="content" class="site-content" transition:animate="fade">
+		<Header
+			settings={settingsResult.data}
+			nav={navResult.data}
+			showBlogTag={node?.__typename === "Post"}
+			isSinglePost={node?.__typename === "Post" || node?.__typename === "Page"}
+		/>
+		<main
+			id="content"
+			class="site-content mx-auto w-full max-w-[var(--container-width,47.5rem)] px-[5%] md:px-0"
+			transition:animate="fade"
+		>
 			<slot />
 		</main>
 		{showFooter && <Footer />}
@@ -320,16 +340,3 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
 		</script>
 	</body>
 </html>
-
-<style>
-	.fallback-banner {
-		background: var(--color-blue, #29aae1);
-		color: #fff;
-		font-size: 0.875rem;
-		padding: 0.5rem 1rem;
-		text-align: center;
-		position: sticky;
-		top: 0;
-		z-index: 99;
-	}
-</style>

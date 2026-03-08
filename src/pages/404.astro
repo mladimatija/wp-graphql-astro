@@ -3,20 +3,11 @@ import MainLayout from "../layouts/MainLayout.astro";
 ---
 
 <MainLayout showFooter={false}>
-	<main role="main">
-		<div class="error-page">
-			<img src="/logo.svg" alt="404" width="192" height="192" />
-			<p>
-				Oh boy, the page you're looking for doesn't seem to exist. Luckily, you
-				got lost on this website and not on the trails :)
-			</p>
-		</div>
-	</main>
+	<div class="mt-8 text-center">
+		<img src="/logo.svg" alt="404" width="192" height="192" class="mx-auto" />
+		<p class="mt-8">
+			Oh boy, the page you're looking for doesn't seem to exist. Luckily, you
+			got lost on this website and not on the trails :)
+		</p>
+	</div>
 </MainLayout>
-
-<style>
-	.error-page p {
-		margin-top: var(--size-30px);
-		text-align: center;
-	}
-</style>

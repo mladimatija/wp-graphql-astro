@@ -37,6 +37,8 @@ function getBreadcrumbItems(n) {
 }
 
 const breadcrumbItems = getBreadcrumbItems(node);
+const footerMetaLinkClass =
+	"text-[var(--color-link)] no-underline transition-colors duration-300 hover:text-[var(--color-black)]";
 
 // Simple breadcrumbs HTML, only one level deep (skip when no node)
 const getBreadCrumbs = (n) => {
@@ -62,7 +64,10 @@ const getBreadCrumbs = (n) => {
 };
 ---
 
-<footer transition:animate="fade">
+<footer
+	class="footer mx-auto w-full max-w-3xl pt-3 text-center"
+	transition:animate="fade"
+>
 	{
 		breadcrumbItems.length > 1 && (
 			<script
@@ -82,30 +87,33 @@ const getBreadCrumbs = (n) => {
 	}
 	{
 		Astro.params.uri !== undefined && node && getBreadCrumbs(node) && (
-			<div transition:animate="fade">
-				<small set:html={getBreadCrumbs(node)} />
+			<div class="footer-breadcrumbs my-4" transition:animate="fade">
+				<small
+					class="text-[var(--color-gray-600)]"
+					set:html={getBreadCrumbs(node)}
+				/>
 			</div>
 		)
 	}
-	<hr />
-	<small>
-		built with <a href="https://astro.build/" target="_blank">Astro</a>,
-		headless WordPress and <a href="https://www.wpgraphql.com/" target="_blank"
-			>GraphQL</a
-		>, hosted on <a href="https://www.netlify.com/" target="_blank">Netlify</a>
+	<hr
+		class="footer-separator my-4 border-0 border-t border-[var(--color-border)]"
+	/>
+	<small class="footer-built-with block text-xs text-[var(--color-gray-600)]">
+		built with <a
+			href="https://astro.build/"
+			target="_blank"
+			rel="noopener noreferrer"
+			class={footerMetaLinkClass}>Astro</a
+		>, headless WordPress and <a
+			href="https://www.wpgraphql.com/"
+			target="_blank"
+			rel="noopener noreferrer"
+			class={footerMetaLinkClass}>GraphQL</a
+		>, hosted on <a
+			href="https://www.netlify.com/"
+			target="_blank"
+			rel="noopener noreferrer"
+			class={footerMetaLinkClass}>Netlify</a
+		>
 	</small>
 </footer>
-
-<style>
-	footer {
-		max-width: 47.5rem;
-		width: 100%;
-		margin: 0 auto;
-		padding-top: var(--size-12px);
-		text-align: center;
-	}
-
-	footer hr {
-		margin: var(--size-15px) 0;
-	}
-</style>

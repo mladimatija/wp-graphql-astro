@@ -8,14 +8,12 @@ const data = await getPosts(5);
 ---
 
 <MainLayout>
-	<main role="main">
-		<div class="posts">
-			{
-				data.posts.edges.map((post, i) => (
-					<PostCard post={post.node} priority={i === 0} />
-				))
-			}
-		</div>
-		<Pagination isHomepage={true} totalPosts={data.posts.pageInfo.total} />
-	</main>
+	<div class="space-y-8">
+		{
+			data.posts.edges.map((post, i) => (
+				<PostCard post={post.node} priority={i === 0} />
+			))
+		}
+	</div>
+	<Pagination isHomepage={true} totalPosts={data.posts.pageInfo.total} />
 </MainLayout>

@@ -30,7 +30,9 @@ function getPaginationText() {
 }
 ---
 
-<div class="pagination">
+<div
+	class="pagination flex flex-wrap items-center justify-center gap-5 py-2 text-sm text-gray-800 [&>a]:text-[#29aae1] [&>a]:hover:underline [&>a]:hover:text-[#192226]"
+>
 	{
 		!isHomepage && page.url.prev && (
 			<a href={page.url.prev === "/page" ? "/" : page.url.prev}>« Prev</a>
@@ -43,28 +45,3 @@ function getPaginationText() {
 		) : null
 	}
 </div>
-
-<style>
-	.pagination {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		justify-content: center;
-		gap: 1.25rem;
-		padding: 0.5rem 0;
-	}
-
-	.pagination > * {
-		font-size: var(--size-13px);
-		color: var(--color-black);
-	}
-
-	.pagination a {
-		color: var(--color-blue);
-	}
-
-	.pagination a:hover {
-		text-decoration: underline;
-		color: var(--color-black);
-	}
-</style>

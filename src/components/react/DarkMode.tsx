@@ -30,8 +30,8 @@ export default function DarkMode(): React.ReactElement | null {
 		// Create darkmode instance with our theme colors
 		const darkmode = new Darkmode({
 			label: "🌓",
-			backgroundColor: "#192226", // $color-black
-			mixColor: "#192226", // $color-black
+			backgroundColor: "#000000",
+			mixColor: "#000000",
 			buttonColorDark: "#29aae1", // $color-blue
 			buttonColorLight: "#29aae1", // $color-blue
 			time: "0.3s", // $transition-duration-normal

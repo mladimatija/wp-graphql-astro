@@ -2,8 +2,9 @@
 
 ---
 
-<div class="contact-form">
+<div class="contact-form my-8">
 	<form
+		class="flex flex-wrap gap-6 [&_.hidden]:absolute [&_.hidden]:h-px [&_.hidden]:w-px [&_.hidden]:overflow-hidden [&_.hidden]:whitespace-nowrap [&_.hidden]:clip-[inset(50%)]"
 		netlify
 		netlify-honeypot="bot-field"
 		data-netlify-recaptcha="true"
@@ -18,9 +19,23 @@
 		</p>
 		<input type="hidden" name="form-name" value="contact-form" />
 		<label for="name" hidden>Name</label>
-		<input id="name" type="text" name="name" placeholder="Name" required />
+		<input
+			id="name"
+			type="text"
+			name="name"
+			placeholder="Name"
+			required
+			class="basis-[calc(50%-0.75rem)] rounded-lg border border-ink px-6 py-4 text-base outline-none transition-colors duration-[0.4s] placeholder:text-ink/50 hover:border-brand focus:border-brand active:border-brand"
+		/>
 		<label for="email" hidden>Email</label>
-		<input id="email" type="email" name="email" placeholder="Email" required />
+		<input
+			id="email"
+			type="email"
+			name="email"
+			placeholder="Email"
+			required
+			class="basis-[calc(50%-0.75rem)] rounded-lg border border-ink px-6 py-4 text-base outline-none transition-colors duration-[0.4s] placeholder:text-ink/50 hover:border-brand focus:border-brand active:border-brand"
+		/>
 		<label for="message" hidden>Message</label>
 		<textarea
 			id="message"
@@ -28,80 +43,15 @@
 			name="message"
 			required
 			placeholder="Message"
-			rows="7"></textarea>
+			rows="7"
+			class="basis-full resize-none rounded-lg border border-ink px-6 py-4 text-base outline-none transition-colors duration-[0.4s] placeholder:text-ink/50 hover:border-brand focus:border-brand active:border-brand"
+		></textarea>
 		<div data-netlify-recaptcha="true"></div>
-		<button type="submit">Submit</button>
+		<button
+			type="submit"
+			class="contact-form-submit mx-auto cursor-pointer rounded-lg border-0 bg-brand px-6 py-4 text-base uppercase text-white transition-colors duration-[0.4s] hover:bg-brand/80"
+		>
+			Submit
+		</button>
 	</form>
 </div>
-
-<style>
-	.contact-form {
-		margin: 2rem 0;
-	}
-
-	.contact-form form {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1.5rem;
-	}
-
-	.contact-form form .hidden {
-		clip-path: inset(50%);
-		height: 1px;
-		overflow: hidden;
-		position: absolute;
-		white-space: nowrap;
-		width: 1px;
-	}
-
-	.contact-form form input {
-		flex-basis: calc(50% - 0.75rem);
-	}
-
-	.contact-form form textarea {
-		flex-basis: 100%;
-		resize: none;
-	}
-
-	.contact-form form input,
-	.contact-form form textarea {
-		padding: 1rem 1.5rem;
-		font-size: 1rem;
-		border: 0.0625rem solid var(--color-black);
-		border-radius: 0.5rem;
-		outline: 0;
-		transition: border-color 0.4s ease;
-	}
-
-	.contact-form form input::placeholder,
-	.contact-form form textarea::placeholder {
-		color: rgb(25 34 38 / 0.5);
-	}
-
-	.contact-form form input:hover,
-	.contact-form form input:focus,
-	.contact-form form input:active,
-	.contact-form form textarea:hover,
-	.contact-form form textarea:focus,
-	.contact-form form textarea:active {
-		border-color: var(--color-blue);
-	}
-
-	.contact-form form button[type="submit"] {
-		margin: 0 auto;
-		padding: 1rem 1.5rem;
-		color: #fff;
-		font-size: 1rem;
-		background-color: var(--color-blue);
-		border: none;
-		border-radius: 0.5rem;
-		text-transform: uppercase;
-		font-weight: normal;
-		cursor: pointer;
-		transition: background-color 0.4s ease;
-	}
-
-	.contact-form form button[type="submit"]:hover {
-		background-color: rgb(41 170 225 / 0.8);
-	}
-</style>

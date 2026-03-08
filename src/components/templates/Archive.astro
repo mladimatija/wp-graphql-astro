@@ -60,31 +60,27 @@ const paginationData = {
 };
 ---
 
-<div class="header">
-	<div class="header-description">
-		<h1 class="header-title">{node.__typename}: {node.name}</h1>
-	</div>
+<div class="text-center">
+	<h1 class="mb-4">{node.__typename}: {node.name}</h1>
 </div>
 
-<main role="main">
-	<div class="posts">
-		{
-			node.__typename === "Category" &&
-				data?.category?.posts?.edges.map((post, i) => (
-					<PostCard post={post.node} priority={i === 0} />
-				))
-		}
-		{
-			node.__typename === "Tag" &&
-				node?.posts?.nodes.map((post, i) => (
-					<PostCard post={post} priority={i === 0} />
-				))
-		}
-	</div>
-
+<div class="space-y-8">
 	{
-		node.__typename === "Category" && totalPages > 1 && (
-			<Pagination page={paginationData} />
-		)
+		node.__typename === "Category" &&
+			data?.category?.posts?.edges.map((post, i) => (
+				<PostCard post={post.node} priority={i === 0} />
+			))
 	}
-</main>
+	{
+		node.__typename === "Tag" &&
+			node?.posts?.nodes.map((post, i) => (
+				<PostCard post={post} priority={i === 0} />
+			))
+	}
+</div>
+
+{
+	node.__typename === "Category" && totalPages > 1 && (
+		<Pagination page={paginationData} />
+	)
+}
