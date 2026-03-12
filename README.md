@@ -311,7 +311,7 @@ const clientLog = {
 
 // Service worker context
 swLog.info("Service worker information");
-swLog.error("Service worker error", errorObject);
+swLog.error(`Service worker error: ${errorObject}`);
 ```
 
 ### Sending Data to Analytics

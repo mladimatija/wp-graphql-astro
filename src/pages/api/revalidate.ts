@@ -128,7 +128,7 @@ export const POST: APIRoute = async ({ request /*, locals*/ }) => {
 					);
 				}
 			} catch (err) {
-				log.error("Netlify build hook request failed: " + err);
+				log.error(`Netlify build hook request failed: ${err}`);
 			}
 		} else {
 			log.info(
@@ -156,7 +156,7 @@ export const POST: APIRoute = async ({ request /*, locals*/ }) => {
 			},
 		);
 	} catch (error) {
-		log.error("Revalidation error: " + error);
+		log.error(`Revalidation error: ${error}`);
 
 		return new Response(
 			JSON.stringify({

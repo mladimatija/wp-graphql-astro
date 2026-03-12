@@ -99,7 +99,7 @@ const stripHtmlForDesc = (html) =>
 		{
 			node.__typename === "Post" ? (
 				<div class="single-post-meta-wrapper mt-2">
-					<PostMeta post={node} />
+					<PostMeta post={node} centered />
 				</div>
 			) : null
 		}

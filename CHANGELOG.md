@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-03-12
+
+### Added
+
+- `centered` prop on `PostMeta` to apply `justify-center` only on single post template
+
+### Changed
+
+- Migrated to Astro 6.0 with Content Layer API, Zod 4, and Vite 7
+- Updated content collections to use `glob()` loaders and `astro/zod`
+- Replaced `entry.slug` with `entry.id` and `page.render()` with `render(page)`
+- Removed `manualChunks` for Astro 6 / Vite 7 compatibility
+- Standardized error logging to use template literals across api, fix-manifest, revalidate, Web Vitals, and service worker scripts
+- Regenerated web app manifest and service worker
+
 ## [1.2.0] - 2026-03-09
 
 ### Added
@@ -116,7 +131,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated CSS color syntax to modern format
 - Switched logo from PNG to SVG
 
-[unreleased]: https://github.com/mladimatija/wp-graphql-astro/compare/v1.2.0...HEAD
+[unreleased]: https://github.com/mladimatija/wp-graphql-astro/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/mladimatija/wp-graphql-astro/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/mladimatija/wp-graphql-astro/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/mladimatija/wp-graphql-astro/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/mladimatija/wp-graphql-astro/releases/tag/v1.0.0

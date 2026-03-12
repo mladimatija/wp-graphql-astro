@@ -274,7 +274,7 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
 						})
 						.catch((error) => {
 							// Always log errors
-							clientLog.error("SW registration failed: " + error);
+							clientLog.error(`SW registration failed: ${error}`);
 						});
 				});
 			}
@@ -292,7 +292,7 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
 						);
 						// Use conditional logging based on environment
 						clientLog.info(
-							"Fallback darkmode fix, isDarkModeActive: " + isDarkModeActive,
+							`Fallback darkmode fix, isDarkModeActive: ${isDarkModeActive}`,
 						);
 
 						// Handle both possible class names

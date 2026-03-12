@@ -6,8 +6,10 @@ import netlify from "@astrojs/netlify";
 import tailwindcss from "@tailwindcss/vite";
 
 // https://astro.build/config
+// Fallback for CI when PUBLIC_SITE_URL is not set (e.g. forks, PRs)
+const siteUrl = process.env.PUBLIC_SITE_URL || "https://example.com";
 export default defineConfig({
-	site: process.env.PUBLIC_SITE_URL,
+	site: siteUrl,
 	output: "static", // Changed from server to static for build-time rendering
 	integrations: [
 		react(),
@@ -18,17 +20,7 @@ export default defineConfig({
 	vite: {
 		plugins: [tailwindcss()],
 		build: {
-			// Improve chunk size warnings threshold
 			chunkSizeWarningLimit: 1000,
-			// Reduce the size of the _astro directory in the output
-			rollupOptions: {
-				output: {
-					manualChunks: {
-						"react-vendor": ["react", "react-dom"],
-						darkmode: ["darkmode-js"],
-					},
-				},
-			},
 		},
 		ssr: {
 			// Avoid ssr externalization to ensure compatibility
