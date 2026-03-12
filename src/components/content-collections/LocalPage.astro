@@ -1,14 +1,14 @@
 ---
 import { Image } from "astro:assets";
 import MainLayout from "../../layouts/MainLayout.astro";
-import type { CollectionEntry } from "astro:content";
+import { render, type CollectionEntry } from "astro:content";
 
 interface Props {
 	page: CollectionEntry<"pages">;
 }
 
 const { page } = Astro.props;
-const { Content } = await page.render();
+const { Content } = await render(page);
 
 // Extract frontmatter data
 const { title, description, heroImage, publishDate, updatedDate } = page.data;

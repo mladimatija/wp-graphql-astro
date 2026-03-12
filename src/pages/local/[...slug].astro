@@ -15,7 +15,7 @@ export async function getStaticPaths() {
 			.filter((page) => !page.data.draft) // Only include non-draft pages
 			.map((page) => ({
 				params: {
-					slug: page.slug,
+					slug: page.id,
 				},
 				props: {
 					page,
@@ -23,7 +23,7 @@ export async function getStaticPaths() {
 			}));
 	} catch (error) {
 		// Always log this error as it's critical for page generation
-		log.error("Error generating static paths for local pages:", error);
+		log.error(`Error generating static paths for local pages: ${error}`);
 		// Return a minimal set if content collections are not set up yet
 		return [{ params: { slug: "about-local" }, props: { page: null } }];
 	}

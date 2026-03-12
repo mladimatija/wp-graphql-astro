@@ -107,19 +107,19 @@ async function generateManifest() {
 			if (!result.errors && result.data) {
 				wpData = result.data;
 			} else if (result.errors) {
-				log.error("GraphQL errors:", result.errors);
+				log.error(`GraphQL errors: ${result.errors}`);
 			}
 		} else {
 			log.error(`WordPress request failed: ${response.status}`);
 			try {
 				const errorText = await response.text();
-				log.error("Error response:", errorText);
+				log.error(`Error response: ${errorText}`);
 			} catch (e) {
 				log.error(e);
 			}
 		}
 	} catch (error) {
-		log.error("Error fetching WordPress data:", error);
+		log.error(`Error fetching WordPress data: ${error}`);
 	}
 
 	// Create manifest data using WordPress with fallbacks
@@ -232,7 +232,7 @@ function writeManifestFile(directory, manifest) {
 		log.info(`Manifest written to ${manifestPath}`);
 		return true;
 	} catch (error) {
-		log.error(`Error writing manifest to ${directory}:`, error);
+		log.error(`Error writing manifest to ${directory}: ${error}`);
 		return false;
 	}
 }
@@ -253,7 +253,7 @@ async function main() {
 
 		log.info("Manifest generation completed successfully");
 	} catch (error) {
-		log.error("Manifest generation failed:", error);
+		log.error(`Manifest generation failed: ${error}`);
 		process.exit(1);
 	}
 }

@@ -81,7 +81,7 @@ async function getSiteNameFromWordPress() {
 
 		throw new Error("Couldn't get site name from WordPress");
 	} catch (error) {
-		log.error("Error fetching site name: " + error.message);
+		log.error(`Error fetching site name: ${error.message}`);
 		return null;
 	}
 }
@@ -119,7 +119,7 @@ async function getCachePrefix() {
 			);
 			return hostname;
 		} catch (e) {
-			log.error("Error parsing PUBLIC_SITE_URL: " + e);
+			log.error(`Error parsing PUBLIC_SITE_URL: ${e}`);
 		}
 	}
 
@@ -207,7 +207,7 @@ async function generateServiceWorker() {
 
 		return true;
 	} catch (error) {
-		log.error("Error generating service worker: " + error);
+		log.error(`Error generating service worker: ${error}`);
 		return false;
 	}
 }
