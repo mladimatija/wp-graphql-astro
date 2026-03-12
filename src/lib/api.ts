@@ -292,7 +292,7 @@ async function executeQuery<T>(
 				headers["Authorization"] = `Basic ${auth}`;
 				log.debug("Added Basic Auth header for API request");
 			} catch (e) {
-				log.error("Error creating Basic Auth header: " + e);
+				log.error(`Error creating Basic Auth header: ${e}`);
 			}
 		} else if (import.meta.env.WP_JWT_TOKEN) {
 			// Method 2: JWT Authentication if using a JWT plugin
@@ -370,7 +370,7 @@ async function executeQuery<T>(
 
 				if (!response.ok) {
 					const errorText = await response.text();
-					log.error("Error response body: " + errorText);
+					log.error(`Error response body: ${errorText}`);
 					const err = new Error(
 						`GraphQL request failed: ${response.status} ${response.statusText}`,
 					);
@@ -391,7 +391,7 @@ async function executeQuery<T>(
 
 				if (result.errors && result.errors.length) {
 					log.error(
-						"GraphQL result contains errors: " + JSON.stringify(result.errors),
+						`GraphQL result contains errors: ${JSON.stringify(result.errors)}`,
 					);
 					throw new Error(
 						`GraphQL errors: ${result.errors.map((e) => e.message).join(", ")}`,
@@ -425,14 +425,14 @@ async function executeQuery<T>(
 					await sleep(backoff);
 					continue;
 				}
-				log.error("Fetch operation failed: " + fetchError);
+				log.error(`Fetch operation failed: ${fetchError}`);
 				throw fetchError;
 			}
 		}
-		log.error("Fetch operation failed after retries: " + lastError);
+		log.error(`Fetch operation failed after retries: ${lastError}`);
 		throw lastError;
 	} catch (error) {
-		log.error(`GraphQL query error: ${(error as Error).message}`);
+		log.error(`GraphQL query error: ${error}`);
 		throw error;
 	}
 }
@@ -489,7 +489,7 @@ export async function settingsQuery(): Promise<SettingsQueryResult> {
 		);
 		return { data, fromFallback: false };
 	} catch (error) {
-		log.error("Error fetching settings: " + error);
+		log.error(`Error fetching settings: ${error}`);
 		const cached = queryCache.get(SETTINGS_CACHE_KEY) as
 			| CacheEntry<SettingsResponse>
 			| undefined;
@@ -520,7 +520,7 @@ export async function navQuery(): Promise<NavQueryResult> {
 		);
 		return { data, fromFallback: false };
 	} catch (error) {
-		log.error("Error fetching nav: " + error);
+		log.error(`Error fetching nav: ${error}`);
 		const cached = queryCache.get(NAV_CACHE_KEY) as
 			| CacheEntry<MenusResponse>
 			| undefined;
@@ -563,7 +563,7 @@ export async function getPosts(
                 name
                 uri
               }
-            }                    
+            }
             featuredImage {
               node {
                 mediaItemUrl
@@ -576,7 +576,7 @@ export async function getPosts(
           total
           hasNextPage
           endCursor
-        }                  
+        }
       }
     }`;
 
@@ -590,7 +590,7 @@ export async function getPosts(
 			cacheKey,
 		);
 	} catch (error) {
-		log.error("Error fetching posts: " + error);
+		log.error(`Error fetching posts: ${error}`);
 		// Return fallback data for development
 		return {
 			posts: {
@@ -795,7 +795,7 @@ export async function getNodeByURI(uri: string): Promise<NodeByUriResponse> {
               name
               uri
             }
-          }                    
+          }
           featuredImage {
             node {
               mediaItemUrl
@@ -811,7 +811,7 @@ export async function getNodeByURI(uri: string): Promise<NodeByUriResponse> {
             id
             title
             uri
-          }                    
+          }
         }
         ... on Page {
           id
@@ -825,7 +825,7 @@ export async function getNodeByURI(uri: string): Promise<NodeByUriResponse> {
               mediaItemUrl
               altText
             }
-          }                    
+          }
         }
         ... on Category {
           id
@@ -874,7 +874,7 @@ export async function getNodeByURI(uri: string): Promise<NodeByUriResponse> {
               }
             }
           }
-        }                  
+        }
       }
     }`;
 
@@ -1015,7 +1015,7 @@ export async function getAllUris(): Promise<UriParams[]> {
 		log.debug(`Total URIs fetched for static paths: ${result.length}`);
 		return result;
 	} catch (error) {
-		log.error("Error fetching all URIs: " + error);
+		log.error(`Error fetching all URIs: ${error}`);
 		return [
 			{ params: { uri: "example-post-1" } },
 			{ params: { uri: "example-post-2" } },

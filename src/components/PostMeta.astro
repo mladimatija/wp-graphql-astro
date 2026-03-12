@@ -3,7 +3,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { stripHtml } from "string-strip-html";
 
-const { post } = Astro.props;
+interface Props {
+	post: {
+		content: string;
+		date: string;
+		dateGmt: string;
+		[key: string]: unknown;
+	};
+	centered?: boolean;
+}
+
+const { post, centered = false } = Astro.props;
+
 const estimatedReadingTime = (postContent: string) => {
 	if (!postContent || postContent === "") {
 		return "less than a minute read";
@@ -22,7 +33,9 @@ const estimatedReadingTime = (postContent: string) => {
 
 {
 	post && (
-		<div class="post-meta flex flex-wrap items-center justify-center gap-1.5 text-sm leading-none text-[var(--color-gray-600)]">
+		<div
+			class={`post-meta flex flex-wrap items-center gap-1.5 text-sm leading-none text-[var(--color-gray-600)] ${centered ? "justify-center" : ""}`}
+		>
 			<FontAwesomeIcon
 				icon={faClock}
 				size={"1x"}

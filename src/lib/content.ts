@@ -8,7 +8,7 @@ export async function getSiteConfig(): Promise<
 	CollectionEntry<"config"> | undefined
 > {
 	const configs = await getCollection("config");
-	return configs.find((config) => config.slug === "seo");
+	return configs.find((config) => config.id === "seo");
 }
 
 /**
@@ -20,7 +20,7 @@ export async function getComponentBySlug(
 	slug: string,
 ): Promise<CollectionEntry<"components"> | undefined> {
 	const components = await getCollection("components");
-	return components.find((component) => component.slug === slug);
+	return components.find((component) => component.id === slug);
 }
 
 /**
@@ -46,7 +46,7 @@ export async function getPageBySlug(
 	slug: string,
 ): Promise<CollectionEntry<"pages"> | undefined> {
 	const pages = await getCollection("pages");
-	return pages.find((page) => page.slug === slug);
+	return pages.find((page) => page.id === slug);
 }
 
 /**
@@ -67,7 +67,7 @@ export async function getAuthorBySlug(
 	slug: string,
 ): Promise<CollectionEntry<"authors"> | undefined> {
 	const authors = await getCollection("authors");
-	return authors.find((author) => author.slug === slug);
+	return authors.find((author) => author.id === slug);
 }
 
 /**

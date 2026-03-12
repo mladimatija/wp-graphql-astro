@@ -283,8 +283,7 @@ self.addEventListener("fetch", (event) => {
 				})
 				.catch((error) => {
 					swLog.error(
-						`Failed to serve redirected manifest asset: ${correctPath}`,
-						error,
+						`Failed to serve redirected manifest asset: ${correctPath} ${error}	`,
 					);
 					return new Response("Not found", { status: 404 });
 				}),
@@ -424,7 +423,7 @@ self.addEventListener("fetch", (event) => {
 						return response;
 					})
 					.catch((error) => {
-						swLog.error("Fetching failed:", error);
+						swLog.error(`Fetching failed: ${error}`);
 						// For images, we could return a fallback image
 						if (event.request.destination === "image") {
 							return caches.match("/logo.svg");
