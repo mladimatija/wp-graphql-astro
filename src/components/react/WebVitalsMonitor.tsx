@@ -45,12 +45,12 @@ const importWebVitals = async (): Promise<boolean> => {
 				webVitalsModule.initWebVitals();
 			}
 		} catch (error) {
-			log.error("Failed to initialize Web Vitals: " + error);
+			log.error(`Failed to initialize Web Vitals: ${error}`);
 		}
 
 		return true;
 	} catch (error) {
-		log.error("Failed to import Web Vitals: " + error);
+		log.error(`Failed to import Web Vitals: ${error}`);
 		return false;
 	}
 };
@@ -142,14 +142,14 @@ export default function WebVitalsMonitor({
 							setIsLoading(false);
 						}
 					} catch (error) {
-						log.error("Error fetching metrics: " + error);
+						log.error(`Error fetching metrics: ${error}`);
 						if (isMounted) {
 							setIsLoading(false);
 						}
 					}
 				}, 3000);
 			} catch (error) {
-				log.error("Failed to load Web Vitals metrics: " + error);
+				log.error(`Failed to load Web Vitals metrics: ${error}`);
 				if (isMounted) {
 					setIsLoading(false);
 				}
