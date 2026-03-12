@@ -48,6 +48,9 @@
 		"tailwindcss": "^4.2.1",
 		"web-vitals": "^5.1.0"
 	},
+	"overrides": {
+		"lodash": ">=4.17.23"
+	},
 	"devDependencies": {
 		"@commitlint/cli": "^20.4.3",
 		"@commitlint/config-conventional": "^20.4.3",
