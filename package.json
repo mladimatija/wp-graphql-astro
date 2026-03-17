@@ -28,7 +28,7 @@
 		"prepare": "husky"
 	},
 	"dependencies": {
-		"@astrojs/netlify": "^7.0.1",
+		"@astrojs/netlify": "^7.0.3",
 		"@astrojs/react": "^5.0.0",
 		"@astrojs/sitemap": "^3.7.1",
 		"@fortawesome/fontawesome-svg-core": "^7.2.0",
