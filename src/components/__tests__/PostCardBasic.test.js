@@ -17,7 +17,12 @@ class PostCardMock {
 
 	getExcerpt(maxLength = 150) {
 		// Simplified excerpt logic
-		const text = String(this.post.content).replace(/<[^>]*>/g, "");
+		const text = String(this.post.content)
+			.replace(/&/g, "&amp;")
+			.replace(/</g, "&lt;")
+			.replace(/>/g, "&gt;")
+			.replace(/"/g, "&quot;")
+			.replace(/'/g, "&#39;");
 		return text.length > maxLength
 			? text.substring(0, maxLength) + "..."
 			: text;
