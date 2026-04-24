@@ -89,7 +89,7 @@ const getBreadCrumbs = (n) => {
 		Astro.params.uri !== undefined && node && getBreadCrumbs(node) && (
 			<div class="footer-breadcrumbs my-4" transition:animate="fade">
 				<small
-					class="text-[var(--color-gray-600)]"
+					class="text-[var(--color-text-muted)]"
 					set:html={getBreadCrumbs(node)}
 				/>
 			</div>
@@ -98,7 +98,7 @@ const getBreadCrumbs = (n) => {
 	<hr
 		class="footer-separator my-4 border-0 border-t border-[var(--color-border)]"
 	/>
-	<small class="footer-built-with block text-xs text-[var(--color-gray-600)]">
+	<small class="footer-built-with block text-xs text-[var(--color-text-muted)]">
 		built with <a
 			href="https://astro.build/"
 			target="_blank"
