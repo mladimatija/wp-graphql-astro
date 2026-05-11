@@ -43,7 +43,7 @@
 		"darkmode-js": "^1.5.7",
 		"dotenv": "^17.4.2",
 		"http-server": "^14.1.1",
-		"react": "^19.2.5",
+		"react": "^19.2.6",
 		"react-dom": "^19.2.5",
 		"tailwindcss": "^4.2.4",
 		"web-vitals": "^5.2.0"
