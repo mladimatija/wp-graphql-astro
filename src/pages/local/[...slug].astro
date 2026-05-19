@@ -14,27 +14,18 @@ export async function getStaticPaths() {
 		return pagesEntries
 			.filter((page) => !page.data.draft) // Only include non-draft pages
 			.map((page) => ({
-				params: {
-					slug: page.id,
-				},
-				props: {
-					page,
-				},
+				params: { slug: page.id },
+				props: { page },
 			}));
 	} catch (error) {
-		// Always log this error as it's critical for page generation
+		// Always log this error as it's critical for page generation.
+		// Return an empty array so we don't generate a bogus path that 404s.
 		log.error(`Error generating static paths for local pages: ${error}`);
-		// Return a minimal set if content collections are not set up yet
-		return [{ params: { slug: "about-local" }, props: { page: null } }];
+		return [];
 	}
 }
 
 const { page } = Astro.props;
-
-// Handle case where page is not found - will be caught by error handling
-if (!page) {
-	return Astro.redirect("/404");
-}
 ---
 
 <LocalPage page={page} />

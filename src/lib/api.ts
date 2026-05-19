@@ -878,16 +878,11 @@ export async function getNodeByURI(uri: string): Promise<NodeByUriResponse> {
       }
     }`;
 
-		// Special case for nodes: don't cache the current page/post being viewed
-		// This ensures we always get fresh content for the current page
-		// In client context, never bypass cache; in SSR context, always bypass cache for direct page views
-		const bypassCache = true; // Always get fresh content when directly viewing a page
-		return await executeQuery<NodeByUriResponse>(
-			query,
-			{ uri },
-			`uri-${uri}`,
-			bypassCache,
-		);
+		// Cache by URI. We previously bypassed the cache on every call, which meant a
+		// single page render (page + layout + footer) triggered 3 round-trips for the
+		// same node. The build-time cache TTL (30 min) and runtime TTL (5 min) already
+		// give us a reasonable freshness/perf trade-off.
+		return await executeQuery<NodeByUriResponse>(query, { uri }, `uri-${uri}`);
 	} catch (error) {
 		log.error(`Error fetching node by URI ${uri}: ` + error);
 		// Return fallback data for development
@@ -919,6 +914,47 @@ export async function getNodeByURI(uri: string): Promise<NodeByUriResponse> {
 				previous: null,
 			},
 		};
+	}
+}
+
+/**
+ * Fetch slugs + typename for all categories and tags in a single round-trip.
+ * Used by build-time static path generation so we don't have to issue one
+ * `getNodeByURI` call per slug just to classify it.
+ */
+export interface TaxonomyEntry {
+	slug: string;
+	typename: "Category" | "Tag";
+	count?: number | null;
+}
+
+const TAXONOMY_SLUGS_CACHE_KEY = "taxonomy-slugs";
+
+export async function getTopLevelTaxonomies(): Promise<TaxonomyEntry[]> {
+	try {
+		const query = `query GetTopLevelTaxonomies {
+      categories(first: 1000) { nodes { slug count } }
+      tags(first: 1000) { nodes { slug count } }
+    }`;
+		const data = await executeQuery<{
+			categories: { nodes: { slug: string; count: number | null }[] };
+			tags: { nodes: { slug: string; count: number | null }[] };
+		}>(query, {}, TAXONOMY_SLUGS_CACHE_KEY);
+
+		const fromCategories: TaxonomyEntry[] = data.categories.nodes.map((c) => ({
+			slug: c.slug,
+			typename: "Category" as const,
+			count: c.count,
+		}));
+		const fromTags: TaxonomyEntry[] = data.tags.nodes.map((t) => ({
+			slug: t.slug,
+			typename: "Tag" as const,
+			count: t.count,
+		}));
+		return [...fromCategories, ...fromTags];
+	} catch (error) {
+		log.error(`Error fetching top-level taxonomies: ${error}`);
+		return [];
 	}
 }
 

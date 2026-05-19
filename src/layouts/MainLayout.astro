@@ -4,9 +4,21 @@ interface Props {
 	description?: string;
 	showFooter?: boolean;
 	showWebVitals?: boolean;
+	/**
+	 * The resolved WordPress node for the current URL. Pass this from the page so
+	 * MainLayout and Footer don't have to re-issue `getNodeByURI` for the same URI.
+	 */
+	node?: {
+		__typename: string;
+		title?: string;
+		name?: string;
+		uri?: string;
+		link?: string;
+		featuredImage?: { node?: { mediaItemUrl?: string } };
+		categories?: { nodes?: { name: string; uri: string }[] };
+	} | null;
 }
 
-import { getNodeByURI } from "../lib/api";
 import { SEO } from "astro-seo";
 import { stripHtml } from "string-strip-html";
 import { ClientRouter } from "astro:transitions";
@@ -30,17 +42,8 @@ const {
 	description,
 	showFooter = true,
 	showWebVitals = import.meta.env.DEV, // Show Web Vitals in development by default
+	node = null,
 } = Astro.props;
-
-// Only fetch node data if we have a URI parameter
-const uri = Astro.params.uri ? `/${Astro.params.uri}/` : undefined;
-const data = uri ? await getNodeByURI(uri) : { nodeByUri: null };
-const node = data.nodeByUri;
-
-// If we have a URI but WordPress returned no node, show 404
-if (uri && !node) {
-	return Astro.redirect("/404");
-}
 
 // Generate clean description and title with fallbacks
 const cleanDescription =
@@ -136,7 +139,7 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
 
 		<!-- Add support for Astro:assets image optimization -->
 		<slot name="head" />
-		<title></title>
+		<!-- `astro-seo`'s <SEO /> above emits its own <title>; do not add a second one. -->
 	</head>
 
 	<body
@@ -183,7 +186,7 @@ const metaImage = node?.featuredImage?.node?.mediaItemUrl || "/favicon.svg";
 		>
 			<slot />
 		</main>
-		{showFooter && <Footer />}
+		{showFooter && <Footer node={node} />}
 
 		<!-- Dark mode component properly bundled with npm package -->
 		<DarkMode client:idle />
