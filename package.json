@@ -8,14 +8,16 @@
 		"node": ">=24"
 	},
 	"scripts": {
+		"predev": "npm run build:branding",
 		"dev": "astro dev",
 		"start": "http-server ./dist",
 		"build": "npm run build:branding && astro build && node fix-manifest.js && node src/scripts/generate-service-worker.js",
+		"prepreview": "npm run build:branding",
 		"preview": "astro preview",
 		"astro": "astro",
 		"format": "prettier --write .",
 		"lint:css": "stylelint \"src/**/*.{astro,css}\"",
-		"lint:js": "eslint \"src/**/*.{js,ts}\"",
+		"lint:js": "eslint \"src/**/*.{js,ts}\" \"*.js\" \"scripts/**/*.{js,ts}\"",
 		"lint": "npm run lint:css && npm run lint:js",
 		"clean": "rm -rf dist",
 		"prebuild": "npm run clean",

@@ -68,3 +68,8 @@ tmp/
 
 # Build artifacts
 *.tsbuildinfo
+
+# Generated from src/templates/ by `npm run build:branding`.
+# Edit the source files under src/templates/, not these outputs.
+public/offline.html
+src/content/config/seo.md

@@ -1,4 +1,6 @@
 [build]
-    command = "astro build"
+    # Use the npm script so build:branding, fix-manifest, and generate-service-worker
+    # also run in CI (the bare `astro build` command skips them).
+    command = "npm run build"
     functions = "netlify/functions"
     publish = "dist"
