@@ -18,19 +18,42 @@ const navResult = navProp
 
 const { generalSettings } = settingsResult.data;
 const { menus } = navResult.data;
-const primaryMenu = menus.nodes[0];
+const primaryMenu = menus?.nodes?.[0];
+const menuItems = primaryMenu?.menuItems?.nodes ?? [];
+
+// Normalize a URL/URI so equality checks aren't tripped up by trailing slashes.
+function normalizePath(path: string | undefined | null): string {
+	if (!path) return "/";
+	try {
+		const url = path.startsWith("http") ? new URL(path).pathname : path;
+		const trimmed = url.replace(/\/+$/, "");
+		return trimmed === "" ? "/" : trimmed;
+	} catch {
+		return path;
+	}
+}
+
+const currentPath = normalizePath(Astro.url.pathname);
+
+function isActive(menuItemUri: string | undefined | null): boolean {
+	const target = normalizePath(menuItemUri);
+	if (target === "/" || target === "") {
+		return currentPath === "/";
+	}
+	// Exact match, or a deeper page under the same section (e.g., /about/team).
+	return currentPath === target || currentPath.startsWith(target + "/");
+}
 ---
 
 <nav role="navigation" aria-label="Main navigation">
 	<ul class="header-nav fixed left-0 top-0 z-[101] pt-[6.25rem]">
 		{
-			primaryMenu.menuItems.nodes.map((menuItem) => (
+			menuItems.map((menuItem) => (
 				<li class="mb-[0.9375rem] list-none text-left text-[var(--color-black)] last:mb-0">
 					<a
 						href={menuItem.uri || generalSettings.url}
 						class={`nav-link ml-[1.875rem] text-2xl font-light text-[var(--color-black)] no-underline transition-all duration-[0.4s] ease-in-out w-auto hover:pl-[1.875rem] hover:text-[var(--color-link)] focus:pl-[1.875rem] focus:text-[var(--color-link)] focus:outline-none active:pl-[1.875rem] active:text-[var(--color-link)] ${
-							menuItem.uri.includes(Astro.params.uri) ||
-							(menuItem.uri === "/" && Astro.params.uri === undefined)
+							isActive(menuItem.uri)
 								? "active pl-[1.875rem] text-[var(--color-link)]"
 								: ""
 						}`}

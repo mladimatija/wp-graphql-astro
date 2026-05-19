@@ -30,8 +30,12 @@ const siteConfig = await getSiteConfig();
 const showFeaturedImagesOnPostCard =
 	siteConfig?.data.showFeaturedImagesOnPostCard ?? true;
 
-// Extract clean excerpt for better display
-const excerpt = stripHtml(post.content.substring(0, 150)).result;
+// Extract clean excerpt for better display. Strip HTML first, then truncate.
+const plainContent = stripHtml(post.content || "").result.trim();
+const excerpt =
+	plainContent.length > 150
+		? plainContent.slice(0, 150).trimEnd()
+		: plainContent;
 const hasFeaturedImage =
 	post.featuredImage?.node?.mediaItemUrl && showFeaturedImagesOnPostCard;
 ---
