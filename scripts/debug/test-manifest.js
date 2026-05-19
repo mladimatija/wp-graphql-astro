@@ -1,4 +1,5 @@
-// Test script to check WordPress API connectivity
+// Test script to check WordPress API connectivity.
+// Run from the repo root: `node scripts/debug/test-manifest.js`
 import https from "https";
 import http from "http";
 import * as dotenv from "dotenv";

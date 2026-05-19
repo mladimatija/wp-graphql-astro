@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Don't index transient endpoints
+Disallow: /api/
+Disallow: /success
+
+Sitemap: https://matijaculjak.com/sitemap-index.xml

@@ -2,8 +2,8 @@
 
 [![CI](https://github.com/mladimatija/wp-graphql-astro/actions/workflows/ci.yml/badge.svg)](https://github.com/mladimatija/wp-graphql-astro/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node Version](https://img.shields.io/badge/node-25.x-brightgreen.svg)](https://nodejs.org)
-[![Astro](https://img.shields.io/badge/Astro-5.16-FF5D01.svg?logo=astro&logoColor=white)](https://astro.build/)
+[![Node Version](https://img.shields.io/node/v/astro)](https://nodejs.org)
+[![Astro](https://img.shields.io/npm/v/astro?label=astro&logo=astro&logoColor=white&color=FF5D01)](https://www.npmjs.com/package/astro)
 
 A headless WordPress site built with [Astro](https://astro.build/) and GraphQL. Fast, modern, and fully static.
 

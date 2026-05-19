@@ -1,6 +1,7 @@
+const isProduction = process.env.NODE_ENV === "production";
+
 module.exports = {
 	plugins: {
-		cssnano: {},
 		"postcss-import": {},
 		"postcss-preset-env": {
 			stage: 1,
@@ -12,5 +13,6 @@ module.exports = {
 			},
 			preserve: true,
 		},
+		...(isProduction ? { cssnano: {} } : {}),
 	},
 };
