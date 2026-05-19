@@ -9,16 +9,25 @@
  * Instead, edit the template in src/scripts/service-worker-template.js
  */
 
-// Simple logging utility for service worker
+// Simple logging utility for service worker.
+// Service workers run in a worker context - `localStorage` is not available.
+// Debug mode is enabled either when the SW is registered against localhost/127.0.0.1,
+// or by a client posting { type: "SW_SET_DEBUG", value: true|false } via
+// `navigator.serviceWorker.controller.postMessage(...)`.
+let __swDebugOverride = null;
+self.addEventListener("message", (event) => {
+	if (event.data && event.data.type === "SW_SET_DEBUG") {
+		__swDebugOverride = Boolean(event.data.value);
+	}
+});
+
 const swLog = {
-	// Get debug mode from service worker registration or localStorage
 	isDebug: () => {
-		// Default to only logging in development
+		if (__swDebugOverride !== null) return __swDebugOverride;
 		if (self.registration && self.registration.scope) {
 			return (
 				self.registration.scope.includes("localhost") ||
-				self.registration.scope.includes("127.0.0.1") ||
-				localStorage.getItem("SW_DEBUG") === "true"
+				self.registration.scope.includes("127.0.0.1")
 			);
 		}
 		return false;

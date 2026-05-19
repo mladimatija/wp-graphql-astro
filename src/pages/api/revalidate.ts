@@ -1,6 +1,10 @@
 import type { APIRoute } from "astro";
 import { log } from "../../lib/constants";
 
+// This endpoint must run as a server function, not be prerendered at build time.
+// With `output: "static"`, Astro prerenders every route unless explicitly opted out.
+export const prerender = false;
+
 /** In-memory rate limit: max requests per window per key (IP). Reset after window ms. */
 const REVALIDATE_RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const REVALIDATE_RATE_LIMIT_MAX = 10;
