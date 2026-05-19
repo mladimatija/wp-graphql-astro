@@ -38,7 +38,7 @@
 		"@tailwindcss/vite": "^4.2.2",
 		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",
-		"astro": "^6.3.2",
+		"astro": "^6.3.5",
 		"astro-seo": "^1.1.0",
 		"darkmode-js": "^1.5.7",
 		"dotenv": "^17.4.2",
