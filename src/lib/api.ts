@@ -491,8 +491,7 @@ export async function settingsQuery(): Promise<SettingsQueryResult> {
 	} catch (error) {
 		log.error(`Error fetching settings: ${error}`);
 		const cached = queryCache.get(SETTINGS_CACHE_KEY) as
-			| CacheEntry<SettingsResponse>
-			| undefined;
+			CacheEntry<SettingsResponse> | undefined;
 		if (cached?.data) {
 			return { data: cached.data, fromFallback: false };
 		}
@@ -522,8 +521,7 @@ export async function navQuery(): Promise<NavQueryResult> {
 	} catch (error) {
 		log.error(`Error fetching nav: ${error}`);
 		const cached = queryCache.get(NAV_CACHE_KEY) as
-			| CacheEntry<MenusResponse>
-			| undefined;
+			CacheEntry<MenusResponse> | undefined;
 		if (cached?.data) {
 			return { data: cached.data, fromFallback: false };
 		}
@@ -975,8 +973,7 @@ export async function getAllUris(): Promise<UriParams[]> {
 	try {
 		if (queryCache.has(ALL_URIS_MERGED_CACHE_KEY)) {
 			const entry = queryCache.get(ALL_URIS_MERGED_CACHE_KEY) as
-				| CacheEntry<UriParams[]>
-				| undefined;
+				CacheEntry<UriParams[]> | undefined;
 			if (entry && Date.now() - entry.timestamp < CACHE_DURATION) {
 				log.debug("Returning cached merged URIs");
 				return entry.data;
