@@ -2,9 +2,13 @@
 import PostCard from "../components/PostCard.astro";
 import MainLayout from "../layouts/MainLayout.astro";
 import Pagination from "../components/Pagination.astro";
-import { getPosts } from "../lib/api";
+import { getPosts, settingsQuery } from "../lib/api";
 
-const data = await getPosts(5);
+// Use the same page size as /page/2/ etc. so the homepage and the rest of the
+// paginated archive line up.
+const { allSettings } = (await settingsQuery()).data;
+const postsPerPage = allSettings.readingSettingsPostsPerPage || 10;
+const data = await getPosts(postsPerPage);
 ---
 
 <MainLayout>

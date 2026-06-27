@@ -1,6 +1,9 @@
 /**
- * Build-time script to generate static files with consistent branding
- * This processes templates with placeholders and replaces them with values from constants
+ * Build-time script to generate static files with consistent branding.
+ *
+ * Reads template sources from `src/templates/` and writes the substituted
+ * outputs to their canonical locations. The outputs are gitignored - edit the
+ * source templates rather than the generated files.
  */
 import fs from "fs";
 import path from "path";
@@ -14,22 +17,26 @@ import {
 	// eslint-disable-next-line import/extensions
 } from "../lib/constants.js";
 
-// Get the directory name
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const publicDir = path.join(__dirname, "../../public");
+const rootDir = path.join(__dirname, "../..");
+const templatesDir = path.join(rootDir, "src/templates");
+const publicDir = path.join(rootDir, "public");
+const contentConfigDir = path.join(rootDir, "src/content/config");
 
-// Files to process
+// Source → destination mapping with the placeholder map for each output.
+// Note: manifest.json is handled by fix-manifest.js (it pulls WordPress data
+// dynamically); only static-branding files belong here.
 const filesToProcess = [
-	// Note: manifest.json is now handled by fix-manifest.js
-	// which gets WordPress data dynamically
 	{
-		path: path.join(publicDir, "offline.html"),
+		source: path.join(templatesDir, "offline.html"),
+		destination: path.join(publicDir, "offline.html"),
 		replacements: {
 			"${APP_NAME}": DEFAULT_APP_NAME,
 		},
 	},
 	{
-		path: path.join(__dirname, "../../src/content/config/seo.md"),
+		source: path.join(templatesDir, "seo.md"),
+		destination: path.join(contentConfigDir, "seo.md"),
 		replacements: {
 			"${APP_NAME}": DEFAULT_APP_NAME,
 			"${APP_DESCRIPTION}": DEFAULT_APP_DESCRIPTION,
@@ -37,22 +44,25 @@ const filesToProcess = [
 	},
 ];
 
-// Process each file
 filesToProcess.forEach((file) => {
 	try {
-		// Read the template file
-		// Apply all replacements
-		let processedContent = fs.readFileSync(file.path, "utf8");
+		let processedContent = fs.readFileSync(file.source, "utf8");
 		for (const [placeholder, value] of Object.entries(file.replacements)) {
 			processedContent = processedContent.replaceAll(placeholder, value);
 		}
 
-		// Write the output file
-		fs.writeFileSync(file.path, processedContent);
+		// Make sure the destination directory exists before writing.
+		fs.mkdirSync(path.dirname(file.destination), { recursive: true });
+		fs.writeFileSync(file.destination, processedContent);
 
-		log.info(`Processed ${path.basename(file.path)} successfully!`);
+		log.info(
+			`Generated ${path.relative(rootDir, file.destination)} from ${path.relative(
+				rootDir,
+				file.source,
+			)}`,
+		);
 	} catch (error) {
-		log.error(`Error processing ${path.basename(file.path)}: ${error}`);
+		log.error(`Error generating ${path.basename(file.destination)}: ${error}`);
 		process.exit(1);
 	}
 });

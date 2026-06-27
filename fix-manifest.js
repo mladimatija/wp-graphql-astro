@@ -50,15 +50,22 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(__dirname, "public");
 const distDir = path.join(__dirname, "dist");
 
-// GraphQL query to get site information
-const query = `{
+// Search term for WordPress media items used as PWA icons.
+// Set MANIFEST_LOGO_SEARCH in the environment to override; if unset we skip the
+// media lookup entirely and fall back to the local SVGs in `public/`.
+const logoSearch = process.env.MANIFEST_LOGO_SEARCH || "";
+
+// GraphQL query to get site information. When `logoSearch` is empty we omit the
+// `mediaItems` block so we don't pull arbitrary first-2 media into the manifest.
+const query = logoSearch
+	? `{
   generalSettings {
     title
     description
     url
     language
   }
-  mediaItems(first: 2, where: {search: "matija-culjak-logo"}) {
+  mediaItems(first: 2, where: {search: "${logoSearch.replace(/"/g, "")}"}) {
     nodes {
       id
       mediaItemUrl
@@ -68,6 +75,14 @@ const query = `{
         height
       }
     }
+  }
+}`
+	: `{
+  generalSettings {
+    title
+    description
+    url
+    language
   }
 }`;
 
@@ -150,14 +165,16 @@ async function generateManifest() {
 		},
 	];
 
-	// Add WordPress media library logos if available
-	if (wpData?.mediaItems?.nodes) {
+	// Add WordPress media library logos if available. We filter by the same
+	// `MANIFEST_LOGO_SEARCH` value so the URL substring check stays in sync with
+	// what we asked GraphQL for.
+	if (wpData?.mediaItems?.nodes && logoSearch) {
 		const logoImages = wpData?.mediaItems.nodes.filter(
 			(node) =>
 				node.mimeType.startsWith("image/") &&
 				node.mediaDetails?.width &&
 				node.mediaDetails?.height &&
-				node.mediaItemUrl.includes("matija-culjak-logo"), // Only include specific logos
+				node.mediaItemUrl.includes(logoSearch),
 		);
 
 		if (logoImages.length > 0) {

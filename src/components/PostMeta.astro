@@ -29,12 +29,23 @@ const estimatedReadingTime = (postContent: string) => {
 		return "less than a minute read";
 	}
 };
+
+// Pin to an explicit locale so all visitors see the same date format regardless
+// of the (build) server's locale. The site is `<html lang="en">`, so use en-US
+// long form ("January 1, 2026"). A small client-side script (below) then
+// re-formats the date into the reader's preferred locale.
+const formatter = new Intl.DateTimeFormat("en-US", {
+	year: "numeric",
+	month: "long",
+	day: "numeric",
+});
+const formattedDate = formatter.format(new Date(post.date));
 ---
 
 {
 	post && (
 		<div
-			class={`post-meta flex flex-wrap items-center gap-1.5 text-sm leading-none text-[var(--color-gray-600)] ${centered ? "justify-center" : ""}`}
+			class={`post-meta flex flex-wrap items-center gap-1.5 text-sm leading-none text-[var(--color-text-muted)] ${centered ? "justify-center" : ""}`}
 		>
 			<FontAwesomeIcon
 				icon={faClock}
@@ -42,10 +53,31 @@ const estimatedReadingTime = (postContent: string) => {
 				className="post-meta-icon h-4 w-4 shrink-0"
 			/>
 			<time datetime={post.dateGmt} class="post-date published">
-				{new Date(post.date).toLocaleDateString()}
+				{formattedDate}
 			</time>
 			<span aria-hidden="true">-</span>
 			<span>{estimatedReadingTime(post.content)}</span>
 		</div>
 	)
 }
+
+<script>
+	// Progressive enhancement: re-format dates using the visitor's locale.
+	// The server emits an en-US long form; clients with a different preference
+	// see their own locale.
+	document.querySelectorAll<HTMLTimeElement>("time.post-date").forEach((el) => {
+		const iso = el.getAttribute("datetime");
+		if (!iso) return;
+		const d = new Date(iso);
+		if (Number.isNaN(d.getTime())) return;
+		try {
+			el.textContent = new Intl.DateTimeFormat(undefined, {
+				year: "numeric",
+				month: "long",
+				day: "numeric",
+			}).format(d);
+		} catch {
+			// Stick with the server-rendered en-US value.
+		}
+	});
+</script>

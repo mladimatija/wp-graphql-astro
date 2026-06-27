@@ -11,37 +11,43 @@ import { settingsQuery } from "../lib/api";
 const { allSettings } = (await settingsQuery()).data;
 const { isHomepage, totalPosts, page } = Astro.props;
 
+const postsPerPage = allSettings.readingSettingsPostsPerPage || 10;
+
+// Total pages, computed lazily so missing/zero values fall back gracefully.
+const computedLastPage = isHomepage
+	? totalPosts
+		? Math.max(1, Math.ceil(totalPosts / postsPerPage))
+		: undefined
+	: page?.lastPage;
+
 function getPaginationText() {
-	let text = "Page ";
-
 	if (isHomepage) {
-		text += "1";
-
-		if (totalPosts) {
-			text += ` of ${Math.ceil(
-				totalPosts / allSettings.readingSettingsPostsPerPage,
-			)}`;
-		}
-	} else if (page) {
-		text += `${page.currentPage} of ${page.lastPage}`;
+		return computedLastPage ? `Page 1 of ${computedLastPage}` : "Page 1";
 	}
-
-	return text;
+	if (page) {
+		return computedLastPage
+			? `Page ${page.currentPage} of ${computedLastPage}`
+			: `Page ${page.currentPage}`;
+	}
+	return "";
 }
+
+// Show "Next »" only when there's a real next page.
+const showNext = isHomepage
+	? computedLastPage === undefined || computedLastPage > 1
+	: Boolean(page && page.url?.next && page.currentPage < (page.lastPage ?? 0));
+
+const nextHref = isHomepage ? "/page/2" : page?.url?.next || undefined;
 ---
 
 <div
 	class="pagination flex flex-wrap items-center justify-center gap-5 py-2 text-sm text-gray-800 [&>a]:text-[#29aae1] [&>a]:hover:underline [&>a]:hover:text-[#192226]"
 >
 	{
-		!isHomepage && page.url.prev && (
+		!isHomepage && page?.url?.prev && (
 			<a href={page.url.prev === "/page" ? "/" : page.url.prev}>« Prev</a>
 		)
 	}
 	<span set:text={getPaginationText()} />
-	{
-		isHomepage || page.currentPage !== page.lastPage ? (
-			<a href={isHomepage ? "/page/2" : page.url.next}>Next »</a>
-		) : null
-	}
+	{showNext && nextHref && <a href={nextHref}>Next »</a>}
 </div>

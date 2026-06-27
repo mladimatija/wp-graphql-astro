@@ -1,81 +1,68 @@
 ---
-import { getNodeByURI, getAllUris, settingsQuery } from "../../../lib/api";
+import {
+	getNodeByURI,
+	getTopLevelTaxonomies,
+	settingsQuery,
+} from "../../../lib/api";
 import MainLayout from "../../../layouts/MainLayout.astro";
 import Archive from "../../../components/templates/Archive.astro";
 
 // Static rendering for all category/tag pages
 export const prerender = true;
 
+// Determine which top-level taxonomy slugs need paginated pages, and how many.
+// A single `categories + tags` GraphQL query that also gives us post counts so
+// we know the real last page per taxonomy.
+export async function getStaticPaths() {
+	const [taxonomies, settings] = await Promise.all([
+		getTopLevelTaxonomies(),
+		settingsQuery(),
+	]);
+	const postsPerPage =
+		settings.data.allSettings?.readingSettingsPostsPerPage || 10;
+
+	const paths: { params: { slug: string; page: string } }[] = [];
+	for (const tax of taxonomies) {
+		const count = tax.count ?? 0;
+		const lastPage = Math.max(1, Math.ceil(count / postsPerPage));
+		for (let i = 2; i <= lastPage; i++) {
+			paths.push({ params: { slug: tax.slug, page: i.toString() } });
+		}
+	}
+	return paths;
+}
+
 // Get the slug and page number from URL parameters
 const { slug, page } = Astro.params;
-const pageNumber = parseInt(page, 10);
+const pageNumber = parseInt(page || "", 10);
 
 // Get the data
 const uri = `/${slug}/`;
 const data = await getNodeByURI(uri);
 const node = data.nodeByUri;
 
-// Determine how many pages to generate at build time
-export async function getStaticPaths() {
-	// Get all URIs
-	const uris = await getAllUris();
-	const { allSettings } = (await settingsQuery()).data;
-	const postsPerPage = allSettings.readingSettingsPostsPerPage || 10;
-
-	// Filter for URIs that are specifically categories or tags
-	// We need to distinguish them from posts that might have no slashes
-	const taxonomyUris = [];
-
-	for (const uri of uris) {
-		const path = uri.params.uri;
-		// Only consider top-level slugs (no slashes)
-		if (!path.includes("/") && path !== "") {
-			try {
-				// Check if this URI resolves to a category or tag
-				const data = await getNodeByURI(`/${path}/`);
-				if (
-					data.nodeByUri &&
-					["Category", "Tag"].includes(data.nodeByUri.__typename)
-				) {
-					taxonomyUris.push({
-						slug: path,
-					});
-				}
-			} catch (error) {
-				// Skip any errors in resolving
-				continue;
-			}
-		}
-	}
-
-	// Generate paths for each taxonomy (up to 5 pages)
-	// This limit is to avoid excessive pages at build time
-	const maxPagesToGenerate = 5;
-
-	const paths = [];
-
-	for (const taxonomy of taxonomyUris) {
-		for (let i = 2; i <= maxPagesToGenerate; i++) {
-			paths.push({
-				params: {
-					slug: taxonomy.slug,
-					page: i.toString(),
-				},
-			});
-		}
-	}
-
-	return paths;
+// Bail out with a 404 status if a taxonomy disappeared between path enumeration
+// and rendering. (Astro.redirect emits a meta-refresh in SSG, which we don't want.)
+if (
+	!node ||
+	!["Category", "Tag"].includes((node as { __typename: string }).__typename)
+) {
+	Astro.response.status = 404;
 }
 
-// If node not found or is not a Category/Tag, redirect to 404
-if (!node || !["Category", "Tag"].includes(node.__typename)) {
-	return Astro.redirect("/404");
-}
+// Compute the real lastPage so the Pagination component has accurate counts.
+// Archive will recompute its own when rendering Category posts, but we set it
+// here for the Tag case where Archive uses the node's embedded posts list.
+const { allSettings } = (await settingsQuery()).data;
+const postsPerPage = allSettings.readingSettingsPostsPerPage || 10;
+const totalPosts =
+	(node as { posts?: { pageInfo?: { total?: number } } })?.posts?.pageInfo
+		?.total ?? 0;
+const lastPage = Math.max(1, Math.ceil(totalPosts / postsPerPage));
 
-// Create page object for pagination component
 const pageData = {
 	currentPage: pageNumber,
+	lastPage,
 	url: {
 		prev:
 			pageNumber > 2
@@ -83,15 +70,15 @@ const pageData = {
 				: pageNumber === 2
 					? `/${slug}`
 					: null,
-		next: `/${slug}/page/${pageNumber + 1}`,
+		next: pageNumber < lastPage ? `/${slug}/page/${pageNumber + 1}` : null,
 	},
-	lastPage: 10, // This is a placeholder, the actual value is determined in the Archive component
 };
 ---
 
 <MainLayout
-	title={`${node.name} - Page ${pageNumber}`}
-	description={`Page ${pageNumber} of posts in ${node.name}`}
+	title={`${node?.name} - Page ${pageNumber}`}
+	description={`Page ${pageNumber} of posts in ${node?.name}`}
+	node={node}
 >
-	<Archive node={node} page={pageData} />
+	{node ? <Archive node={node} page={pageData} /> : <p>Content not found.</p>}
 </MainLayout>

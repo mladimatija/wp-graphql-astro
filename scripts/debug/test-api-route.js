@@ -1,4 +1,5 @@
-// Test script to check the manifest.json API route
+// Test script to check the manifest.json API route.
+// Run from the repo root: `node scripts/debug/test-api-route.js`
 import fetch from "cross-fetch";
 import { spawn } from "child_process";
 import * as dotenv from "dotenv";

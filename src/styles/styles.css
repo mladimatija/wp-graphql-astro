@@ -450,6 +450,7 @@ body:not(.darkmode--activated) .darkmode-background {
 body.darkmode--activated {
 	/* Override the shared color vars used by the layout and Tailwind text utilities */
 	--color-text: var(--color-white);
+	--color-text-muted: var(--color-gray-400);
 	--color-border: var(--color-border-dark);
 	--color-background: var(--color-background-dark);
 
@@ -579,9 +580,14 @@ body.darkmode--activated {
 	color: var(--color-white) !important;
 }
 
+.darkmode--activated .contact-form form input,
+.darkmode--activated .contact-form form textarea {
+	border-color: var(--color-white);
+}
+
 .darkmode--activated .contact-form form input::placeholder,
 .darkmode--activated .contact-form form textarea::placeholder {
-	color: var(--color-black);
+	color: var(--color-white);
 }
 
 .darkmode--activated .contact-form form button[type="submit"] {

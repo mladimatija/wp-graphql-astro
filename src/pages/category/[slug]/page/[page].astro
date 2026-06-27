@@ -1,63 +1,63 @@
 ---
-import { getNodeByURI, getAllUris, settingsQuery } from "../../../../lib/api";
+import {
+	getNodeByURI,
+	getTopLevelTaxonomies,
+	settingsQuery,
+} from "../../../../lib/api";
 import MainLayout from "../../../../layouts/MainLayout.astro";
 import Archive from "../../../../components/templates/Archive.astro";
 
 // Static rendering for all categories
 export const prerender = true;
 
+// Generate only as many pages per category as actually exist (driven by the
+// post count returned by GraphQL), instead of a fixed 1..5 sweep that produces
+// 404s for small categories.
+export async function getStaticPaths() {
+	const [taxonomies, settings] = await Promise.all([
+		getTopLevelTaxonomies(),
+		settingsQuery(),
+	]);
+	const postsPerPage =
+		settings.data.allSettings?.readingSettingsPostsPerPage || 10;
+
+	const paths: { params: { slug: string; page: string } }[] = [];
+	for (const tax of taxonomies) {
+		if (tax.typename !== "Category") continue;
+		const count = tax.count ?? 0;
+		const lastPage = Math.max(1, Math.ceil(count / postsPerPage));
+		for (let i = 2; i <= lastPage; i++) {
+			paths.push({ params: { slug: tax.slug, page: i.toString() } });
+		}
+	}
+	return paths;
+}
+
 // Get the category slug and page number from URL parameters
 const { slug, page } = Astro.params;
-const pageNumber = parseInt(page, 10);
+const pageNumber = parseInt(page || "", 10);
 
 // Get the category data
 const uri = `/${slug}/`;
 const data = await getNodeByURI(uri);
 const node = data.nodeByUri;
 
-// Determine how many category pages to generate at build time
-export async function getStaticPaths() {
-	// Get all categories
-	const uris = await getAllUris();
-	const { allSettings } = (await settingsQuery()).data;
-	const postsPerPage = allSettings.readingSettingsPostsPerPage || 10;
-
-	// Filter for category URIs
-	const categoryUris = uris
-		.filter((uri) => uri.params.uri.startsWith("category/"))
-		.map((uri) => ({
-			slug: uri.params.uri.split("/")[1], // Extract the category slug
-		}));
-
-	// Generate paths for each category (up to 5 pages)
-	// This limit is to avoid excessive pages at build time
-	// Runtime rendering will handle any pages beyond this
-	const maxPagesToGenerate = 5;
-
-	const paths = [];
-
-	for (const category of categoryUris) {
-		for (let i = 2; i <= maxPagesToGenerate; i++) {
-			paths.push({
-				params: {
-					slug: category.slug,
-					page: i.toString(),
-				},
-			});
-		}
-	}
-
-	return paths;
-}
-
-// If node not found, redirect to 404
 if (!node) {
-	return Astro.redirect("/404");
+	Astro.response.status = 404;
 }
 
-// Create page object for pagination component
+// Compute the real last page so Pagination shows accurate counts and the
+// "Next »" link is suppressed on the actual final page.
+const { allSettings } = (await settingsQuery()).data;
+const postsPerPage = allSettings.readingSettingsPostsPerPage || 10;
+const totalPosts =
+	(node as { posts?: { pageInfo?: { total?: number } } })?.posts?.pageInfo
+		?.total ?? 0;
+const lastPage = Math.max(1, Math.ceil(totalPosts / postsPerPage));
+
 const pageData = {
 	currentPage: pageNumber,
+	lastPage,
 	url: {
 		prev:
 			pageNumber > 2
@@ -65,15 +65,15 @@ const pageData = {
 				: pageNumber === 2
 					? `/${slug}`
 					: null,
-		next: `/${slug}/page/${pageNumber + 1}`,
+		next: pageNumber < lastPage ? `/${slug}/page/${pageNumber + 1}` : null,
 	},
-	lastPage: 10, // This is a placeholder, the actual value is determined in the Archive component
 };
 ---
 
 <MainLayout
-	title={`${node.name} - Page ${pageNumber}`}
-	description={`Page ${pageNumber} of posts in ${node.name} category`}
+	title={`${node?.name} - Page ${pageNumber}`}
+	description={`Page ${pageNumber} of posts in ${node?.name} category`}
+	node={node}
 >
-	<Archive node={node} page={pageData} />
+	{node ? <Archive node={node} page={pageData} /> : <p>Content not found.</p>}
 </MainLayout>

@@ -31,14 +31,6 @@ export default defineConfig({
 			devSourcemap: true,
 		},
 	},
-	// View Transitions is now a standard feature in Astro v5
-	viewTransitions: {
-		// Enable support for the View Transitions API
-		// This adds support for :view-transition-* pseudo-classes
-		handleViewTransitions: true,
-		persist: ["dark-mode"],
-	},
-	// Image optimization configuration aligned with Astro v5
 	image: {
 		domains: [],
 		remotePatterns: [{ protocol: "https" }],

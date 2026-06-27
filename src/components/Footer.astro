@@ -1,17 +1,42 @@
 ---
-import { getNodeByURI } from "../lib/api";
+/**
+ * Footer expects the resolved WordPress node as a prop from the page.
+ */
+interface FooterNode {
+	__typename: string;
+	title?: string;
+	name?: string;
+	uri?: string;
+	link?: string;
+	categories?: { nodes?: { name: string; uri: string }[] };
+}
+
+interface Props {
+	node?: FooterNode | null;
+}
+
+const { node = null } = Astro.props;
 
 const baseUrl = (
 	import.meta.env.PUBLIC_SITE_URL || "https://example.com"
 ).replace(/\/$/, "");
-const uri = `/${Astro.params.uri}/`;
-const data = await getNodeByURI(uri);
-const node = data.nodeByUri;
 
-// Breadcrumb items for JSON-LD (and for building HTML)
-function getBreadcrumbItems(n) {
+const footerMetaLinkClass =
+	"text-[var(--color-link)] no-underline transition-colors duration-300 hover:text-[var(--color-black)]";
+
+// JSON-LD reads `items`; the HTML view renders the same list with anchors.
+interface BreadcrumbItem {
+	name: string;
+	url: string;
+	/** Whether the HTML view should render this as a link. The current page is plain text. */
+	link?: boolean;
+}
+
+function buildBreadcrumbs(n: FooterNode | null): BreadcrumbItem[] {
 	if (!n) return [];
-	const items = [{ name: "Home", url: baseUrl + "/" }];
+	const items: BreadcrumbItem[] = [
+		{ name: "Home", url: baseUrl + "/", link: true },
+	];
 	const type = n.__typename;
 	if (type === "Tag" || type === "Category" || type === "Archive") {
 		items.push({
@@ -20,48 +45,26 @@ function getBreadcrumbItems(n) {
 					? `Posts tagged "${n.name}"`
 					: `Archive by category "${n.name}"`,
 			url: baseUrl + (n.uri || "/"),
+			link: false,
 		});
 	} else if (type === "Post" || type === "Page") {
 		if (type === "Post" && n.categories?.nodes?.length) {
 			items.push({
 				name: n.categories.nodes[0].name,
 				url: baseUrl + n.categories.nodes[0].uri,
+				link: true,
 			});
 		}
 		items.push({
 			name: n.title || n.name || "",
 			url: n.link || baseUrl + (n.uri || "/"),
+			link: false,
 		});
 	}
 	return items;
 }
 
-const breadcrumbItems = getBreadcrumbItems(node);
-const footerMetaLinkClass =
-	"text-[var(--color-link)] no-underline transition-colors duration-300 hover:text-[var(--color-black)]";
-
-// Simple breadcrumbs HTML, only one level deep (skip when no node)
-const getBreadCrumbs = (n) => {
-	if (!n) return "";
-	const type = n.__typename;
-	let out = 'You are here: <a href="/">Home</a> > ';
-
-	if (type === "Tag" || type === "Category" || type === "Archive") {
-		if (type === "Tag") {
-			out += `Posts tagged "${n.name}"`;
-		} else {
-			out += `Archive by category "${n.name}"`;
-		}
-	} else if (type === "Post") {
-		if (n.categories?.nodes?.length) {
-			out += `<a href="${n.categories.nodes[0].uri}">${n.categories.nodes[0].name}</a> > `;
-		}
-	}
-
-	out += n.title || "";
-
-	return out;
-};
+const breadcrumbItems = buildBreadcrumbs(node);
 ---
 
 <footer
@@ -86,19 +89,24 @@ const getBreadCrumbs = (n) => {
 		)
 	}
 	{
-		Astro.params.uri !== undefined && node && getBreadCrumbs(node) && (
+		breadcrumbItems.length > 1 && (
 			<div class="footer-breadcrumbs my-4" transition:animate="fade">
-				<small
-					class="text-[var(--color-gray-600)]"
-					set:html={getBreadCrumbs(node)}
-				/>
+				<small class="text-[var(--color-text-muted)]">
+					You are here:{" "}
+					{breadcrumbItems.map((item, i) => (
+						<>
+							{i > 0 && " > "}
+							{item.link ? <a href={item.url}>{item.name}</a> : item.name}
+						</>
+					))}
+				</small>
 			</div>
 		)
 	}
 	<hr
 		class="footer-separator my-4 border-0 border-t border-[var(--color-border)]"
 	/>
-	<small class="footer-built-with block text-xs text-[var(--color-gray-600)]">
+	<small class="footer-built-with block text-xs text-[var(--color-text-muted)]">
 		built with <a
 			href="https://astro.build/"
 			target="_blank"

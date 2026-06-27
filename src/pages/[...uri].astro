@@ -7,50 +7,45 @@ import { getNodeByURI, getAllUris } from "../lib/api";
 // Static rendering for all posts and content from WordPress
 export const prerender = true;
 
+// Get static paths for static site generation (all pages and posts).
+// `getAllUris` already pulls URIs straight from WordPress, so every path here is
+// known-valid at build time - no need to render a 404 inline.
+export async function getStaticPaths() {
+	return await getAllUris();
+}
+
 // Astro dynamic routing pattern
 const uri = `/${Astro.params.uri}/`;
 const data = await getNodeByURI(uri);
 const node = data.nodeByUri;
 
-// Get static paths for static site generation (all pages and posts)
-export async function getStaticPaths() {
-	// Return all paths without filtering to generate every page and post
-	// This ensures the entire site is pre-rendered at build time
-	return await getAllUris();
+// If a URI from `getAllUris` no longer resolves (deleted between path enumeration
+// and page render), fall through to Astro's standard 404 rather than emitting an
+// HTML meta-refresh redirect (which is all `Astro.redirect` produces in SSG mode).
+if (!node) {
+	Astro.response.status = 404;
 }
 
 // Determine which template to use based on the content type
 function resolveContentTemplate(node) {
-	let template;
 	switch (node?.__typename) {
-		case "Post":
-			template = Single;
-			break;
-		case "Page":
-			template = Single;
-			break;
 		case "Category":
-			template = Archive;
-			break;
 		case "Tag":
-			template = Archive;
-			break;
+			return Archive;
+		case "Post":
+		case "Page":
 		default:
-			template = Single;
+			return Single;
 	}
-
-	return template;
 }
 
-// Resolve the appropriate template component
 const Template = resolveContentTemplate(node);
-
-// Handle case of a node not found
-if (!node) {
-	return Astro.redirect("/404");
-}
 ---
 
-<MainLayout title={node.title || node.name} description={node.excerpt}>
-	<Template node={node} />
+<MainLayout
+	title={node?.title || node?.name}
+	description={node?.excerpt}
+	node={node}
+>
+	{node ? <Template node={node} /> : <p>Content not found.</p>}
 </MainLayout>
