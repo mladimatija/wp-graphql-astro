@@ -54,7 +54,17 @@
 		"lodash": ">=4.18.1",
 		"uuid": ">=14.0.0",
 		"yaml": ">=2.8.3",
-		"vite": "^8.0.13"
+		"vite": "^8.0.13",
+		"@opentelemetry/core": "^2.8.0",
+		"@opentelemetry/resources": "^2.8.0",
+		"@opentelemetry/sdk-trace-base": "^2.8.0",
+		"@opentelemetry/sdk-trace-node": "^2.8.0",
+		"@netlify/edge-bundler": {
+			"esbuild": "^0.28.1"
+		},
+		"@netlify/zip-it-and-ship-it": {
+			"esbuild": "^0.28.1"
+		}
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^21.1.0",
