@@ -14,6 +14,15 @@ updates:
       prefix: "chore(deps)"
     labels:
       - "dependencies"
+    ignore:
+      # Pinned to 1.x for the ESLint 10 migration. Both 2.x and 3.x require
+      # eslint >=10 AND eslint-plugin-jsx-a11y >=6.10.2, whose latest release
+      # (6.10.2) still caps at eslint ^9 — an unsatisfiable peer set that fails
+      # installation with ERESOLVE. See ESLINT.md.
+      - dependency-name: "eslint-plugin-astro"
+        versions: [">=2"]
+      - dependency-name: "astro-eslint-parser"
+        versions: [">=2"]
 
   # GitHub Actions
   - package-ecosystem: "github-actions"

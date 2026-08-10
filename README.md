@@ -227,6 +227,10 @@ Works on other platforms too:
 - Lint code: `npm run lint`
 - Build: `npm run build`
 
+Linting runs ESLint 10 and Stylelint. See [ESLINT.md](ESLINT.md) for the
+ESLint 10 migration notes, the dependencies that are deliberately pinned, and
+why `.astro` files are not currently linted by ESLint.
+
 ## Testing
 
 Tests run with Vitest:

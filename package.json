@@ -65,22 +65,24 @@
 		},
 		"@netlify/zip-it-and-ship-it": {
 			"esbuild": "^0.28.1"
+		},
+		"eslint-plugin-import": {
+			"eslint": "^10.0.0"
 		}
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^21.2.0",
 		"@commitlint/config-conventional": "^21.2.0",
-		"@eslint/js": "^9.39.4",
+		"@eslint/js": "^10.0.1",
 		"@testing-library/jest-dom": "^7.0.1",
 		"@testing-library/react": "^16.3.2",
 		"astro-eslint-parser": "^1.4.0",
 		"autoprefixer": "^10.5.4",
 		"cross-fetch": "^4.1.0",
 		"cssnano": "^8.0.5",
-		"eslint": "^9.39.5",
+		"eslint": "^10.8.1",
 		"eslint-plugin-astro": "^1.7.0",
 		"eslint-plugin-import": "^2.32.0",
-		"eslint-plugin-react": "^7.37.4",
 		"globals": "^17.9.0",
 		"husky": "^9.1.7",
 		"jsdom": "^29.1.1",
