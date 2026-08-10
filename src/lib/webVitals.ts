@@ -7,10 +7,11 @@
  * @see https://web.dev/vitals/ for more information on Core Web Vitals
  */
 
-// Import individual functions from web-vitals v5
+// Import individual functions from web-vitals v6
 import { onCLS, onLCP, onFCP, onTTFB, onINP } from "web-vitals";
 import { log } from "./constants";
 
+import type { MetricType, ReportOpts } from "web-vitals";
 import type { WebVitalsMetrics } from "../components/react/WebVitalsMonitor";
 
 /**
@@ -20,11 +21,55 @@ import type { WebVitalsMetrics } from "../components/react/WebVitalsMonitor";
 const analyticsEndpoint = import.meta.env.PUBLIC_ANALYTICS_ENDPOINT || "";
 
 /**
+ * How many distinct metrics `getWebVitalsMetrics()` waits for: CLS, LCP, FCP,
+ * TTFB and INP.
+ */
+const EXPECTED_METRIC_COUNT = 5;
+
+/**
+ * How long `getWebVitalsMetrics()` waits before resolving with a partial
+ * result. Not every metric is guaranteed to arrive — INP needs an interaction
+ * and CLS is finalised when the page is hidden — so without a deadline the
+ * promise could never settle.
+ */
+const METRICS_TIMEOUT_MS = 5000;
+
+/**
+ * Shared reporting options.
+ *
+ * `reportSoftNavs` is opt-in as of web-vitals v6. The site uses Astro's
+ * `<ClientRouter />`, so most navigations after the initial load are soft
+ * navigations — without this, only the first page of a session is measured.
+ *
+ * Note that enabling it means a callback may fire more than once per page load,
+ * once per navigation.
+ */
+const reportOpts: ReportOpts = { reportSoftNavs: true };
+
+/**
+ * Resolves the path a metric belongs to.
+ *
+ * With soft navigations a metric can be reported after the user has already
+ * navigated away, so `window.location` is not reliable — `navigationURL` (an
+ * absolute URL) records where the metric actually happened.
+ */
+function getMetricPath(metric: MetricType): string {
+	if (metric.navigationURL) {
+		try {
+			return new URL(metric.navigationURL).pathname;
+		} catch {
+			// Fall through to the current location below.
+		}
+	}
+	return window.location.pathname;
+}
+
+/**
  * Reports Web Vitals metrics to your analytics endpoint
  *
  * @param {Object} metric - Web Vitals metric object
  */
-function sendToAnalytics(metric) {
+function sendToAnalytics(metric: MetricType) {
 	// Early return if no analytics endpoint is configured
 	if (!analyticsEndpoint) {
 		// Log metrics in development mode or if debugging is enabled
@@ -39,7 +84,7 @@ function sendToAnalytics(metric) {
 		rating: metric.rating, // "good", "needs-improvement", or "poor"
 		delta: metric.delta,
 		id: metric.id,
-		page: window.location.pathname,
+		page: getMetricPath(metric),
 		// Add any additional data you want to collect
 		screenWidth: window.innerWidth,
 		dpr: window.devicePixelRatio,
@@ -74,11 +119,11 @@ export function initWebVitals() {
 
 	try {
 		// Measure and report each Core Web Vital
-		onCLS(sendToAnalytics); // Cumulative Layout Shift
-		onLCP(sendToAnalytics); // Largest Contentful Paint
-		onFCP(sendToAnalytics); // First Contentful Paint
-		onTTFB(sendToAnalytics); // Time to First Byte
-		onINP(sendToAnalytics); // Interaction to Next Paint (replaces FID in v5)
+		onCLS(sendToAnalytics, reportOpts); // Cumulative Layout Shift
+		onLCP(sendToAnalytics, reportOpts); // Largest Contentful Paint
+		onFCP(sendToAnalytics, reportOpts); // First Contentful Paint
+		onTTFB(sendToAnalytics, reportOpts); // Time to First Byte
+		onINP(sendToAnalytics, reportOpts); // Interaction to Next Paint (replaced FID in v5)
 	} catch (error) {
 		log.error(`Failed to initialize Web Vitals: ${error}`);
 	}
@@ -98,26 +143,32 @@ export async function getWebVitalsMetrics() {
 		}
 
 		try {
-			const metrics = {};
-			let remaining = 5; // Number of metrics we're waiting for (FID removed in v5)
+			const metrics: WebVitalsMetrics = {};
 
-			function saveMetric(metric) {
+			// Resolve on a deadline as well as on completion, and count distinct
+			// metric names rather than callbacks: a callback can fire repeatedly
+			// for the same metric (CLS updates until the page is hidden, and every
+			// metric reports again per soft navigation), so counting calls would
+			// resolve early with a partial result.
+			const timeoutId = setTimeout(() => resolve(metrics), METRICS_TIMEOUT_MS);
+
+			function saveMetric(metric: MetricType) {
 				metrics[metric.name] = {
 					value: metric.value,
 					rating: metric.rating,
 				};
-				remaining--;
 
-				if (remaining <= 0) {
+				if (Object.keys(metrics).length >= EXPECTED_METRIC_COUNT) {
+					clearTimeout(timeoutId);
 					resolve(metrics);
 				}
 			}
 
-			onCLS(saveMetric);
-			onLCP(saveMetric);
-			onFCP(saveMetric);
-			onTTFB(saveMetric);
-			onINP(saveMetric);
+			onCLS(saveMetric, reportOpts);
+			onLCP(saveMetric, reportOpts);
+			onFCP(saveMetric, reportOpts);
+			onTTFB(saveMetric, reportOpts);
+			onINP(saveMetric, reportOpts);
 		} catch (error) {
 			log.error(`Failed to get Web Vitals metrics: ${error}`);
 			resolve({});
