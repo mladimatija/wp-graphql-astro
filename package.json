@@ -19,6 +19,7 @@
 		"lint:css": "stylelint \"src/**/*.{astro,css}\"",
 		"lint:js": "eslint \"src/**/*.{js,ts}\" \"*.js\" \"scripts/**/*.{js,ts}\"",
 		"lint": "npm run lint:css && npm run lint:js",
+		"audit:ci": "node scripts/audit-ci.js",
 		"clean": "rm -rf dist",
 		"prebuild": "npm run clean",
 		"build:branding": "node src/scripts/process-templates.js",
@@ -51,21 +52,8 @@
 		"web-vitals": "^6.1.0"
 	},
 	"overrides": {
-		"lodash": ">=4.18.1",
-		"uuid": ">=14.0.0",
-		"yaml": ">=2.8.3",
 		"sharp": ">=0.35.0",
 		"vite": "^8.0.13",
-		"@opentelemetry/core": "^2.8.0",
-		"@opentelemetry/resources": "^2.8.0",
-		"@opentelemetry/sdk-trace-base": "^2.8.0",
-		"@opentelemetry/sdk-trace-node": "^2.8.0",
-		"@netlify/edge-bundler": {
-			"esbuild": "^0.28.1"
-		},
-		"@netlify/zip-it-and-ship-it": {
-			"esbuild": "^0.28.1"
-		},
 		"eslint-plugin-import": {
 			"eslint": "^10.0.0"
 		}

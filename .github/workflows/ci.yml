@@ -40,7 +40,7 @@ jobs:
         run: npm test
 
       - name: Check for security vulnerabilities
-        run: npm audit --production
+        run: npm run audit:ci
 
   build:
     runs-on: ubuntu-latest
