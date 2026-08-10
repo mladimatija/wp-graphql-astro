@@ -7,6 +7,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-08-10
+
+Two framework majors (Astro 7, ESLint 10), a Web Vitals correctness fix for
+client-side routing, and a rebuilt CI security gate.
+
+### Added
+
+- `scripts/audit-ci.js` and the `audit:ci` npm script — a CI security gate that runs `npm audit --omit=dev` against an explicit advisory allowlist. Each entry carries a reason and an expiry date, and an expired entry fails the build, so an advisory with no upstream patch can be documented and revisited instead of silencing the audit wholesale or downgrading the dependency that pulls it in
+- `reportSoftNavs` Web Vitals reporting (opt-in as of web-vitals v6), so metrics are collected on every `<ClientRouter />` navigation rather than only the initial page load
+- `EXPECTED_METRIC_COUNT` / `METRICS_TIMEOUT_MS` constants and a `getMetricPath()` helper in `src/lib/webVitals.ts`
+- Dependabot `ignore` rules for `eslint-plugin-astro` and `astro-eslint-parser`, both held at 1.x, so it stops opening weekly PRs that cannot pass CI
+
+### Changed
+
+- Migrated to Astro 7 — `astro` 6.3.5 → 7.2.0, `@astrojs/netlify` 7 → 8, `@astrojs/react` 5 → 6, and the `vite` override 7.3.2 → 8.0.13
+- Migrated to ESLint 10 — `eslint` 9.39.4 → 10.8.1 and `@eslint/js` 9 → 10; `eslint.config.js` required no changes
+- `web-vitals` 5 → 6; `src/lib/webVitals.ts` now uses the library's `MetricType` and `ReportOpts` types instead of untyped callback parameters
+- Web Vitals metrics attribute to the path in `metric.navigationURL` rather than `window.location.pathname`, which is unreliable once a metric can arrive after the visitor has navigated away
+- `getWebVitalsMetrics()` counts distinct metric names instead of callback invocations, and resolves on a 5s deadline as well as on completion
+- CI's `npm audit --production` step replaced by `npm run audit:ci` (also drops the flag npm has deprecated in favour of `--omit=dev`)
+- `overrides` pruned from 12 entries to 3 (`sharp`, `vite`, and an `eslint-plugin-import` → `eslint` peer fix)
+- `actions/checkout` and `actions/setup-node` 6 → 7
+- Dependency bumps: `react` / `react-dom` 19.2.6 → 19.2.8, `tailwindcss` and `@tailwindcss/vite` 4.3.0 → 4.3.3, `@testing-library/jest-dom` 6 → 7, `postcss-html` 1 → 2, `vitest` 4.1.6 → 4.1.10, `typescript-eslint` 8.59.4 → 8.66.0, `stylelint` 17.11.1 → 17.14.1, `prettier` 3.8.3 → 3.9.6, `@astrojs/sitemap` 3.7.2 → 3.7.3, `@fortawesome/*` 7.2.0 → 7.3.1, plus commitlint, postcss, cssnano, globals, lint-staged and autoprefixer patch bumps
+- Regenerated service worker; cache keys move to `matijaculjak-com-*-v20260810`
+
+### Fixed
+
+- Web Vitals are now reported across soft navigations. With `<ClientRouter />` handling most navigations, only the first page of a session was ever measured
+- `getWebVitalsMetrics()` no longer resolves with a partial result. It decremented a counter per callback, but CLS fires repeatedly as shifts accumulate and every metric re-reports per soft navigation, so five invocations did not mean five distinct metrics. It also had no deadline, so it could never settle when INP never arrived (no interaction) — it now resolves with whatever it has after 5s
+
+### Removed
+
+- `eslint-plugin-react` — declared in `devDependencies` but never imported by `eslint.config.js` and referenced nowhere else. Its `eslint ^9.7` peer cap made it look like a hard ESLint 10 blocker; it was dead weight
+- 8 `overrides` entries verified to have no effect on resolution: `lodash` and `uuid` (no longer in the dependency tree at all), `yaml`, the four `@opentelemetry/*` entries, and the scoped `esbuild` overrides under `@netlify/edge-bundler` and `@netlify/zip-it-and-ship-it`. All now resolve at or above their floors naturally — removing them left `package-lock.json` byte-identical
+
+### Security
+
+- `sharp` held at `>=0.35.0` via `overrides`. `@netlify/images` → `ipx` declares `sharp: ^0.34.3`, which resolves to a build inheriting libvips CVE-2026-33327, CVE-2026-33328, CVE-2026-35590 and CVE-2026-35591
+- CI now fails on any production advisory except two allowlisted `image-size` DoS advisories, GHSA-w3rx-r6r6-pgpr and GHSA-5p2g-fcmc-qvqq. Neither has a patched release at any version, and neither is reachable here: the only import sits in `@netlify/dev-utils`'s test helpers, and `@netlify/blobs` imports just `HTTPServer` from that module. The allowlist entries expire 2026-11-30
+
+### Documentation
+
+- `ESLINT.md` recording the ESLint 10 migration, why `eslint-plugin-astro` and `astro-eslint-parser` are pinned, and a watch list of upstream signals that unblock each pin
+- README points at `ESLINT.md` from the linting section
+
+### Known limitations
+
+- `.astro` files are not linted by ESLint. `astro-eslint-parser@1.4.0` depends on the old Go `@astrojs/compiler`, while Astro 7 moved to the Rust compiler, so parsing fails on every `.astro` file. The fix needs `astro-eslint-parser@3.x`, which is gated behind `eslint-plugin-astro@3.x` and an unsatisfiable `eslint-plugin-jsx-a11y` peer set. CSS inside `.astro` files is still linted by Stylelint
+
 ## [1.4.0] - 2026-05-19
 
 ### Added
@@ -181,7 +230,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated CSS color syntax to modern format
 - Switched logo from PNG to SVG
 
-[unreleased]: https://github.com/mladimatija/wp-graphql-astro/compare/v1.4.0...HEAD
+[unreleased]: https://github.com/mladimatija/wp-graphql-astro/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/mladimatija/wp-graphql-astro/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/mladimatija/wp-graphql-astro/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/mladimatija/wp-graphql-astro/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/mladimatija/wp-graphql-astro/compare/v1.1.0...v1.2.0
